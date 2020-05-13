@@ -6,16 +6,29 @@
 
   <groupId>com.yanlaoge.gulimall.ware</groupId>
   <artifactId>gulimall-ware</artifactId>
+  <packaging>pom</packaging>
   <version>0.0.1-SNAPSHOT</version>
+  <modules>
+    <module>gulimall-ware-api</module>
+    <module>gulimall-ware-biz</module>
+  </modules>
   <name>gulimall-ware</name>
   <description>谷粒商城-商品</description>
 
   <parent>
     <groupId>com.yanlaoge.gulimall</groupId>
     <artifactId>gulimall</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
   </parent>
 
+  <dependencies>
+
+    <dependency>
+      <groupId>com.yanlaoge.gulimall</groupId>
+      <artifactId>gulimall-common</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>

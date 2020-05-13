@@ -1,6 +1,8 @@
 package com.yanlaoge.gulimall.coupon.controller;
 
 import com.yanlaoge.gulimall.coupon.entity.CouponEntity;
+
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -31,10 +33,17 @@ public class CouponController {
     @Autowired
     private CouponService couponService;
 
+    @RequestMapping("/test")
+    public R test(){
+        CouponEntity couponEntity = new CouponEntity();
+        couponEntity.setAmount(new BigDecimal("500"));
+        return R.ok().put("data",couponEntity);
+    }
+
     /**
      * 列表
      */
-    @GetMapping("/list")
+    @RequestMapping("/list")
     //@RequiresPermissions("coupon:coupon:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = couponService.queryPage(params);

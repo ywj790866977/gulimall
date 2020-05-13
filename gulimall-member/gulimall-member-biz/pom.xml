@@ -10,12 +10,23 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>gulimall-member-biz</artifactId>
+
   <dependencies>
     <dependency>
       <groupId>com.yanlaoge.gulimall.member</groupId>
       <artifactId>gulimall-member-api</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>com.yanlaoge.gulimall.coupon</groupId>
+      <artifactId>gulimall-coupon-api</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>com.yanlaoge.gulimall.coupon</groupId>-->
+<!--      <artifactId>gulimall-coupon-biz</artifactId>-->
+<!--      <version>0.0.1-SNAPSHOT</version>-->
+<!--    </dependency>-->
   </dependencies>
 
 

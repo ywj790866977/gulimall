@@ -24,6 +24,7 @@
     <module>renren-fast</module>
     <module>renren-generator</module>
     <module>gulimall-common</module>
+    <module>gulimall-gateway</module>
   </modules>
 
   <properties>
@@ -78,15 +79,7 @@
   </dependencyManagement>
 
   <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
 
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-openfeign</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.projectlombok</groupId>

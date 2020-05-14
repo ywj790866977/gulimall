@@ -10,7 +10,6 @@ yum-config-manager     --add-repo     https://download.docker.com/linux/centos/d
 yum install docker-ce docker-ce-cli containerd.io
 systemctl enable docker
 systemctl restart docker
-
 ```
 #### 1.1 docker 安装mysql
 ```shell script

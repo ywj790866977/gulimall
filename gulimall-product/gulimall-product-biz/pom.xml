@@ -15,7 +15,6 @@
       <groupId>com.yanlaoge.gulimall.product</groupId>
       <artifactId>gulimall-product-api</artifactId>
       <version>0.0.1-SNAPSHOT</version>
-      <scope>compile</scope>
     </dependency>
   </dependencies>
 

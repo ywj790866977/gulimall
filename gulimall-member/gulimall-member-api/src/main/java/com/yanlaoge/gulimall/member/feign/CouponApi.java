@@ -1,4 +1,4 @@
-package com.yanlaoge.gulimall.coupon.feign;
+package com.yanlaoge.gulimall.member.feign;
 
 import com.yanlaoge.common.utils.R;
 

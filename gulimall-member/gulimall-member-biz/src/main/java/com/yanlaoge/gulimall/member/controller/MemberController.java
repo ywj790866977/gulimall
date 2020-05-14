@@ -2,13 +2,12 @@ package com.yanlaoge.gulimall.member.controller;
 
 import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.common.utils.R;
-import com.yanlaoge.gulimall.coupon.feign.CouponApi;
+import com.yanlaoge.gulimall.member.feign.CouponApi;
 import com.yanlaoge.gulimall.member.entity.MemberEntity;
 import com.yanlaoge.gulimall.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -24,7 +23,7 @@ import java.util.Map;
 public class MemberController {
     @Autowired
     private MemberService memberService;
-    @Resource
+    @Autowired
     private CouponApi couponApi;
 
     /**

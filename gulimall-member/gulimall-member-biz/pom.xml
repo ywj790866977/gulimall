@@ -22,11 +22,6 @@
       <artifactId>gulimall-coupon-api</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>com.yanlaoge.gulimall.coupon</groupId>-->
-<!--      <artifactId>gulimall-coupon-biz</artifactId>-->
-<!--      <version>0.0.1-SNAPSHOT</version>-->
-<!--    </dependency>-->
   </dependencies>
 
 

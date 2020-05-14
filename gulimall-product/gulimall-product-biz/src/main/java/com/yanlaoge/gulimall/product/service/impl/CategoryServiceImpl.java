@@ -1,5 +1,6 @@
 package com.yanlaoge.gulimall.product.service.impl;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -24,6 +25,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public List<CategoryEntity> listByTree() {
+        //1.
+        List<CategoryEntity> list = list();
+        //2.
+        return list;
     }
 
 }

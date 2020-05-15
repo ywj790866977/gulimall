@@ -31,7 +31,7 @@ public class MemberController {
      *
      * @return R
      */
-    @RequestMapping("/coupon")
+    @RequestMapping("/test")
     public R test() {
         R test = couponApi.test();
         return test;

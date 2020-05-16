@@ -13,7 +13,6 @@ import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.common.utils.R;
 
 
-
 /**
  * 商品三级分类
  *
@@ -23,63 +22,77 @@ import com.yanlaoge.common.utils.R;
 @RestController
 @RequestMapping("product/category")
 public class CategoryController {
-    @Autowired
-    private CategoryService categoryService;
 
-    /**
-     * 列表
-     */
-    @RequestMapping("/list")
-    //@RequiresPermissions("product:category:list")
-    public R list(){
-        System.out.println("============start=========");
-        List<CategoryEntity> categoryEntityList = categoryService.listByTree();
-        return R.ok().put("data", categoryEntityList);
-    }
+	@Autowired
+	private CategoryService categoryService;
+
+	/**
+	 * 列表
+	 */
+	@RequestMapping("/list")
+	//@RequiresPermissions("product:category:list")
+	public R list() {
+		System.out.println("============start=========");
+		List<CategoryEntity> categoryEntityList = categoryService.listByTree();
+		return R.ok().put("data", categoryEntityList);
+	}
 
 
-    /**
-     * 信息
-     */
-    @RequestMapping("/info/{catId}")
-    //@RequiresPermissions("product:category:info")
-    public R info(@PathVariable("catId") Long catId){
+	/**
+	 * 信息
+	 */
+	@RequestMapping("/info/{catId}")
+	//@RequiresPermissions("product:category:info")
+	public R info(@PathVariable("catId") Long catId) {
 		CategoryEntity category = categoryService.getById(catId);
 
-        return R.ok().put("category", category);
-    }
+		return R.ok().put("category", category);
+	}
 
-    /**
-     * 保存
-     */
-    @RequestMapping("/save")
-    //@RequiresPermissions("product:category:save")
-    public R save(@RequestBody CategoryEntity category){
+	/**
+	 * 保存
+	 */
+	@RequestMapping("/save")
+	//@RequiresPermissions("product:category:save")
+	public R save(@RequestBody CategoryEntity category) {
 		categoryService.save(category);
 
-        return R.ok();
-    }
+		return R.ok();
+	}
 
-    /**
-     * 修改
-     */
-    @RequestMapping("/update")
-    //@RequiresPermissions("product:category:update")
-    public R update(@RequestBody CategoryEntity category){
+	/**
+	 * 修改
+	 */
+	@RequestMapping("/update")
+	//@RequiresPermissions("product:category:update")
+	public R update(@RequestBody CategoryEntity category) {
 		categoryService.updateById(category);
 
-        return R.ok();
-    }
+		return R.ok();
+	}
 
-    /**
-     * 删除
-     */
-    @PostMapping("/delete")
-    //@RequiresPermissions("product:category:delete")
-    public R delete(@RequestBody Long[] catIds){
+	/**
+	 * 批量更新
+	 *
+	 * @param categories 集合
+	 * @return R
+	 */
+	@RequestMapping("/updates")
+	//@RequiresPermissions("product:category:update")
+	public R update(@RequestBody List<CategoryEntity> categories) {
+		categoryService.updateBatchById(categories);
+		return R.ok();
+	}
+
+	/**
+	 * 删除
+	 */
+	@PostMapping("/delete")
+	//@RequiresPermissions("product:category:delete")
+	public R delete(@RequestBody Long[] catIds) {
 //		categoryService.removeByIds(Arrays.asList(catIds));
 		categoryService.removeMenuByIds(Arrays.asList(catIds));
-        return R.ok();
-    }
+		return R.ok();
+	}
 
 }

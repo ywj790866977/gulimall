@@ -1,18 +1,16 @@
-package com.yanlaoge.gulimall.product;
+package com.yanlaoge.gulimall.thirdparty;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.OSSClientBuilder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import javax.annotation.Resource;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * @author 好人
@@ -26,7 +24,7 @@ public class TestDemo01 {
 
     @Test
     public void test02() throws FileNotFoundException {
-        InputStream inputStream = new FileInputStream("/Users/yan/Pictures/246x0w.png");
+        InputStream inputStream = new FileInputStream("C:\\Users\\Lenovo\\Pictures\\23ffasd.jpg");
         ossClient.putObject("yanmall","246x0w.png",inputStream);
         ossClient.shutdown();
 

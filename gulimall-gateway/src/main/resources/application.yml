@@ -13,6 +13,12 @@
 #            - Path=/api/product/**
 #          filters:
 #            - RewritePath=/api/(?<sement>.*),/$\{sement}
+#        - id: third_party_route
+#          uri: lb://gulimall-third-party
+#          predicates:
+#            - Path=/api/thirdparty/**
+#          filters:
+#            - RewritePath=/api/thirdparty/(?<sement>.*),/$\{sement}
 #        - id: admin_rote
 #          uri: lb://renren-fast
 #          predicates:

@@ -1,4 +1,4 @@
-package com.yanlaoge.gulimall.gateway;
+package com.yanlaoge.gulimall.thirdparty;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,17 +6,15 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /**
- * GulimallGatewayApplication
- *
- * @author js-rubyle
- * @date 2020/5/14 13:43
+ * 第三方服务 启动类
+ * @author  rubyle
  */
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @EnableDiscoveryClient
-public class GulimallGatewayApplication {
+public class GulimallThirdPartyApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GulimallGatewayApplication.class, args);
+		SpringApplication.run(GulimallThirdPartyApplication.class, args);
 	}
 
 }

@@ -1,28 +1,31 @@
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://10.211.55.20:3306/gulimall_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    url: jdbc:mysql://192.168.11.128:3306/gulimall_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
-    hikari:
-      connection-timeout: 30000
-  application:
-    name: gulimall-product
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
-
-
-mybatis-plus:
-  mapper-locations: classpath*:/mapper/**/*.xml
-  global-config:
-    db-config:
-      id-type: auto
-#      logic-delete-field: flag  #全局逻辑删除字段值 3.3.0开始支持，详情看下面。
-      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
-      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
-server:
-  port: 9004
-
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+##    url: jdbc:mysql://10.211.55.20:3306/gulimall_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+#    url: jdbc:mysql://192.168.11.128:3306/gulimall_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+#    username: root
+#    password: root
+#    hikari:
+#      connection-timeout: 30000
+#  application:
+#    name: gulimall-product
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: 127.0.0.1:8848
+#
+#
+#mybatis-plus:
+#  mapper-locations: classpath*:/mapper/**/*.xml
+#  global-config:
+#    db-config:
+#      id-type: auto
+##      logic-delete-field: flag  #全局逻辑删除字段值 3.3.0开始支持，详情看下面。
+#      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+#      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+#server:
+#  port: 9004
+#
+#logging:
+#  level:
+#    com.yanlaoge.gulimall: debug

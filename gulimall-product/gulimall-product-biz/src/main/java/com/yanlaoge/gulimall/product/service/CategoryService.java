@@ -15,28 +15,35 @@ import java.util.Map;
  */
 public interface CategoryService extends IService<CategoryEntity> {
 
-    PageUtils queryPage(Map<String, Object> params);
+	PageUtils queryPage(Map<String, Object> params);
 
-    /**
-     * 查询分级结构
-     *
-     * @return 树形集合
-     */
-    List<CategoryEntity> listByTree();
+	/**
+	 * 查询分级结构
+	 *
+	 * @return 树形集合
+	 */
+	List<CategoryEntity> listByTree();
 
-    /**
-     * 根据ids删除
-     *
-     * @param asList 删除id数组
-     */
-    void removeMenuByIds(List<Long> asList);
+	/**
+	 * 根据ids删除
+	 *
+	 * @param asList 删除id数组
+	 */
+	void removeMenuByIds(List<Long> asList);
 
-    /**
-     * 根据catelogId查找完整路径
-     *
-     * @param catelogId catelogId
-     * @return 路径集合
-     */
-    List<Long> findCatelogIds(Long catelogId);
+	/**
+	 * 根据catelogId查找完整路径
+	 *
+	 * @param catelogId catelogId
+	 * @return 路径集合
+	 */
+	List<Long> findCatelogIds(Long catelogId);
+
+	/**
+	 * 级联更新关联的所有数据
+	 *
+	 * @param category 实体
+	 */
+	void updateCascade(CategoryEntity category);
 }
 

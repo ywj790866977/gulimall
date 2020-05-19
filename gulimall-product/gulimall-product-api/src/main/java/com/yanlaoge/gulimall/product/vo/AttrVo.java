@@ -1,24 +1,16 @@
-package com.yanlaoge.gulimall.product.entity;
+package com.yanlaoge.gulimall.product.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-
-import java.io.Serializable;
-import java.util.Date;
 import lombok.Data;
 
 /**
- * 商品属性
- * 
- * @author rubyle
- * @date 2020-05-13 14:21:04
+ * AttrVo
+ *
+ * @author js-rubyle
+ * @date 2020/5/19 14:04
  */
 @Data
-@TableName("pms_attr")
-public class AttrEntity implements Serializable {
-	private static final long serialVersionUID = 1L;
-
+public class AttrVo {
 	/**
 	 * 属性id
 	 */
@@ -60,5 +52,8 @@ public class AttrEntity implements Serializable {
 	 * 快速展示【是否展示在介绍上；0-否 1-是】，在sku中仍然可以调整
 	 */
 	private Integer showDesc;
-
+	/**
+	 * 组id
+	 */
+	private Long attrGroupId;
 }

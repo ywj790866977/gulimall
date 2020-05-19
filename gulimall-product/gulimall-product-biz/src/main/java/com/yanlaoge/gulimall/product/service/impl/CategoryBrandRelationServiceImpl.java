@@ -1,5 +1,6 @@
 package com.yanlaoge.gulimall.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.yanlaoge.gulimall.product.dao.BrandDao;
 import com.yanlaoge.gulimall.product.dao.CategoryDao;
 import com.yanlaoge.gulimall.product.entity.BrandEntity;
@@ -21,30 +22,46 @@ import javax.annotation.Resource;
 
 
 @Service("categoryBrandRelationService")
-public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandRelationDao, CategoryBrandRelationEntity> implements CategoryBrandRelationService {
+public class CategoryBrandRelationServiceImpl extends
+		ServiceImpl<CategoryBrandRelationDao, CategoryBrandRelationEntity> implements CategoryBrandRelationService {
 
-    @Resource
-    private BrandDao brandDao;
-    @Resource
-    private CategoryDao categoryDao;
+	@Resource
+	private BrandDao brandDao;
+	@Resource
+	private CategoryDao categoryDao;
 
-    @Override
-    public PageUtils queryPage(Map<String, Object> params) {
-        IPage<CategoryBrandRelationEntity> page = this.page(
-                new Query<CategoryBrandRelationEntity>().getPage(params),
-                new QueryWrapper<CategoryBrandRelationEntity>()
-        );
+	@Override
+	public PageUtils queryPage(Map<String, Object> params) {
+		IPage<CategoryBrandRelationEntity> page = this.page(
+				new Query<CategoryBrandRelationEntity>().getPage(params),
+				new QueryWrapper<CategoryBrandRelationEntity>()
+		);
 
-        return new PageUtils(page);
-    }
+		return new PageUtils(page);
+	}
 
-    @Override
-    public void saveDetail(CategoryBrandRelationEntity categoryBrandRelation) {
-        BrandEntity brandEntity = brandDao.selectById(categoryBrandRelation.getBrandId());
-        CategoryEntity categoryEntity = categoryDao.selectById(categoryBrandRelation.getCatelogId());
-        categoryBrandRelation.setBrandName(brandEntity.getName());
-        categoryBrandRelation.setCatelogName(categoryEntity.getName());
-        save(categoryBrandRelation);
-    }
+	@Override
+	public void saveDetail(CategoryBrandRelationEntity categoryBrandRelation) {
+		BrandEntity brandEntity = brandDao.selectById(categoryBrandRelation.getBrandId());
+		CategoryEntity categoryEntity = categoryDao.selectById(categoryBrandRelation.getCatelogId());
+		categoryBrandRelation.setBrandName(brandEntity.getName());
+		categoryBrandRelation.setCatelogName(categoryEntity.getName());
+		save(categoryBrandRelation);
+	}
+
+	@Override
+	public void updateByBrandId(Long brandId, String brandName) {
+		UpdateWrapper<CategoryBrandRelationEntity> wrapper = new UpdateWrapper<>();
+		wrapper.eq("brand_id", brandId);
+		CategoryBrandRelationEntity entity = new CategoryBrandRelationEntity();
+		entity.setBrandId(brandId);
+		entity.setBrandName(brandName);
+		update(entity, wrapper);
+	}
+
+	@Override
+	public void updateByCategoryId(Long catId, String catName) {
+		baseMapper.updateByCategoryId(catId, catName);
+	}
 
 }

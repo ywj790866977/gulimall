@@ -3,14 +3,19 @@
 
 <mapper namespace="com.yanlaoge.gulimall.product.dao.CategoryBrandRelationDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="com.yanlaoge.gulimall.product.entity.CategoryBrandRelationEntity" id="categoryBrandRelationMap">
-        <result property="id" column="id"/>
-        <result property="brandId" column="brand_id"/>
-        <result property="catelogId" column="catelog_id"/>
-        <result property="brandName" column="brand_name"/>
-        <result property="catelogName" column="catelog_name"/>
-    </resultMap>
+  <!-- 可根据自己的需求，是否要使用 -->
+  <resultMap type="com.yanlaoge.gulimall.product.entity.CategoryBrandRelationEntity" id="categoryBrandRelationMap">
+    <result property="id" column="id"/>
+    <result property="brandId" column="brand_id"/>
+    <result property="catelogId" column="catelog_id"/>
+    <result property="brandName" column="brand_name"/>
+    <result property="catelogName" column="catelog_name"/>
+  </resultMap>
+  <update id="updateByCategoryId">
+      UPDATE pms_category_brand_relation
+      SET catelog_name = #{catName}
+      WHERE catelog_id = #{catId}
+  </update>
 
 
 </mapper>

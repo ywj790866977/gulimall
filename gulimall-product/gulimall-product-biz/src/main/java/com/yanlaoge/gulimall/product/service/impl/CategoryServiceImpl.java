@@ -1,9 +1,13 @@
 package com.yanlaoge.gulimall.product.service.impl;
 
+import com.yanlaoge.gulimall.product.service.CategoryBrandRelationService;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+import javax.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -18,10 +22,14 @@ import com.yanlaoge.common.utils.Query;
 import com.yanlaoge.gulimall.product.dao.CategoryDao;
 import com.yanlaoge.gulimall.product.entity.CategoryEntity;
 import com.yanlaoge.gulimall.product.service.CategoryService;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
+
+    @Autowired
+    private CategoryBrandRelationService categoryBrandRelationService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -58,6 +66,16 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         findParentPath(catelogId,list);
 //        findParentPathByWhile(catelogId,list);
         return Lists.reverse(list) ;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateCascade(CategoryEntity category) {
+        updateById(category);
+        if(!StringUtils.isEmpty(category.getName())){
+            categoryBrandRelationService.updateByCategoryId(category.getCatId(),category.getName());
+            //TODO 其他冗余更新
+        }
     }
 
     private void findParentPathByWhile(Long catelogId, ArrayList<Long> list) {

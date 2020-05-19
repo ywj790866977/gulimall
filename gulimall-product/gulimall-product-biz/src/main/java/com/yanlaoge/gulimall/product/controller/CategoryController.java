@@ -32,7 +32,17 @@ public class CategoryController {
 	@RequestMapping("/list")
 	//@RequiresPermissions("product:category:list")
 	public R list() {
-		System.out.println("============start=========");
+		List<CategoryEntity> list = categoryService.list();
+		List<CategoryEntity> categoryEntityList = categoryService.listByTree();
+		return R.ok().put("data", list);
+	}
+
+	/**
+	 * 列表
+	 */
+	@RequestMapping("/list/tree")
+	//@RequiresPermissions("product:category:list")
+	public R listByTree() {
 		List<CategoryEntity> categoryEntityList = categoryService.listByTree();
 		return R.ok().put("data", categoryEntityList);
 	}
@@ -77,7 +87,7 @@ public class CategoryController {
 	 * @param categories 集合
 	 * @return R
 	 */
-	@RequestMapping("/updates")
+	@RequestMapping("/update/sort")
 	//@RequiresPermissions("product:category:update")
 	public R update(@RequestBody List<CategoryEntity> categories) {
 		categoryService.updateBatchById(categories);

@@ -1,19 +1,16 @@
 package com.yanlaoge.gulimall.product.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.yanlaoge.gulimall.product.entity.AttrGroupEntity;
-import com.yanlaoge.gulimall.product.service.AttrGroupService;
 import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.common.utils.R;
+import com.yanlaoge.gulimall.product.entity.AttrGroupEntity;
+import com.yanlaoge.gulimall.product.service.AttrGroupService;
+import com.yanlaoge.gulimall.product.service.CategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 
 
@@ -28,6 +25,8 @@ import com.yanlaoge.common.utils.R;
 public class AttrGroupController {
     @Autowired
     private AttrGroupService attrGroupService;
+    @Autowired
+    private CategoryService categoryService;
 
     /**
      * 列表
@@ -50,7 +49,8 @@ public class AttrGroupController {
     //@RequiresPermissions("product:attrgroup:info")
     public R info(@PathVariable("attrGroupId") Long attrGroupId){
 		AttrGroupEntity attrGroup = attrGroupService.getById(attrGroupId);
-
+		List<Long> catelogPath =  categoryService.findCatelogIds(attrGroup.getCatelogId());
+        attrGroup.setCatelogPath(catelogPath);
         return R.ok().put("attrGroup", attrGroup);
     }
 

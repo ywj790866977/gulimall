@@ -1,7 +1,9 @@
 package com.yanlaoge.gulimall.product.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -48,6 +50,31 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         //TODO 业务判断
         removeByIds(asList);
 //        baseMapper.deleteBatchIds(asList);
+    }
+
+    @Override
+    public List<Long> findCatelogIds(Long catelogId) {
+        ArrayList<Long> list = Lists.newArrayList();
+        findParentPath(catelogId,list);
+//        findParentPathByWhile(catelogId,list);
+        return Lists.reverse(list) ;
+    }
+
+    private void findParentPathByWhile(Long catelogId, ArrayList<Long> list) {
+        list.add(catelogId);
+        CategoryEntity categoryEntity = this.getById(catelogId);
+        while (categoryEntity.getParentCid() != null && categoryEntity.getParentCid() != 0){
+            list.add(categoryEntity.getParentCid());
+            categoryEntity = this.getById(categoryEntity.getParentCid());
+        }
+    }
+
+    private void findParentPath(Long catelogId, ArrayList<Long> list) {
+        list.add(catelogId);
+        CategoryEntity categoryEntity = getById(catelogId);
+        if(categoryEntity.getParentCid() != null && categoryEntity.getParentCid()!=0){
+            findParentPath(categoryEntity.getParentCid(),list);
+        }
     }
 
     public List<CategoryEntity> getChildren(CategoryEntity root, List<CategoryEntity> list) {

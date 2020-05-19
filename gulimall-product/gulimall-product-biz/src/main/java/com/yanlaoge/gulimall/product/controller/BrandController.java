@@ -80,7 +80,7 @@ public class BrandController {
     /**
      * 修改
      */
-    @RequestMapping("/updateStatus")
+    @RequestMapping("update/status")
     //@RequiresPermissions("product:brand:update")
     public R updateStatus(@RequestBody  @Validated(UpdateGroup.class) BrandEntity brand){
         brandService.updateById(brand);

@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.common.utils.Query;
 import com.yanlaoge.gulimall.product.dao.AttrAttrgroupRelationDao;
 import com.yanlaoge.gulimall.product.dao.AttrDao;
+import com.yanlaoge.gulimall.product.dao.AttrGroupDao;
 import com.yanlaoge.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import com.yanlaoge.gulimall.product.entity.AttrEntity;
 import com.yanlaoge.gulimall.product.entity.AttrGroupEntity;
@@ -20,16 +22,16 @@ import com.yanlaoge.gulimall.product.service.CategoryService;
 import com.yanlaoge.gulimall.product.vo.AttrGroupRelationVo;
 import com.yanlaoge.gulimall.product.vo.AttrResVo;
 import com.yanlaoge.gulimall.product.vo.AttrVo;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.annotation.Resource;
-import org.apache.commons.lang3.EnumUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -48,6 +50,8 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 	private AttrAttrgroupRelationDao attrAttrgroupRelationDao;
 	@Resource
 	private AttrGroupService attrGroupService;
+	@Resource
+	private AttrGroupDao attrGroupDao;
 
 	@Override
 	public PageUtils queryPage(Map<String, Object> params) {
@@ -173,10 +177,12 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 	public List<AttrEntity> getRelationAttr(Long attrgroupId) {
 
 		List<AttrAttrgroupRelationEntity> relationEntities = attrAttrgroupRelationDao
-				.selectList(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_group_id",
-						attrgroupId));
+				.selectList(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_group_id", attrgroupId));
 		List<Long> attrIds = relationEntities.stream().map(AttrAttrgroupRelationEntity::getAttrId)
 				.collect(Collectors.toList());
+		if(CollectionUtils.isEmpty(attrIds)){
+			return Lists.newArrayList();
+		}
 		return listByIds(attrIds);
 	}
 
@@ -188,6 +194,39 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 			return entity;
 		}).collect(Collectors.toList());
 		attrAttrgroupRelationDao.deleteBatchRelation(attrAttrgroupRelationEntities);
+	}
+
+	@Override
+	public PageUtils getNoRelationAttr(Map<String, Object> params, Long attrgroupId) {
+		// 当前分组查询所属分类的所有属性
+		AttrGroupEntity attrGroupEntity = attrGroupService.getById(attrgroupId);
+		Long catelogId = attrGroupEntity.getCatelogId();
+		// 当前分类只能关联别的分组没有关联的属性
+		List<AttrGroupEntity> attrGroupEntities = attrGroupDao.selectList(new QueryWrapper<AttrGroupEntity>()
+				.eq("catelog_id", catelogId)
+				.ne("attr_group_id", attrgroupId));
+		List<Long> attrGroupIds = attrGroupEntities.stream().map(AttrGroupEntity::getAttrGroupId)
+				.collect(Collectors.toList());
+		//查询出已经关联的书信
+		List<AttrAttrgroupRelationEntity> relationEntities = attrAttrgroupRelationDao.selectList(
+				new QueryWrapper<AttrAttrgroupRelationEntity>().in("attr_group_id", attrGroupIds));
+		//已经关联的属性
+		List<Long> attrIds =
+				relationEntities.stream().map(AttrAttrgroupRelationEntity::getAttrId).collect(Collectors.toList());
+		//进行排除
+		QueryWrapper<AttrEntity> wrapper = new QueryWrapper<AttrEntity>().eq("catelog_id", catelogId).eq("attr_type",
+				AttrTypeEnum.BASE.getCode());
+		if(!CollectionUtils.isEmpty(attrIds)){
+			wrapper.notIn("attr_id", attrIds);
+		}
+		String key = (String) params.get("key");
+		if(!StringUtils.isEmpty(key)){
+			wrapper.and(o->{
+				o.eq("attr_id",key).or().like("attr_name",key);
+			});
+		}
+		IPage<AttrEntity> page = page(new Query<AttrEntity>().getPage(params), wrapper);
+		return new PageUtils(page);
 	}
 
 }

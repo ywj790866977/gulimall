@@ -40,15 +40,28 @@ public class AttrGroupController {
 	 * @return R
 	 */
 	@GetMapping("/{attrgroupId}/attr/relation")
-	public R list(@PathVariable("attrgroupId") Long attrgroupId) {
+	public R relationList(@PathVariable("attrgroupId") Long attrgroupId) {
 		List<AttrEntity> attrEntityList = attrService.getRelationAttr(attrgroupId);
 		return R.ok().put("data", attrEntityList);
 	}
 
 	/**
+	 * 根据组id查询所有为关联属性
 	 *
-	 * @param relationVos
-	 * @return
+	 * @param attrgroupId 组id
+	 * @return R
+	 */
+	@GetMapping("/{attrgroupId}/noattr/relation")
+	public R noRelationList(@RequestParam Map<String, Object> params,@PathVariable("attrgroupId") Long attrgroupId) {
+		PageUtils page =   attrService.getNoRelationAttr(params, attrgroupId);
+		return R.ok().put("page", page);
+	}
+
+	/**
+	 * 删除关联属性
+	 *
+	 * @param relationVos 删除的集合
+	 * @return R
 	 */
 	@PostMapping("/attr/relation/delete")
 	public R lists(@RequestBody List<AttrGroupRelationVo> relationVos ) {

@@ -1,5 +1,6 @@
 package com.yanlaoge.gulimall.product.service.impl;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -25,5 +26,10 @@ public class ProductAttrValueServiceImpl extends ServiceImpl<ProductAttrValueDao
 
         return new PageUtils(page);
     }
+
+	@Override
+	public void saveProductAttr(List<ProductAttrValueEntity> entities) {
+		this.saveBatch(entities);
+	}
 
 }

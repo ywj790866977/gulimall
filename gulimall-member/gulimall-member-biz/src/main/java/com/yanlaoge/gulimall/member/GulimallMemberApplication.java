@@ -9,10 +9,13 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScans;
 
+/**
+ *
+ * @author rubyle
+ */
 @SpringBootApplication
 @EnableDiscoveryClient
 @MapperScan("com.yanlaoge.gulimall.member.dao")
-@EnableFeignClients("com.yanlaoge.gulimall.member.feign")
 public class GulimallMemberApplication {
 
 	public static void main(String[] args) {

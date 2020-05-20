@@ -2,12 +2,16 @@ package com.yanlaoge.gulimall.product.controller;
 
 import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.common.utils.R;
+import com.yanlaoge.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import com.yanlaoge.gulimall.product.entity.AttrEntity;
 import com.yanlaoge.gulimall.product.entity.AttrGroupEntity;
+import com.yanlaoge.gulimall.product.service.AttrAttrgroupRelationService;
 import com.yanlaoge.gulimall.product.service.AttrGroupService;
 import com.yanlaoge.gulimall.product.service.AttrService;
 import com.yanlaoge.gulimall.product.service.CategoryService;
 import com.yanlaoge.gulimall.product.vo.AttrGroupRelationVo;
+import com.yanlaoge.gulimall.product.vo.AttrGroupWithAttrsVo;
+import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +36,35 @@ public class AttrGroupController {
 	private CategoryService categoryService;
 	@Autowired
 	private AttrService attrService;
+	@Resource
+	private AttrAttrgroupRelationService relationService;
+
+	/**
+	 * 获取分类下所有分组&关联信息
+	 *
+	 * @param catelogId 分类id
+	 * @return vo
+	 */
+	@GetMapping("/{catelogId}/withattr")
+	public R getAttrRelation(@PathVariable("catelogId") Long catelogId) {
+		//1. 查询三级分类所有分组信息
+		//2. 查询每个分组所有属性信息
+		List<AttrGroupWithAttrsVo> relationEntities = attrGroupService.getAttrGroupwithAttrs(catelogId);
+		return R.ok().put("data", relationEntities);
+	}
+
+	/**
+	 * 根据vo获取保存
+	 *
+	 * @param relationVos vos
+	 * @return R
+	 */
+	@PostMapping("/attr/relation")
+	public R saveRelation(@RequestBody List<AttrGroupRelationVo> relationVos) {
+		relationService.saveRelation(relationVos);
+		return R.ok();
+	}
+
 
 	/**
 	 * 根据组id查询所有属性
@@ -52,8 +85,8 @@ public class AttrGroupController {
 	 * @return R
 	 */
 	@GetMapping("/{attrgroupId}/noattr/relation")
-	public R noRelationList(@RequestParam Map<String, Object> params,@PathVariable("attrgroupId") Long attrgroupId) {
-		PageUtils page =   attrService.getNoRelationAttr(params, attrgroupId);
+	public R noRelationList(@RequestParam Map<String, Object> params, @PathVariable("attrgroupId") Long attrgroupId) {
+		PageUtils page = attrService.getNoRelationAttr(params, attrgroupId);
 		return R.ok().put("page", page);
 	}
 
@@ -64,7 +97,7 @@ public class AttrGroupController {
 	 * @return R
 	 */
 	@PostMapping("/attr/relation/delete")
-	public R lists(@RequestBody List<AttrGroupRelationVo> relationVos ) {
+	public R lists(@RequestBody List<AttrGroupRelationVo> relationVos) {
 		attrService.deleteRelation(relationVos);
 		return R.ok();
 	}

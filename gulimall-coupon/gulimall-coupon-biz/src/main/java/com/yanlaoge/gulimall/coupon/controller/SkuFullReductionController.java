@@ -1,5 +1,6 @@
 package com.yanlaoge.gulimall.coupon.controller;
 
+import com.yanlaoge.common.to.SkuReductionTo;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -29,6 +30,15 @@ import com.yanlaoge.common.utils.R;
 public class SkuFullReductionController {
     @Autowired
     private SkuFullReductionService skuFullReductionService;
+
+    /**
+     * 列表
+     */
+    @RequestMapping("/saveInfo")
+    public R saveInfo(@RequestBody SkuReductionTo skuReductionTo){
+        skuFullReductionService.saveSkuReduction(skuReductionTo);
+        return R.ok();
+    }
 
     /**
      * 列表

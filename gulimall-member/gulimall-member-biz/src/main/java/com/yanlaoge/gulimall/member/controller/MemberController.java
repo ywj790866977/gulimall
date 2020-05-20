@@ -2,7 +2,6 @@ package com.yanlaoge.gulimall.member.controller;
 
 import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.common.utils.R;
-import com.yanlaoge.gulimall.member.feign.CouponApi;
 import com.yanlaoge.gulimall.member.entity.MemberEntity;
 import com.yanlaoge.gulimall.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,19 +22,7 @@ import java.util.Map;
 public class MemberController {
     @Autowired
     private MemberService memberService;
-    @Autowired
-    private CouponApi couponApi;
 
-    /**
-     * test
-     *
-     * @return R
-     */
-    @RequestMapping("/test")
-    public R test() {
-        R test = couponApi.test();
-        return test;
-    }
 
     /**
      * 列表

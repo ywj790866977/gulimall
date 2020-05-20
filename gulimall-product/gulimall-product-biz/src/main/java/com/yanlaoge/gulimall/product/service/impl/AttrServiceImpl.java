@@ -69,7 +69,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 		AttrEntity attrEntity = new AttrEntity();
 		BeanUtils.copyProperties(attrVo, attrEntity);
 		this.save(attrEntity);
-		if (AttrTypeEnum.BASE.getCode().equals(attrVo.getAttrType())) {
+		if (AttrTypeEnum.BASE.getCode().equals(attrVo.getAttrType()) && attrVo.getAttrGroupId() != null) {
 			AttrAttrgroupRelationEntity entity = new AttrAttrgroupRelationEntity();
 			entity.setAttrGroupId(attrVo.getAttrGroupId());
 			entity.setAttrId(attrEntity.getAttrId());
@@ -113,7 +113,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 				AttrAttrgroupRelationEntity relationEntity = attrAttrgroupRelationDao
 						.selectOne(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_id",
 								attrResVo.getAttrId()));
-				if (relationEntity != null) {
+				if (relationEntity != null && relationEntity.getAttrGroupId() != null) {
 					// 2. 根据关联表 查询 组
 					AttrGroupEntity groupEntity = attrGroupService.getById(relationEntity.getAttrGroupId());
 					attrResVo.setGroupName(groupEntity.getAttrGroupName());
@@ -203,8 +203,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 		Long catelogId = attrGroupEntity.getCatelogId();
 		// 当前分类只能关联别的分组没有关联的属性
 		List<AttrGroupEntity> attrGroupEntities = attrGroupDao.selectList(new QueryWrapper<AttrGroupEntity>()
-				.eq("catelog_id", catelogId)
-				.ne("attr_group_id", attrgroupId));
+				.eq("catelog_id", catelogId));
 		List<Long> attrGroupIds = attrGroupEntities.stream().map(AttrGroupEntity::getAttrGroupId)
 				.collect(Collectors.toList());
 		//查询出已经关联的书信

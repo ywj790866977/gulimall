@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.gulimall.product.entity.AttrAttrgroupRelationEntity;
 
+import com.yanlaoge.gulimall.product.vo.AttrGroupRelationVo;
+import com.yanlaoge.gulimall.product.vo.AttrGroupWithAttrsVo;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,6 +18,14 @@ import java.util.Map;
  */
 public interface AttrAttrgroupRelationService extends IService<AttrAttrgroupRelationEntity> {
 
-    PageUtils queryPage(Map<String, Object> params);
+	PageUtils queryPage(Map<String, Object> params);
+
+	/**
+	 * 保存关联关系
+	 *
+	 * @param relationVos 关系集合
+	 */
+	void saveRelation(List<AttrGroupRelationVo> relationVos);
+
 }
 

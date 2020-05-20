@@ -33,13 +33,6 @@ public class CouponController {
     @Autowired
     private CouponService couponService;
 
-    @RequestMapping("/test")
-    public R test(){
-        CouponEntity couponEntity = new CouponEntity();
-        couponEntity.setAmount(new BigDecimal("500"));
-        return R.ok().put("data",couponEntity);
-    }
-
     /**
      * 列表
      */

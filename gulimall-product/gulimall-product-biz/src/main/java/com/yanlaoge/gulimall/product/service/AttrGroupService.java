@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.gulimall.product.entity.AttrGroupEntity;
 
+import com.yanlaoge.gulimall.product.entity.BrandEntity;
+import com.yanlaoge.gulimall.product.vo.AttrGroupWithAttrsVo;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,21 +17,29 @@ import java.util.Map;
  */
 public interface AttrGroupService extends IService<AttrGroupEntity> {
 
-    /**
-     * 普通分页查询
-     *
-     * @param params 分页参数
-     * @return 分页
-     */
-    PageUtils queryPage(Map<String, Object> params);
+	/**
+	 * 普通分页查询
+	 *
+	 * @param params 分页参数
+	 * @return 分页
+	 */
+	PageUtils queryPage(Map<String, Object> params);
 
-    /**
-     * catelogid 分页查询
-     *
-     * @param params    分页参数
-     * @param catelogId catelogid
-     * @return 分页
-     */
-    PageUtils queryPage(Map<String, Object> params, Long catelogId);
+	/**
+	 * catelogid 分页查询
+	 *
+	 * @param params    分页参数
+	 * @param catelogId catelogid
+	 * @return 分页
+	 */
+	PageUtils queryPage(Map<String, Object> params, Long catelogId);
+
+	/**
+	 * 获取分类下所有分组&关联信息
+	 *
+	 * @param catelogId 分类id
+	 * @return 属性集合
+	 */
+	List<AttrGroupWithAttrsVo> getAttrGroupwithAttrs(Long catelogId);
 }
 

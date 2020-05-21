@@ -6,6 +6,8 @@ import com.yanlaoge.gulimall.coupon.entity.MemberPriceEntity;
 import com.yanlaoge.gulimall.coupon.entity.SkuLadderEntity;
 import com.yanlaoge.gulimall.coupon.service.MemberPriceService;
 import com.yanlaoge.gulimall.coupon.service.SkuLadderService;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
@@ -44,17 +46,22 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
 	@Override
 	public void saveSkuReduction(SkuReductionTo skuReductionTo) {
 		//1. 商品阶梯价格
+
 		SkuLadderEntity skuLadderEntity = new SkuLadderEntity();
 		skuLadderEntity.setSkuId(skuReductionTo.getSkuId());
 		skuLadderEntity.setFullCount(skuReductionTo.getFullCount());
 		skuLadderEntity.setDiscount(skuReductionTo.getDiscount());
 		skuLadderEntity.setAddOther(skuReductionTo.getCountStatus());
-		skuLadderService.save(skuLadderEntity);
+		if (skuReductionTo.getFullCount() > 0) {
+			skuLadderService.save(skuLadderEntity);
+		}
 
 		//2. 保存商品满减信息
 		SkuFullReductionEntity skuFullReductionEntity = new SkuFullReductionEntity();
 		BeanUtils.copyProperties(skuReductionTo,skuFullReductionEntity);
-		this.save(skuFullReductionEntity);
+		if(skuFullReductionEntity.getFullPrice().compareTo(BigDecimal.ZERO) >0){
+			this.save(skuFullReductionEntity);
+		}
 
 		//3. 商品会员价格
 		List<MemberPrice> memberPrice = skuReductionTo.getMemberPrice();
@@ -65,6 +72,8 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
 			memberPriceEntity.setMemberLevelName(item.getName());
 			memberPriceEntity.setAddOther(1);
 			return memberPriceEntity;
+		}).filter(item->{
+			return item.getMemberPrice().compareTo(BigDecimal.ZERO) >0;
 		}).collect(Collectors.toList());
 		memberPriceService.saveBatch(collect);
 	}

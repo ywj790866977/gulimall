@@ -1,15 +1,15 @@
-spring:
-  application:
-    name: gulimall-third-party
-  cloud:
-    alicloud:
-      access-key: LTAI4GEEH4Asm83pNRUMd1S5
-      secret-key: OCTLZA2FFuRDvUPRYQ6KoyUsMEORxy
-      oss:
-        endpoint: oss-cn-beijing.aliyuncs.com
-        bucket: yanmall
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
-server:
-  port: 9006
+#spring:
+#  application:
+#    name: gulimall-third-party
+#  cloud:
+#    alicloud:
+#      access-key: LTAI4GEEH4Asm83pNRUMd1S5
+#      secret-key: OCTLZA2FFuRDvUPRYQ6KoyUsMEORxy
+#      oss:
+#        endpoint: oss-cn-beijing.aliyuncs.com
+#        bucket: yanmall
+#    nacos:
+#      discovery:
+#        server-addr: 127.0.0.1:8848
+#server:
+#  port: 9006

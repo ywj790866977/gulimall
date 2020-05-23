@@ -15,13 +15,30 @@ import java.util.Map;
  */
 public interface ProductAttrValueService extends IService<ProductAttrValueEntity> {
 
-	PageUtils queryPage(Map<String, Object> params);
+    PageUtils queryPage(Map<String, Object> params);
 
-	/**
-	 * 保存信息
-	 *
-	 * @param entities 实体
-	 */
-	void saveProductAttr(List<ProductAttrValueEntity> entities);
+    /**
+     * 保存信息
+     *
+     * @param entities 实体
+     */
+    void saveProductAttr(List<ProductAttrValueEntity> entities);
+
+    /**
+     * 属性集合
+     *
+     * @param spuId spuid
+     * @return 集合
+     */
+    List<ProductAttrValueEntity> baseAttrListforspu(Long spuId);
+
+    /**
+     * 更新
+     *
+     * @param spuId    spuid
+     * @param entities 实体集合
+     */
+    void updateBySpuid(Long spuId, List<ProductAttrValueEntity> entities);
+
 }
 

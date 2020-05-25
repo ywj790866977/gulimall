@@ -52,7 +52,7 @@ docker restart redis
 ```shell script
 docker run --name elasticsearch -p 9200:9200 -p 9300:9300 \
 -e "discovery.type=single-node" \
--e ES_JAVA_OPTS="-Xms64m -Xmx128m" \
+-e ES_JAVA_OPTS="-Xms64m -Xmx512m" \
 -v /mydata/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \
 -v /mydata/elasticsearch/data:/usr/share/elasticsearch/data \
 -v /mydata/elasticsearch/plugins:/usr/share/elasticsearch/plugins \
@@ -67,4 +67,20 @@ docker run  --name kibana -e ELASTICSEARCH_HOSTS=http://10.211.55.20:9200 -p 560
 ```shell script
 ## es测试数据
 https://raw.githubusercontent.com/elastic/elasticsearch/master/docs/src/test/resources/accounts.json?raw=ture
+```
+
+```shell script
+docker run -p 80:80 --name nginx -d  nginx:1.10
+mkdir /mydata/nginx
+cd /mydata/nginx
+docker container cp nginx:/etc/nginx .
+mv nginx conf
+
+###
+docker run -p 80:80 --name nginx \
+-v /mydata/nginx/html:/usr/share/nginx/html \
+-v /mydata/nginx/logs:/var/log/nginx \
+-v /mydata/nginx/conf:/etc/nginx \
+-d  nginx:1.10
+
 ```

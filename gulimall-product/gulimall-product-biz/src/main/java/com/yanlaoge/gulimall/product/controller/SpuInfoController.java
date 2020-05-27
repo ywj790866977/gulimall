@@ -1,15 +1,13 @@
 package com.yanlaoge.gulimall.product.controller;
 
+import com.yanlaoge.common.utils.ResponseHelper;
+import com.yanlaoge.common.utils.ResponseVo;
 import com.yanlaoge.gulimall.product.vo.SpuSaveVo;
 import java.util.Arrays;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.yanlaoge.gulimall.product.entity.SpuInfoEntity;
 import com.yanlaoge.gulimall.product.service.SpuInfoService;
@@ -31,11 +29,16 @@ public class SpuInfoController {
     @Autowired
     private SpuInfoService spuInfoService;
 
+    @PostMapping("/{spuId}/up")
+    public ResponseVo<Void> spuUp(@PathVariable("spuId") Long spuId){
+        spuInfoService.up(spuId);
+        return ResponseHelper.success();
+    }
+
     /**
      * 列表
      */
     @RequestMapping("/list")
-    //@RequiresPermissions("product:spuinfo:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = spuInfoService.queryPageByCondtion(params);
 

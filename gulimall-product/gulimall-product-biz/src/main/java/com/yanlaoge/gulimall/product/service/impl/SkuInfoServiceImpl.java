@@ -3,6 +3,8 @@ package com.yanlaoge.gulimall.product.service.impl;
 import java.math.BigDecimal;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -69,5 +71,10 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 	public void saveSkuInfo(SkuInfoEntity skuInfoEntity) {
 		this.save(skuInfoEntity);
 	}
+
+    @Override
+    public List<SkuInfoEntity> getSkuByspuId(Long spuId) {
+		return this.list(new QueryWrapper<SkuInfoEntity>().eq("spuId",spuId));
+    }
 
 }

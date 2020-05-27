@@ -24,7 +24,7 @@ public class EsConfig {
     }
 
     @Bean
-    public RestHighLevelClient esClient(){
+    public RestHighLevelClient esRestClient(){
         return new RestHighLevelClient(
                 RestClient.builder(
                         new HttpHost("10.211.55.20", 9200, "http")));

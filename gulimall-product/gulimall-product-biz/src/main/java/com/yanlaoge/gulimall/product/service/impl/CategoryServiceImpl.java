@@ -78,6 +78,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         }
     }
 
+    @Override
+    public List<CategoryEntity> getLevel1Categorys() {
+        return this.list(new QueryWrapper<CategoryEntity>().eq("parent_cid",0));
+    }
+
     private void findParentPathByWhile(Long catelogId, ArrayList<Long> list) {
         list.add(catelogId);
         CategoryEntity categoryEntity = this.getById(catelogId);

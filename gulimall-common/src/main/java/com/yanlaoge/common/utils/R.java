@@ -1,7 +1,10 @@
 
 package com.yanlaoge.common.utils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.http.HttpStatus;
 
 import java.util.HashMap;
@@ -12,11 +15,26 @@ import java.util.Map;
  *
  * @author Mark sunlightcs@gmail.com
  */
-@Data
-public class R<T> extends HashMap<String, Object> {
+public class R extends HashMap<String, Object> {
     private static final long serialVersionUID = 1L;
 
-    private T data;
+    public R setData(Object data) {
+        put("data", data);
+        return this;
+    }
+
+    /**
+     * 传入类型进行对应的转换
+     *
+     * @param tTypeReference 转换的类型
+     * @param <T>            泛型
+     * @return 转换完的数据
+     */
+    public <T> T getData(TypeReference<T> tTypeReference) {
+        Object data = get("data");
+        String s = JSON.toJSONString(data);
+        return JSON.parseObject(s, tTypeReference);
+    }
 
     public R() {
         put("code", 0);

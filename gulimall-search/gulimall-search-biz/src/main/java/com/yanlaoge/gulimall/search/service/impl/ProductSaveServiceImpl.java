@@ -49,10 +49,12 @@ public class ProductSaveServiceImpl implements ProductSaveService {
 
         BulkResponse bulk = client.bulk(bulkRequest, EsConfig.COMMON_OPTIONS);
         boolean b = bulk.hasFailures();
-        if(!b){
+        // 是否有错误
+        if(b){
             List<String> ids = Arrays.stream(bulk.getItems()).map(BulkItemResponse::getId).collect(Collectors.toList());
             log.error("【productStatusUp】 添加商品错误, ids: {}",ids);
         }
-        return b;
+        // 是否成功
+        return !b;
     }
 }

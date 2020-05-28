@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import javax.annotation.Resource;
+
+import com.yanlaoge.gulimall.product.vo.Catalog2Vo;
+import com.yanlaoge.gulimall.product.vo.Catalog3Vo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import com.yanlaoge.gulimall.product.dao.CategoryDao;
 import com.yanlaoge.gulimall.product.entity.CategoryEntity;
 import com.yanlaoge.gulimall.product.service.CategoryService;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 
 @Service("categoryService")
@@ -82,6 +85,39 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public List<CategoryEntity> getLevel1Categorys() {
         return this.list(new QueryWrapper<CategoryEntity>().eq("parent_cid",0));
     }
+
+    @Override
+    public Map<String, List<Catalog2Vo>> getCatalogJson() {
+        List<CategoryEntity> level1Categorys = getLevel1Categorys();
+        return level1Categorys.stream().collect(Collectors.toMap(v->v.getCatId().toString(), this::getCatelog2Vos));
+    }
+
+    private List<Catalog2Vo> getCatelog2Vos(CategoryEntity entity) {
+        List<CategoryEntity> entities = this.list(new QueryWrapper<CategoryEntity>().eq("parent_cid",
+                entity.getCatId()));
+        List<Catalog2Vo> catalog2Vos = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(entities)) {
+            catalog2Vos = entities.stream().map(item ->
+                 new Catalog2Vo().setId(item.getCatId().toString()).setName(item.getName())
+                        .setCatalog1Id(entity.getCatId().toString()).setCatalog3List(this.getCatelog3Vos(item))
+            ).collect(Collectors.toList());
+        }
+        return catalog2Vos;
+    }
+
+    private List<Catalog3Vo> getCatelog3Vos(CategoryEntity entity) {
+        List<CategoryEntity> entities = this.list(new QueryWrapper<CategoryEntity>().eq("parent_cid",
+                entity.getCatId()));
+        List<Catalog3Vo> catalog3Vos = Lists.newArrayList();
+        if(!CollectionUtils.isEmpty(entities)) {
+            catalog3Vos = entities.stream().map(catelog3 ->
+                    new Catalog3Vo().setCatalog2Id(entity.getCatId().toString()).setId(catelog3.getCatId().toString())
+                            .setName(catelog3.getName())
+            ).collect(Collectors.toList());
+        }
+        return catalog3Vos;
+    }
+
 
     private void findParentPathByWhile(Long catelogId, ArrayList<Long> list) {
         list.add(catelogId);

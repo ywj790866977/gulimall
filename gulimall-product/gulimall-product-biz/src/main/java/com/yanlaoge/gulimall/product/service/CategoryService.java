@@ -3,6 +3,7 @@ package com.yanlaoge.gulimall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.gulimall.product.entity.CategoryEntity;
+import com.yanlaoge.gulimall.product.vo.Catalog2Vo;
 
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,13 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @return 分类集合
      */
     List<CategoryEntity> getLevel1Categorys();
+
+    /**
+     * 返回分类
+     *
+     * @return 分类
+     */
+    Map<String, List<Catalog2Vo>> getCatalogJson();
 
 }
 

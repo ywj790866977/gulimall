@@ -37,6 +37,11 @@
 #            - Path=/api/**
 #          filters:
 #            - RewritePath=/api/(?<sement>.*),/renren-fast/$\{sement}
+#        - id: gulimall_host
+#          uri: lb://gulimall-product
+#          predicates:
+#            - Host=**.gulimall.com,gulimall.com
+#
 #
 #server:
 #  port: 9000

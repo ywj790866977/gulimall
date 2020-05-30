@@ -15,8 +15,13 @@ import com.yanlaoge.gulimall.product.service.CategoryService;
 import com.yanlaoge.gulimall.product.vo.Catalog2Vo;
 import com.yanlaoge.gulimall.product.vo.Catalog3Vo;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -37,7 +42,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     private CategoryBrandRelationService categoryBrandRelationService;
-
+    @Resource
+    private RedissonClient redissonClient;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
@@ -67,7 +73,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public void removeMenuByIds(List<Long> asList) {
         //TODO 业务判断
         removeByIds(asList);
-//        baseMapper.deleteBatchIds(asList);
     }
 
     @Override
@@ -78,6 +83,25 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return Lists.reverse(list);
     }
 
+    /**
+     * 更新
+     *
+     *  删除缓存:
+     *    1. 单个删除
+     *       @CacheEvict(value = "category",key = "'getLevel1Categorys'")
+     *    2. 批量删除
+     *       @Caching(evict = {
+     *             @CacheEvict(value = "category",key = "'getLevel1Categorys'"),
+     *            @CacheEvict(value = "category",key = "'getCatelogFromDb'")
+     *       })
+     *    3.  @CacheEvict(value = "category",allEntries = true) 删除分区内
+     * @param category 实体
+     */
+//    @Caching(evict = {
+//            @CacheEvict(value = "category",key = "'getLevel1Categorys'"),
+//            @CacheEvict(value = "category",key = "'getCatelogFromDb'")
+//    })
+    @CacheEvict(value = "category",allEntries = true)
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateCascade(CategoryEntity category) {
@@ -88,35 +112,84 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         }
     }
 
+    /**
+     * 查询以及品牌
+     *
+     *  @Cacheable("level1Categorys")
+     *  使用springCache, 注解的意思是:
+     *     当前方法的结果需要缓存, 如果缓存中有,方法不调用,如果缓存中没有,会调用缓存,并将结果放入缓存
+     *     "level1Categorys":  放到哪个分区,不是缓存的key名, 分区建议用业务来区分
+     *  默认:
+     *    1. 如果缓存中有, 方法不调用
+     *    2. key是默认生成的, 缓存的名字  ::SimpKey []
+     *    3. 缓存的值 value, 默认使用jdk 序列化规则
+     *    4. 默认ttl为-1, 永久存储
+     * @return 集合
+     */
+    @Cacheable(value = "category",key = "#root.method.name")
     @Override
     public List<CategoryEntity> getLevel1Categorys() {
+        System.out.println("getLevel1Categorys..");
         return this.list(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
     }
 
     /**
-     * 从缓存获取数据
+     * 先从缓存获取数据,如果没有再查询数据库
      * 需要解决缓存穿透,雪崩,击穿问题
      *  1.缓存空数据,解决穿透
      *  2.设置随机过期时间,解决雪崩
      *  3.加锁,解决击穿问题
      *  3.1 在查询数据库之前加锁
      *   3.1.1 本地锁, 分布式时存在锁不住问题,一台机器一把锁
-     *   3.1.2 redis 分布式锁
+     *   3.1.2 redis 实现分布式锁
+     *   3.1.3 redisson 分布式锁
+     * 数据的一致性:
+     *   1. 先更新数据,再更新缓存 : 在更新的时候更新缓存,
+     *          问题: 脏数据,
+     *   2. 先更新数据库,再删除缓存 :
+     *          问题: 脏数据,并发情况下,A删除设置新缓存,B也设置, A比较晚, B先设置了, 更新缓存,A执行完,更新成了旧数据
+     *          解决: 1.设置缓存失效时间
+     *                2.消息队列（比较复杂，需要引入消息队列系统）,删除的操作通过异步来完成
+     *   4. 先删除缓存,在更新数据库:
+     *          问题: 脏数据, 删除缓存失败,但更新数据库成功.
+     *          解决: 1.设置缓存失效时间
+     *                2. 消息队列
+     *   5. 读写锁: 同时只有一个人能够更新数据
+     *   6. canal: 自动同步数据
      *
      * @return 数据
      */
     @Override
     public Map<String, List<Catalog2Vo>> getCatalogJson() {
-
+        // 1.获取缓存数据
         String catelogJson = stringRedisTemplate.opsForValue().get("catelogJson");
+        // 1.1 缓存为空,查询数据库,可能会出现上面注释的一些问题
         if (StringUtils.isEmpty(catelogJson)) {
-            // redis 锁
-            return getCatalogJsonFromDbWithRedisLock();
-            // 本地锁
+            // 1. 本地锁
             // return getCatalogJsonFromDbWithLock();
+            // 2. redis 锁
+            // return getCatalogJsonFromDbWithRedisLock();
+            // 3. redisson 分布式锁
+            return getCatalogJsonFromDbWithRedissonLock();
         }
+        // 1.2 缓存不为空,直接返回
         return JSON.parseObject(catelogJson, new TypeReference<Map<String, List<Catalog2Vo>>>() {
         });
+    }
+
+    private Map<String, List<Catalog2Vo>> getCatalogJsonFromDbWithRedissonLock(){
+        //获取锁
+        RLock catelogJsonLock = redissonClient.getLock("CatelogJson-lock");
+        //锁
+        catelogJsonLock.lock();
+        Map<String, List<Catalog2Vo>> catelogFromDb;
+        try {
+            catelogFromDb = getCatelogFromDb();
+        } finally {
+            catelogJsonLock.unlock();
+        }
+
+        return catelogFromDb;
     }
 
     /**
@@ -205,14 +278,17 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         }
     }
 
-    private Map<String, List<Catalog2Vo>> getCatelogFromDb() {
+    @Cacheable(value = "category", key = "#root.methodName")
+    public Map<String, List<Catalog2Vo>> getCatelogFromDb() {
         // 查询所有
         List<CategoryEntity> list = this.list();
         List<CategoryEntity> level1Categorys = getCategoryEntities(list, 0L);
         Map<String, List<Catalog2Vo>> catelogFromDb = level1Categorys.stream().collect(Collectors.toMap(v -> v.getCatId().toString(),
                 item -> this.getCatelog2Vos(list, item)));
-        String s = JSON.toJSONString(catelogFromDb);
-        stringRedisTemplate.opsForValue().set("catelogJson", s, 1, TimeUnit.DAYS);
+        // 放入redis缓存
+        // 测试 Cacheable 注释掉的, 如果使用分布式锁的时候, 需要打开
+        // String s = JSON.toJSONString(catelogFromDb);
+        // stringRedisTemplate.opsForValue().set("catelogJson", s, 1, TimeUnit.DAYS);
         return catelogFromDb;
     }
 

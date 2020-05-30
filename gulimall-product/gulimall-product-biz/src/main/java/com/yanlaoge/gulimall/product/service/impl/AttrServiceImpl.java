@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.common.utils.Query;
-import com.yanlaoge.common.utils.StaticConstant;
 import com.yanlaoge.gulimall.product.dao.AttrAttrgroupRelationDao;
 import com.yanlaoge.gulimall.product.dao.AttrDao;
 import com.yanlaoge.gulimall.product.dao.AttrGroupDao;
@@ -33,7 +32,6 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 /**

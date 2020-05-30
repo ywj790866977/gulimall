@@ -3,6 +3,9 @@ package com.yanlaoge.gulimall.product.web;
 import com.yanlaoge.gulimall.product.entity.CategoryEntity;
 import com.yanlaoge.gulimall.product.service.CategoryService;
 import com.yanlaoge.gulimall.product.vo.Catalog2Vo;
+import org.redisson.Redisson;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +24,8 @@ public class IndexController {
 
     @Resource
     private CategoryService categoryService;
+    @Resource
+    private RedissonClient redissonClient;
 
     @GetMapping({"/", "/index.html"})
     public String index(Model model) {
@@ -34,5 +39,25 @@ public class IndexController {
     @GetMapping("/index/catalog.json")
     public  Map<String,List<Catalog2Vo>> getCatelogJson() {
         return categoryService.getCatalogJson();
+    }
+
+    @ResponseBody
+    @GetMapping("hello")
+    public String hello(){
+        //获取锁
+        RLock myLock = redissonClient.getLock("my-lock");
+        // 加锁
+        myLock.lock();
+        try {
+            System.out.printf("加锁成功,执行业务.."+Thread.currentThread().getId());
+//            Thread.sleep(30000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            //解锁
+            System.out.printf("解锁.."+Thread.currentThread().getId());
+            myLock.unlock();
+        }
+        return "hello";
     }
 }

@@ -17,7 +17,9 @@
 #    date-format: yyyy-MM-dd HH:mm:ss
 #  thymeleaf:
 #    cache: false
-#
+#  redis:
+#    host: 10.211.55.20
+#    port: 6379
 #
 #
 #mybatis-plus:

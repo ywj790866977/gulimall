@@ -399,7 +399,7 @@
 <!--搜索导航-->
 <div class="header_sous">
     <div class="logo">
-        <a href="#"><img src="/static/search/image/logo1.jpg" alt=""></a>
+        <a href="http://gulimall.com"><img src="/static/search/image/logo1.jpg" alt=""></a>
     </div>
     <div class="header_form">
         <input type="text" placeholder="手机" />
@@ -3558,8 +3558,8 @@
         var index=$(this).parents('li').index();
         $(this).parents('li').css('border','2px solid red').siblings('li').css('border','1px solid #ccc');
         $(this).parents('ul').prev().find('img').prop('src',a);
-        $(this).parents('ul').siblings('.tab_JE').find('a').eq(index).css('display','block').siblings('a').css('display','none');
-        $(this).parents('ul').siblings('.tab_R').find('span').eq(index).css('display','block').siblings('span').css('display','none')
+        $(this).parents('ul').siblings('.tab_JE').find('a').eq(lsit).css('display','block').siblings('a').css('display','none');
+        $(this).parents('ul').siblings('.tab_R').find('span').eq(lsit).css('display','block').siblings('span').css('display','none')
     });
 
     $(".JD_ipone_one").hover(function(){

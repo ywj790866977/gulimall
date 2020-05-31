@@ -1,4 +1,8 @@
 # 谷粒商城
+视频问题集数:
+```$xslt
+161,162,176,
+```
 
 ## 一.初始化
 
@@ -172,4 +176,65 @@ PUT product
     }
   }
 }
+```
+
+```shell script
+###
+GET game_record_2019_01/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "skuTitle": "华为"
+          }
+        }
+      ],
+      "filter": [
+        {
+          "term": {
+            "catalogId": 225
+          }
+        },
+        {
+          "terms": {
+            "brandId": [
+              1,
+              3,
+              9
+            ]
+          }
+        },
+        {
+          "nested": {
+            "path": "attrs",
+            "query": {
+              "bool": {
+                "must": [
+                  {
+                    "term": {
+                      "attrs.attrId": {
+                        "value": "15"
+                      }
+                    }
+                  },
+                  {
+                    "term": {
+                      "attrs.attrValue": [
+                        "超哥",
+                        "帅气"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
 ```

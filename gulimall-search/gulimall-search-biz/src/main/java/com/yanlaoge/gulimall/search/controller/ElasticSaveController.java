@@ -2,7 +2,7 @@ package com.yanlaoge.gulimall.search.controller;
 
 import com.yanlaoge.common.utils.ResponseHelper;
 import com.yanlaoge.common.utils.ResponseVo;
-import com.yanlaoge.gulimall.product.enums.ProductStatusEnum;
+import com.yanlaoge.gulimall.search.enums.ProductStatusEnum;
 import com.yanlaoge.gulimall.search.model.SpuModel;
 import com.yanlaoge.gulimall.search.service.ProductSaveService;
 import lombok.extern.slf4j.Slf4j;

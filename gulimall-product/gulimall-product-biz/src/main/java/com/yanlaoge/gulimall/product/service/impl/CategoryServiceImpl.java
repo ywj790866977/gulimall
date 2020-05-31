@@ -124,11 +124,27 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      *    2. key是默认生成的, 缓存的名字  ::SimpKey []
      *    3. 缓存的值 value, 默认使用jdk 序列化规则
      *    4. 默认ttl为-1, 永久存储
+     *
+     *  springCache的不足:
+     *    1. 读模式:
+     *      缓存穿透: 缓存null key. 解决:  配置文件设置缓存null
+     *      缓存击穿: 大量并发查询一个刚好过期的数据. 解决:   加锁? 默认不加锁, 可以通过设置, sync = true, 但是加的是synchronized
+     *              不支持分布式锁
+     *      缓存雪崩: 大量key同时过去. 解决: 加随机时间,
+     *    2. 写模式: 缓存一致
+     *      2.1 读写锁
+     *      2.2 canal
+     *      2.3 读多写多,直接查询数据库
+     *
+     *   总结: 常规数据可以使用springCache, 读多写少, 不考虑实时性
+     *         特殊数据需要特殊设计
+     *
      * @return 集合
      */
-    @Cacheable(value = "category",key = "#root.method.name")
+    @Cacheable(value = "category",key = "#root.method.name",sync = true)
     @Override
     public List<CategoryEntity> getLevel1Categorys() {
+
         System.out.println("getLevel1Categorys..");
         return this.list(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
     }

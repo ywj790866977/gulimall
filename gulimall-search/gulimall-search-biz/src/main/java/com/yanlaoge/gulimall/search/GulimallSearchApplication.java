@@ -6,6 +6,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /**
  * 启动类
+ *
  * @author rubyle
  */
 @SpringBootApplication

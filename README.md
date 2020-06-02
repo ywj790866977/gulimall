@@ -1,7 +1,7 @@
 # 谷粒商城
 视频问题集数:
 ```$xslt
-161,162,176,
+161,162,176,178
 ```
 
 ## 一.初始化
@@ -103,9 +103,9 @@ docker run -p 80:80 --name nginx \
 
 ```
 
-```shell script
-## elasticsearch mappings
+elasticsearch mappings
 PUT product
+```json
 {
   "mappings": {
     "properties": {
@@ -123,9 +123,7 @@ PUT product
         "type": "keyword"
       },
       "skuImg":{
-        "type": "keyword",
-        "index": false,
-        "doc_values": false
+        "type": "keyword"
       },
       "saleCount":{
         "type": "long"
@@ -143,19 +141,13 @@ PUT product
         "type": "long"
       },
       "brandName":{
-        "type": "keyword",
-        "index": false,
-        "doc_values": false
+        "type": "keyword"
       },
       "brandImg":{
-        "type": "keyword",
-        "index": false,
-        "doc_values": false
+        "type": "keyword"
       },
       "catalogName":{
-        "type": "keyword",
-        "index": false,
-        "doc_values": false
+        "type": "keyword"
       },
       "attrs":{
         "type": "nested",
@@ -164,9 +156,7 @@ PUT product
             "type": "long"
           },
           "attrName":{
-            "type": "keyword",
-            "index": false,
-            "doc_values": false
+            "type": "keyword"
           },
           "attrValue" :{
             "type": "keyword"
@@ -178,16 +168,14 @@ PUT product
 }
 ```
 
-```shell script
-###
-GET game_record_2019_01/_search
+```json
 {
   "query": {
     "bool": {
       "must": [
         {
           "match": {
-            "skuTitle": "华为"
+            "skuTitle": "Apple"
           }
         }
       ],
@@ -200,6 +188,7 @@ GET game_record_2019_01/_search
         {
           "terms": {
             "brandId": [
+              12,
               1,
               3,
               9
@@ -220,10 +209,9 @@ GET game_record_2019_01/_search
                     }
                   },
                   {
-                    "term": {
+                    "terms": {
                       "attrs.attrValue": [
-                        "超哥",
-                        "帅气"
+                        "以官网信息为准"
                       ]
                     }
                   }
@@ -231,8 +219,102 @@ GET game_record_2019_01/_search
               }
             }
           }
+        },
+        {
+          "term": {
+            "hasStock": {
+              "value": true
+            }
+          }
+        },
+        {
+          "range": {
+            "skuPrice": {
+              "gte": 0,
+              "lte": 100000
+            }
+          }
         }
       ]
+    }
+  },
+  "sort": [
+    {
+      "skuPrice": {
+        "order": "desc"
+      }
+    }
+  ],
+  "from": 0,
+  "size": 5,
+  "highlight": {
+    "fields": {
+      "skuTitle": {}
+    },
+    "pre_tags": "<b style='color:red' >",
+    "post_tags": "</b>"
+  },
+  "aggs": {
+    "brand_agg": {
+      "terms": {
+        "field": "brandId",
+        "size": 10
+      },
+      "aggs": {
+        "brand_name_agg": {
+          "terms": {
+            "field": "brandName",
+            "size": 10
+          }
+        },
+        "brand_img_agg": {
+          "terms": {
+            "field": "brandImg",
+            "size": 10
+          }
+        }
+      }
+    },
+    "catalog_agg":{
+      "terms": {
+        "field": "catalogId",
+        "size": 10
+      },
+      "aggs": {
+        "catalog_name_agg": {
+          "terms": {
+            "field": "catalogName",
+            "size": 10
+          }
+        }
+      }
+    },
+    "attr_agg":{
+      "nested": {
+        "path": "attr"
+      },
+      "aggs": {
+        "attr_id_agg": {
+          "terms": {
+            "field": "attrs.attrId",
+            "size": 10
+          },
+          "aggs": {
+            "attr_name_agg": {
+              "terms": {
+                "field": "attrs.attrName",
+                "size": 10
+              }
+            },
+            "attr_value_agg":{
+              "terms": {
+                "field": "attrs.attrValue",
+                "size": 10
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

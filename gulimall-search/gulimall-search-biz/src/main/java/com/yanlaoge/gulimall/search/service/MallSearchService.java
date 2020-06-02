@@ -18,5 +18,5 @@ public interface MallSearchService {
      * @param vo 参数
      * @return 集合
      */
-    List<SearchResponseVo> search(SearchParamVo vo);
+    SearchResponseVo search(SearchParamVo vo);
 }

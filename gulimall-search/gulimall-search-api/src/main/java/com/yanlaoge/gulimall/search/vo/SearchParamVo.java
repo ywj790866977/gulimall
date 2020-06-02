@@ -30,7 +30,7 @@ public class SearchParamVo {
      * 是否有货
      * hasStock=0/1
      */
-    private Integer hasStock;
+    private Integer hasStock = 1;
     /**
      * 价格
      * skuPrice=1_500/_500/500_

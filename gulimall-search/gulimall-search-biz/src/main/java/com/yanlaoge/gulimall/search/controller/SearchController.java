@@ -24,8 +24,8 @@ public class SearchController {
 
     @GetMapping("list.html")
     public String listPage(@RequestBody SearchParamVo vo, Model model){
-         List<SearchResponseVo> list =  mallSearchService.search(vo);
-         model.addAttribute("result",list);
+         SearchResponseVo res =  mallSearchService.search(vo);
+         model.addAttribute("result",res);
         return "list";
     }
 }

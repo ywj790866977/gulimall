@@ -7,4 +7,6 @@ package com.yanlaoge.gulimall.search.constant;
  */
 public class EsConstant {
     public static final String PRODUCT_INDEX = "product";
+    public static final String ASC = "asc";
+    public static final Integer PAGESIZE = 16;
 }

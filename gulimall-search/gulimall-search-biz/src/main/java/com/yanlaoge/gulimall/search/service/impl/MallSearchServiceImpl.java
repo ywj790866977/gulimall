@@ -13,7 +13,13 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.*;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -33,10 +39,8 @@ public class MallSearchServiceImpl implements MallSearchService {
     @SneakyThrows
     @Override
     public SearchResponseVo search(SearchParamVo vo) {
-        //1. 构建query
-        QueryBuilder queryBuilder = builderQuery(vo);
         //2.准备请求
-        SearchRequest searchRequest = builderSearchRequest(queryBuilder);
+        SearchRequest searchRequest = builderSearchRequest(vo);
         //3. 执行请求
 
         //4. 处理请求
@@ -79,24 +83,25 @@ public class MallSearchServiceImpl implements MallSearchService {
 
         }
         // 2.4 库存
-        queryBuilder.filter(QueryBuilders.termsQuery("hasStock",vo.getHasStock() == 1));
+        queryBuilder.filter(QueryBuilders.termQuery("hasStock",vo.getHasStock() == 1));
 
         // 2.5 价格区间
-        if(!StringUtils.isEmpty(vo.getSkuPrice())){
-            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("skuPrice");
-            String[] s = vo.getSkuPrice().split("_");
-            if(s.length == 2){
-                rangeQuery.gte(s[0]).lte(s[1]);
-            }else if(s.length == 1){
-                if("_".startsWith(vo.getSkuPrice())){
-                    rangeQuery.lte(s[0]);
-                }
-                if("_".endsWith(vo.getSkuPrice())){
-                    rangeQuery.gte(s[0]);
-                }
-            }
-            queryBuilder.filter(rangeQuery);
-        }
+        // 进行价格区间查询,无结果
+//        if(!StringUtils.isEmpty(vo.getSkuPrice())){
+//            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("skuPrice");
+//            String[] s = vo.getSkuPrice().split("_");
+//            if(s.length == 2){
+//                rangeQuery.gte(s[0]).lte(s[1]);
+//            }else if(s.length == 1){
+//                if("_".startsWith(vo.getSkuPrice())){
+//                    rangeQuery.lte(s[0]);
+//                }
+//                if("_".endsWith(vo.getSkuPrice())){
+//                    rangeQuery.gte(s[0]);
+//                }
+//            }
+//            queryBuilder.filter(rangeQuery);
+//        }
 
         return queryBuilder;
     }
@@ -105,9 +110,71 @@ public class MallSearchServiceImpl implements MallSearchService {
         return null;
     }
 
-    private SearchRequest builderSearchRequest(QueryBuilder queryBuilder) {
+    private SearchRequest builderSearchRequest(SearchParamVo vo) {
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        sourceBuilder.query(queryBuilder);
+        //查询条件
+        sourceBuilder.query(builderQuery(vo));
+        //排序条件
+        buiderSort(sourceBuilder,vo);
+        //分页条件
+        buiderPage(sourceBuilder,vo);
+        //高亮
+        buiderHighlight(sourceBuilder,vo);
+        //聚合
+        builderAgg(sourceBuilder,vo);
+
         return new SearchRequest(new String[]{EsConstant.PRODUCT_INDEX},sourceBuilder);
+    }
+
+    private void builderAgg(SearchSourceBuilder sourceBuilder, SearchParamVo vo) {
+        // 1. 品牌聚合
+        TermsAggregationBuilder brandAgg = AggregationBuilders.terms("brand_agg");
+        brandAgg.field("brandId").size(50);
+        // 1.1 子聚合
+        brandAgg.subAggregation(AggregationBuilders.terms("brand_name_agg").field("brandName").size(1));
+        brandAgg.subAggregation(AggregationBuilders.terms("brand_img_agg").field("brandImg").size(1));
+        sourceBuilder.aggregation(brandAgg);
+
+        //2. 分类聚合
+        TermsAggregationBuilder catalogAgg = AggregationBuilders.terms("catalog_agg").field("catalogId").size(20);
+        // 2.1 子聚合
+        catalogAgg.subAggregation(AggregationBuilders.terms("catalog_name_agg").field("catalogName").size(1));
+        sourceBuilder.aggregation(catalogAgg);
+
+        //3.属性聚合
+        // 3.1 进行内属性聚合
+        NestedAggregationBuilder nested = AggregationBuilders.nested("attr_agg", "attrs");
+        // 3.2 读哪个属性聚合
+        TermsAggregationBuilder attrIdAgg = AggregationBuilders.terms("attr_id_agg").field("attrs.attrId");
+        // 3.2 对聚合的属性id,进行聚合他的name和value
+        attrIdAgg.subAggregation(AggregationBuilders.terms("attr_name_agg").field("attrs.attrName").size(1));
+        attrIdAgg.subAggregation(AggregationBuilders.terms("attr_value_agg").field("attrs.attrValue").size(50));
+        nested.subAggregation(attrIdAgg);
+
+        sourceBuilder.aggregation(nested);
+    }
+
+    private void buiderHighlight(SearchSourceBuilder sourceBuilder, SearchParamVo vo) {
+        if(!StringUtils.isEmpty(vo.getKeyword())){
+            HighlightBuilder highlightBuilder = new HighlightBuilder();
+            highlightBuilder.field("skuTitle");
+            highlightBuilder.preTags("<b style='color:red'>");
+            highlightBuilder.postTags("</b>");
+            sourceBuilder.highlighter(highlightBuilder);
+        }
+    }
+
+    private void buiderPage(SearchSourceBuilder sourceBuilder, SearchParamVo vo) {
+        sourceBuilder.from((vo.getPageNum() -1)*EsConstant.PAGESIZE);
+        sourceBuilder.size(EsConstant.PAGESIZE);
+    }
+
+    private void buiderSort(SearchSourceBuilder sourceBuilder,SearchParamVo vo) {
+        if(!StringUtils.isEmpty(vo.getSort())){
+            String sort = vo.getSort();
+            String[] s = sort.split("_");
+            SortOrder sortOrder = EsConstant.ASC.equalsIgnoreCase(s[1]) ? SortOrder.ASC: SortOrder.DESC;
+            sourceBuilder.sort(s[0],sortOrder);
+        }
     }
 }

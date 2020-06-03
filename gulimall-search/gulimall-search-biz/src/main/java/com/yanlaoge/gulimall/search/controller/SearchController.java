@@ -23,7 +23,7 @@ public class SearchController {
     private MallSearchService mallSearchService;
 
     @GetMapping("list.html")
-    public String listPage(@RequestBody SearchParamVo vo, Model model){
+    public String listPage(SearchParamVo vo, Model model){
          SearchResponseVo res =  mallSearchService.search(vo);
          model.addAttribute("result",res);
         return "list";

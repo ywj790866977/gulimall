@@ -4,6 +4,10 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ *
+ * @author rubyle
+ */
 @Data
 public class AttrVo {
     private Long attrId;

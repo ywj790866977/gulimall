@@ -19,7 +19,7 @@ import java.util.List;
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class SpuModel {
+public class SkuModel {
     private Long skuId;
     private Long spuId;
     private String skuTitle;

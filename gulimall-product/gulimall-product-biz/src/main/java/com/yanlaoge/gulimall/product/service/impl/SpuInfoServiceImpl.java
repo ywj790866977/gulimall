@@ -1,7 +1,6 @@
 package com.yanlaoge.gulimall.product.service.impl;
 
 import com.google.common.collect.Sets;
-import com.yanlaoge.common.exception.ServiceException;
 import com.yanlaoge.common.to.SkuReductionTo;
 import com.yanlaoge.common.utils.*;
 import com.yanlaoge.common.to.SpuBoundsTo;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import com.yanlaoge.gulimall.search.model.Attrs;
-import com.yanlaoge.gulimall.search.model.SpuModel;
+import com.yanlaoge.gulimall.search.model.SkuModel;
 import com.yanlaoge.gulimall.ware.vo.SkuHasStockVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -228,18 +227,18 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         // 3. 查询 库存
         Map<Long, Boolean> stockMap = getSkuHasStockVos(skuIds);
         // 4. 遍历构建spuModel
-        List<SpuModel> spuModelList = skuInfoEntityList.stream().map(item ->getSpuModel(attrsList, stockMap, item))
+        List<SkuModel> skuModelList = skuInfoEntityList.stream().map(item ->getSpuModel(attrsList, stockMap, item))
                 .collect(Collectors.toList());
         // 5. es 进行保存
-        boolean flag =  saveModel(spuModelList);
+        boolean flag =  saveModel(skuModelList);
         ServiceAssert.isFalse(flag,"操作失败");
         // 6. 成功修改状态
         baseMapper.updateSpuStatus(spuId, ProductStatusEnum.SPU_UP.getCode());
     }
 
-    private boolean saveModel(List<SpuModel> spuModelList) {
+    private boolean saveModel(List<SkuModel> skuModelList) {
         try {
-            ResponseVo<Void> voidResponseVo = searchFeignService.productStatusUp(spuModelList);
+            ResponseVo<Void> voidResponseVo = searchFeignService.productStatusUp(skuModelList);
             if(voidResponseVo.getCode() != 0){
                 log.error("【saveModel】 调用检索服务保存商品失败 res:{}",voidResponseVo);
                 return false;
@@ -251,29 +250,29 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         return true;
     }
 
-    private SpuModel getSpuModel(List<Attrs> attrsList, Map<Long, Boolean> stockMap, SkuInfoEntity item) {
+    private SkuModel getSpuModel(List<Attrs> attrsList, Map<Long, Boolean> stockMap, SkuInfoEntity item) {
 
-        SpuModel spuModel = new SpuModel();
-        BeanUtils.copyProperties(item, spuModel);
-        spuModel.setSkuPrice(item.getPrice());
-        spuModel.setSkuImg(item.getSkuDefaultImg());
+        SkuModel skuModel = new SkuModel();
+        BeanUtils.copyProperties(item, skuModel);
+        skuModel.setSkuPrice(item.getPrice());
+        skuModel.setSkuImg(item.getSkuDefaultImg());
         // 设置库存
         if(CollectionUtils.isEmpty(stockMap)){
-            spuModel.setHasStock(true);
+            skuModel.setHasStock(true);
         }else {
-            spuModel.setHasStock(stockMap.get(item.getSkuId()));
+            skuModel.setHasStock(stockMap.get(item.getSkuId()));
         }
         // TODO 2.热度评分
-        spuModel.setHotScore(0L);
+        skuModel.setHotScore(0L);
         // 3. 品牌和分类
         BrandEntity brandEntity = brandService.getById(item.getBrandId());
-        spuModel.setBrandImg(brandEntity.getLogo());
-        spuModel.setBrandName(brandEntity.getName());
+        skuModel.setBrandImg(brandEntity.getLogo());
+        skuModel.setBrandName(brandEntity.getName());
         CategoryEntity categoryEntity = categoryService.getById(item.getCatalogId());
-        spuModel.setCatalogName(categoryEntity.getName());
+        skuModel.setCatalogName(categoryEntity.getName());
         // attrs
-        spuModel.setAttrs(attrsList);
-        return spuModel;
+        skuModel.setAttrs(attrsList);
+        return skuModel;
     }
 
     private Map<Long, Boolean> getSkuHasStockVos(List<Long> skuIds) {

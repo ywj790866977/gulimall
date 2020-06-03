@@ -1,30 +1,45 @@
 package com.yanlaoge.gulimall.search.service.impl;
 
-import com.yanlaoge.common.utils.Query;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.google.common.collect.Lists;
 import com.yanlaoge.gulimall.search.config.EsConfig;
 import com.yanlaoge.gulimall.search.constant.EsConstant;
+import com.yanlaoge.gulimall.search.model.SkuModel;
 import com.yanlaoge.gulimall.search.service.MallSearchService;
-import com.yanlaoge.gulimall.search.vo.SearchParamVo;
-import com.yanlaoge.gulimall.search.vo.SearchResponseVo;
+import com.yanlaoge.gulimall.search.vo.*;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.ml.job.results.Bucket;
 import org.elasticsearch.index.query.*;
-import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.nested.ParsedNested;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedLongTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * searchService
@@ -47,8 +62,105 @@ public class MallSearchServiceImpl implements MallSearchService {
         SearchResponse response = client.search(searchRequest, EsConfig.COMMON_OPTIONS);
 
         //5. 封装成结果
-        SearchResponseVo res = builderSearchResponseVo();
+        SearchResponseVo res = builderSearchResponseVo(response,vo);
         return res;
+    }
+
+    private SearchResponseVo builderSearchResponseVo(SearchResponse response,SearchParamVo vo) {
+        SearchResponseVo searchResponseVo = new SearchResponseVo();
+        // 查询所有商品
+        SearchHits hits = response.getHits();
+        searchResponseVo.setProducts(getSkuModels(hits,vo));
+        // 聚合信息
+        Aggregations aggregations = response.getAggregations();
+        searchResponseVo.setCatalogs(getCatalogVos(aggregations));
+        searchResponseVo.setBrands(getBrandVos(aggregations));
+        searchResponseVo.setAttrs(getAttrVos(aggregations));
+
+        // 分页信息
+        searchResponseVo.setPageNum(vo.getPageNum());
+        Long total = hits.getTotalHits().value;
+        searchResponseVo.setTotal(total);
+        Integer totalPages = (int)( total /  EsConstant.PAGESIZE == 0 ? total / EsConstant.PAGESIZE :
+                (total / EsConstant.PAGESIZE) + 1);
+        searchResponseVo.setTotalPages(totalPages);
+        return null;
+    }
+
+    private List<AttrVo> getAttrVos(Aggregations aggregations) {
+        List<AttrVo> attrVos = Lists.newArrayList();
+        ParsedNested attrAgg = aggregations.get("attr_agg");
+        ParsedLongTerms attrIdAgg = attrAgg.getAggregations().get("attr_id_agg");
+        for (Terms.Bucket bucket : attrIdAgg.getBuckets()) {
+            AttrVo attrVo = new AttrVo();
+            // 属性id
+            long attrId = bucket.getKeyAsNumber().longValue();
+            // 属性名字
+            String attrName =
+                    ((ParsedStringTerms) bucket.getAggregations().get("attr_name_agg")).getBuckets().get(0).getKeyAsString();
+            // 属性值
+            List<String> attrValues =
+                    ((ParsedStringTerms) bucket.getAggregations().get("attr_value_agg")).getBuckets().stream()
+                            .map(MultiBucketsAggregation.Bucket::getKeyAsString).collect(Collectors.toList());
+            // 设置值
+            attrVo.setAttrId(attrId);
+            attrVo.setAttrName(attrName);
+            attrVo.setAttrValue(attrValues);
+            attrVos.add(attrVo);
+        }
+        return attrVos;
+    }
+
+    private List<BrandVo> getBrandVos(Aggregations aggregations) {
+        List<BrandVo> brandVos = Lists.newArrayList();
+        ParsedLongTerms brandAgg = aggregations.get("brand_agg");
+        for (Terms.Bucket bucket : brandAgg.getBuckets()) {
+            BrandVo brandVo = new BrandVo();
+            brandVo.setBrandId(bucket.getKeyAsNumber().longValue());
+            String img =
+                    ((ParsedStringTerms)bucket.getAggregations().get("brand_img_agg")).getBuckets().get(0).getKeyAsString();
+            String brandName =
+                    ((ParsedStringTerms)bucket.getAggregations().get("brand_name_agg")).getBuckets().get(0).getKeyAsString();
+            brandVo.setBrandImg(img);
+            brandVo.setBrandName(brandName);
+            brandVos.add(brandVo);
+        }
+        return brandVos;
+    }
+
+    private List<CatalogVo> getCatalogVos(Aggregations aggregations) {
+        List<CatalogVo> catalogVos = Lists.newArrayList();
+        ParsedLongTerms catalogAgg = aggregations.get("catalog_agg");
+        List<? extends Terms.Bucket> buckets = catalogAgg.getBuckets();
+        for (Terms.Bucket bucket : buckets) {
+            CatalogVo catalogVo = new CatalogVo();
+            //设置分类id
+            catalogVo.setCatalogId(Long.parseLong(bucket.getKeyAsString()));
+            //设置分类名
+            ParsedStringTerms catalogNameAgg = bucket.getAggregations().get("catalog_name_agg");
+            String catalogName = catalogNameAgg.getBuckets().get(0).getKeyAsString();
+            catalogVo.setCatalogName(catalogName);
+            //添加到集合
+            catalogVos.add(catalogVo);
+        }
+        return catalogVos;
+    }
+
+    private List<SkuModel> getSkuModels(SearchHits hits,SearchParamVo vo) {
+        List<SkuModel> list = Lists.newArrayList();
+        if(!ArrayUtils.isEmpty(hits.getHits())){
+            for (SearchHit hit : hits.getHits()) {
+                String sourceAsString = hit.getSourceAsString();
+                SkuModel skuModel = JSON.parseObject(sourceAsString,SkuModel.class);
+                if(!StringUtils.isEmpty(vo.getKeyword())){
+                    HighlightField highlightField = hit.getHighlightFields().get("skuTitle");
+                    String highlight = highlightField.getFragments()[0].string();
+                    skuModel.setSkuTitle(highlight);
+                }
+                list.add(skuModel);
+            }
+        }
+        return list;
     }
 
     private QueryBuilder builderQuery(SearchParamVo vo) {
@@ -83,7 +195,9 @@ public class MallSearchServiceImpl implements MallSearchService {
 
         }
         // 2.4 库存
-        queryBuilder.filter(QueryBuilders.termQuery("hasStock",vo.getHasStock() == 1));
+        if(vo.getHasStock() != null){
+            queryBuilder.filter(QueryBuilders.termQuery("hasStock",vo.getHasStock() == 1));
+        }
 
         // 2.5 价格区间
         // 进行价格区间查询,无结果
@@ -106,14 +220,11 @@ public class MallSearchServiceImpl implements MallSearchService {
         return queryBuilder;
     }
 
-    private SearchResponseVo builderSearchResponseVo() {
-        return null;
-    }
-
     private SearchRequest builderSearchRequest(SearchParamVo vo) {
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         //查询条件
-        sourceBuilder.query(builderQuery(vo));
+        QueryBuilder queryBuilder = builderQuery(vo);
+        sourceBuilder.query(queryBuilder);
         //排序条件
         buiderSort(sourceBuilder,vo);
         //分页条件

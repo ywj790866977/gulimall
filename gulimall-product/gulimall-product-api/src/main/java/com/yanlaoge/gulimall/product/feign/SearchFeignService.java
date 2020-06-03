@@ -1,7 +1,7 @@
 package com.yanlaoge.gulimall.product.feign;
 
 import com.yanlaoge.common.utils.ResponseVo;
-import com.yanlaoge.gulimall.search.model.SpuModel;
+import com.yanlaoge.gulimall.search.model.SkuModel;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,9 +18,9 @@ public interface SearchFeignService {
     /**
      * 保存商品
      *
-     * @param spuModelList model
+     * @param skuModelList model
      * @return R
      */
     @PostMapping("/search/save/product")
-    ResponseVo<Void> productStatusUp(@RequestBody List<SpuModel> spuModelList);
+    ResponseVo<Void> productStatusUp(@RequestBody List<SkuModel> skuModelList);
 }

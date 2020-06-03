@@ -1,6 +1,6 @@
 package com.yanlaoge.gulimall.search.service;
 
-import com.yanlaoge.gulimall.search.model.SpuModel;
+import com.yanlaoge.gulimall.search.model.SkuModel;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,9 +14,9 @@ public interface ProductSaveService {
     /**
      * 商品上架
      *
-     * @param spuModelList 商品集合
+     * @param skuModelList 商品集合
      * @throws IOException 查询异常
      * @return 是否成功
      */
-    Boolean productStatusUp(List<SpuModel> spuModelList) throws IOException;
+    Boolean productStatusUp(List<SkuModel> skuModelList) throws IOException;
 }

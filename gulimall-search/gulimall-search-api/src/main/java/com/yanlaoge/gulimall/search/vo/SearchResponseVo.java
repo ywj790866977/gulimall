@@ -1,6 +1,6 @@
 package com.yanlaoge.gulimall.search.vo;
 
-import com.yanlaoge.gulimall.search.model.SpuModel;
+import com.yanlaoge.gulimall.search.model.SkuModel;
 import lombok.Data;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public class SearchResponseVo {
     /**
      * 结果集
      */
-    private List<SpuModel> products;
+    private List<SkuModel> products;
     /**
      * 结果涉及品牌
      */

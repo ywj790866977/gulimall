@@ -3,7 +3,7 @@ package com.yanlaoge.gulimall.search.controller;
 import com.yanlaoge.common.utils.ResponseHelper;
 import com.yanlaoge.common.utils.ResponseVo;
 import com.yanlaoge.gulimall.search.enums.ProductStatusEnum;
-import com.yanlaoge.gulimall.search.model.SpuModel;
+import com.yanlaoge.gulimall.search.model.SkuModel;
 import com.yanlaoge.gulimall.search.service.ProductSaveService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,9 +28,9 @@ public class ElasticSaveController {
     private ProductSaveService productSaveService;
 
     @PostMapping("/product")
-    public ResponseVo<Void> productStatusUp(@RequestBody List<SpuModel> spuModelList) {
+    public ResponseVo<Void> productStatusUp(@RequestBody List<SkuModel> skuModelList) {
         try {
-            Boolean aBoolean = productSaveService.productStatusUp(spuModelList);
+            Boolean aBoolean = productSaveService.productStatusUp(skuModelList);
             if (!aBoolean){
                 return ResponseHelper.error(ProductStatusEnum.PRODUCT_UP_EXCEPTOPN.getCode(),
                         ProductStatusEnum.PRODUCT_UP_EXCEPTOPN.getMsg());

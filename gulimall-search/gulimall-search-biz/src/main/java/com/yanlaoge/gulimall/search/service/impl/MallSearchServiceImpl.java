@@ -84,7 +84,7 @@ public class MallSearchServiceImpl implements MallSearchService {
         Integer totalPages = (int)( total /  EsConstant.PAGESIZE == 0 ? total / EsConstant.PAGESIZE :
                 (total / EsConstant.PAGESIZE) + 1);
         searchResponseVo.setTotalPages(totalPages);
-        return null;
+        return searchResponseVo;
     }
 
     private List<AttrVo> getAttrVos(Aggregations aggregations) {

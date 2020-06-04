@@ -1038,11 +1038,11 @@
                     <!--综合排序-->
                     <div class="filter_top">
                         <div class="filter_top_left">
-                            <a href="#">综合排序</a>
-                            <a href="#">销量</a>
-                            <a href="#">价格</a>
-                            <a href="#">评论分</a>
-                            <a href="#">上架时间</a>
+                            <a class="sort_a" sort="hotScore" href="#">综合排序</a>
+                            <a class="sort_a" sort="saleCount" href="#">销量</a>
+                            <a class="sort_a" sort="skuPrice" href="#">价格</a>
+                            <a class="sort_a" href="#">评论分</a>
+                            <a class="sort_a" href="#">上架时间</a>
                         </div>
                         <div class="filter_top_right">
                             <span class="fp-text">
@@ -2000,18 +2000,57 @@
     $(".page_a").click(function () {
         var pn = $(this).attr("pn");
         if(location.href.indexOf("pageNum")){
-            location.href = replaceParamVal(location.href,"pageNum",pn);
+            location.href = replaceAndAddParamVal(location.href,"pageNum",pn);
         }else{
             location.href = location.href + "&pageNum=" +pn;
         }
         return false;
     })
 
-    function replaceParamVal(url,paramName,replaceVal) {
+    function replaceAndAddParamVal(url, paramName, replaceVal) {
         var oUrl = url.toString();
-        var re = eval('/('+paramName+'=)([^$]*)/gi');
-        var nUrl = oUrl.replace(re,paramName+'='+replaceVal);
-        return nUrl;
+        if(oUrl.indexOf(paramName) != -1){
+            var re = eval('/('+paramName+'=)([^$]*)/gi');
+            var nUrl = oUrl.replace(re,paramName+'='+replaceVal);
+            return nUrl;
+        }else{
+            if(oUrl.indexOf("?") != -1){
+                return oUrl + "&" +paramName+'='+replaceVal
+            }else{
+                return oUrl + "?"+paramName+'='+replaceVal
+            }
+        }
+
+    }
+
+    $(".sort_a").click(function () {
+        //设置样式
+        toggleStyle(this)
+        //进行查询
+        var sort= $(this).attr("sort")
+        var sortValue = $(this).hasClass("desc") ? sort+"_desc" : sort+"_asc";
+        location.href =  replaceAndAddParamVal(location.href,"sort",sortValue)
+
+        return false;
+    })
+    
+    function toggleStyle(ele) {
+        $(".sort_a").css({"color":"#333","border-color":"#ccc","background":"#fff"})
+        $(".sort_a").each(function () {
+            var text = $(this).text().replace("↓","").replace("↑","")
+            $(this).text(text)
+        })
+        //设置当前
+        $(ele).css({"color":"#FFF","border-color":"#e4393c","background":"#e4393c"})
+        //升降序
+        $(ele).toggleClass("desc")
+        if($(ele).hasClass("desc")){
+            var text = $(ele).text().replace("↓","").replace("↑","")
+            $(ele).text(text+"↓")
+        }else{
+            var text = $(ele).text().replace("↓","").replace("↑","")
+            $(ele.text(text+"↑"))
+        }
     }
 </script>
 </body>

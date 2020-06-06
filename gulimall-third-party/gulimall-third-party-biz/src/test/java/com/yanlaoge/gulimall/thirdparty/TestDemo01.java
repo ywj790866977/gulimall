@@ -6,7 +6,12 @@ import com.aliyun.oss.OSSClientBuilder;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Resource;
+
+import com.yanlaoge.gulimall.thirdparty.utils.HttpUtils;
+import org.apache.http.HttpResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,5 +53,28 @@ public class TestDemo01 {
         // 关闭OSSClient。
         ossClient.shutdown();
         System.out.println("上传成功..");
+    }
+
+    @Test
+    public void test03(){
+        String host ="https://smsmsgs.market.alicloudapi.com";
+        String path = "/sms/";
+        String method = "GET";
+        String appcode = "";
+        Map<String,String> headers = new HashMap<>();
+        headers.put("Authorization","APPCODE "+appcode);
+        Map<String,String> querys = new HashMap<>();
+        querys.put("code","123");
+        querys.put("phone","123252353");
+        querys.put("skin","1");
+        querys.put("sign","1245");
+
+        try {
+            HttpResponse response = HttpUtils.doGet(host, path, method, headers, querys);
+            System.out.println(response.getEntity());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

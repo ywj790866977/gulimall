@@ -11,4 +11,4 @@ release.properties
 **/mvnw.cmd
 **/.mvn
 **/target/
-**/.idea
+**/**.iml

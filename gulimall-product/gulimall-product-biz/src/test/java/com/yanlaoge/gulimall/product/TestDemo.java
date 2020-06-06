@@ -3,6 +3,8 @@ package com.yanlaoge.gulimall.product;
 import com.yanlaoge.gulimall.product.dao.AttrGroupDao;
 import com.yanlaoge.gulimall.product.service.AttrGroupService;
 import com.yanlaoge.gulimall.product.service.CategoryService;
+import com.yanlaoge.gulimall.product.service.SkuSaleAttrValueService;
+import com.yanlaoge.gulimall.product.vo.SkuItemSaleAttrVo;
 import com.yanlaoge.gulimall.product.vo.SpuItemAttrGroupVo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -27,6 +29,8 @@ public class TestDemo {
     private CategoryService categoryService;
     @Resource
     private AttrGroupDao attrGroupDao;
+    @Resource
+    private SkuSaleAttrValueService skuSaleAttrValueService;
 
     @Test
     public void test01(){
@@ -38,5 +42,11 @@ public class TestDemo {
     public void test02(){
         List<SpuItemAttrGroupVo> attrGroupwithSpuId = attrGroupDao.getAttrGroupwithSpuId(12L, 225L);
         System.out.println(attrGroupwithSpuId);
+    }
+
+    @Test
+    public void test03(){
+        List<SkuItemSaleAttrVo> saleAttrsBySpuId = skuSaleAttrValueService.getSaleAttrsBySpuId(11L);
+        System.out.println(saleAttrsBySpuId);
     }
 }

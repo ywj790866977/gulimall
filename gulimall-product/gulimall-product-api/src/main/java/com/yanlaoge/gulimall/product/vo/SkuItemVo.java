@@ -34,6 +34,8 @@ public class SkuItemVo {
      * 规格参数
      */
     private List<SpuItemAttrGroupVo> groupAttrs;
-
-
+    /**
+     * 有无货
+     */
+    private Boolean hasStock = true;
 }

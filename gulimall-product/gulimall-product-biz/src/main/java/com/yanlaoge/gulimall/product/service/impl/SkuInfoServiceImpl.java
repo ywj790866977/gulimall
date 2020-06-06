@@ -13,6 +13,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -36,7 +40,8 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 	private AttrGroupService attrGroupService;
 	@Resource
 	private SkuSaleAttrValueService skuSaleAttrValueService;
-
+	@Resource
+	private ThreadPoolExecutor executor;
 	@Override
 	public PageUtils queryPage(Map<String, Object> params) {
 		IPage<SkuInfoEntity> page = this.page(
@@ -95,26 +100,34 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     }
 
     @Override
-    public SkuItemVo item(Long skuId) {
+    public SkuItemVo item(Long skuId) throws ExecutionException, InterruptedException {
 		SkuItemVo skuItemVo = new SkuItemVo();
-		// 1. sku基本信息
-		SkuInfoEntity skuInfoEntity = getById(skuId);
-		skuItemVo.setInfo(skuInfoEntity);
-		Long catalogId = skuInfoEntity.getCatalogId();
-		Long spuId = skuInfoEntity.getSpuId();
-		// 2.图片信息
-		List<SkuImagesEntity> images =  skuImagesService.getImagesBySkuId(skuId);
-		skuItemVo.setImages(images);
-		// 3. 销售属性组合
-		List<SkuItemSaleAttrVo> skuItemSaleAttrVos =  skuSaleAttrValueService.getSaleAttrsBySpuId(spuId);
-		skuItemVo.setSaleAttr(skuItemSaleAttrVos);
-		// 4. 商品介绍
-		SpuInfoDescEntity spuInfoDescEntity = spuInfoDescService.getById(spuId);
-		skuItemVo.setDesp(spuInfoDescEntity);
-		// 5. 规格属性
-		List<SpuItemAttrGroupVo> attrGroupVos =  attrGroupService.getAttrGroupwithSpuId(spuId,catalogId);
-		skuItemVo.setGroupAttrs(attrGroupVos);
-		return  null;
+		CompletableFuture<SkuInfoEntity> infoFuture = CompletableFuture.supplyAsync(() -> {
+			//sku基本信息
+			SkuInfoEntity skuInfoEntity = getById(skuId);
+			skuItemVo.setInfo(skuInfoEntity);
+			return skuInfoEntity;
+		}, executor);
+		// 销售属性组合
+		CompletableFuture<Void> saleFuture = infoFuture.thenAcceptAsync((res) ->
+				skuItemVo.setSaleAttr(skuSaleAttrValueService.getSaleAttrsBySpuId(res.getSpuId())), executor);
+		// 商品介绍
+		CompletableFuture<Void> descFuture =
+				infoFuture.thenAcceptAsync((res) -> skuItemVo.setDesp(spuInfoDescService.getById(res.getSpuId())),
+						executor);
+		// 规格属性
+		CompletableFuture<Void> attrFurure =
+				infoFuture.thenAcceptAsync((res) -> skuItemVo.setGroupAttrs(attrGroupService.getAttrGroupwithSpuId(
+						res.getSpuId(), res.getCatalogId())), executor);
+		// 图片信息
+		CompletableFuture<Void> imgFuture =
+				CompletableFuture.runAsync(() -> skuItemVo.setImages(skuImagesService.getImagesBySkuId(skuId)),
+						executor);
+
+		//等待任务都完成
+		CompletableFuture.allOf(saleFuture,descFuture,attrFurure,imgFuture).get();
+		// TODO 有无货
+		return  skuItemVo;
     }
 
 }

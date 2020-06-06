@@ -1,6 +1,13 @@
 package com.yanlaoge.gulimall.product.service.impl;
 
 import java.math.BigDecimal;
+
+import com.yanlaoge.gulimall.product.entity.SkuImagesEntity;
+import com.yanlaoge.gulimall.product.entity.SpuInfoDescEntity;
+import com.yanlaoge.gulimall.product.service.*;
+import com.yanlaoge.gulimall.product.vo.SkuItemSaleAttrVo;
+import com.yanlaoge.gulimall.product.vo.SkuItemVo;
+import com.yanlaoge.gulimall.product.vo.SpuItemAttrGroupVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +21,21 @@ import com.yanlaoge.common.utils.Query;
 
 import com.yanlaoge.gulimall.product.dao.SkuInfoDao;
 import com.yanlaoge.gulimall.product.entity.SkuInfoEntity;
-import com.yanlaoge.gulimall.product.service.SkuInfoService;
+
+import javax.annotation.Resource;
 
 
 @Service("skuInfoService")
 public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> implements SkuInfoService {
+
+	@Resource
+	private SkuImagesService skuImagesService;
+	@Resource
+	private SpuInfoDescService spuInfoDescService;
+	@Resource
+	private AttrGroupService attrGroupService;
+	@Resource
+	private SkuSaleAttrValueService skuSaleAttrValueService;
 
 	@Override
 	public PageUtils queryPage(Map<String, Object> params) {
@@ -75,6 +92,29 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     @Override
     public List<SkuInfoEntity> getSkuByspuId(Long spuId) {
 		return this.list(new QueryWrapper<SkuInfoEntity>().eq("spu_id",spuId));
+    }
+
+    @Override
+    public SkuItemVo item(Long skuId) {
+		SkuItemVo skuItemVo = new SkuItemVo();
+		// 1. sku基本信息
+		SkuInfoEntity skuInfoEntity = getById(skuId);
+		skuItemVo.setInfo(skuInfoEntity);
+		Long catalogId = skuInfoEntity.getCatalogId();
+		Long spuId = skuInfoEntity.getSpuId();
+		// 2.图片信息
+		List<SkuImagesEntity> images =  skuImagesService.getImagesBySkuId(skuId);
+		skuItemVo.setImages(images);
+		// 3. 销售属性组合
+		List<SkuItemSaleAttrVo> skuItemSaleAttrVos =  skuSaleAttrValueService.getSaleAttrsBySpuId(spuId);
+		skuItemVo.setSaleAttr(skuItemSaleAttrVos);
+		// 4. 商品介绍
+		SpuInfoDescEntity spuInfoDescEntity = spuInfoDescService.getById(spuId);
+		skuItemVo.setDesp(spuInfoDescEntity);
+		// 5. 规格属性
+		List<SpuItemAttrGroupVo> attrGroupVos =  attrGroupService.getAttrGroupwithSpuId(spuId,catalogId);
+		skuItemVo.setGroupAttrs(attrGroupVos);
+		return  null;
     }
 
 }

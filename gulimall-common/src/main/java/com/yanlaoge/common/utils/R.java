@@ -23,6 +23,12 @@ public class R extends HashMap<String, Object> {
         return this;
     }
 
+    public <T> T getData( String key,TypeReference<T> tTypeReference) {
+        Object data = get(key);
+        String s = JSON.toJSONString(data);
+        return JSON.parseObject(s, tTypeReference);
+    }
+
     /**
      * 传入类型进行对应的转换
      *

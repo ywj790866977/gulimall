@@ -12,6 +12,9 @@
         <result property="attrValue" column="attr_value"/>
         <result property="attrSort" column="attr_sort"/>
     </resultMap>
+    <select id="getSaleAttrsBySpuId" resultType="com.yanlaoge.gulimall.product.vo.SkuItemSaleAttrVo">
+
+    </select>
 
 
 </mapper>

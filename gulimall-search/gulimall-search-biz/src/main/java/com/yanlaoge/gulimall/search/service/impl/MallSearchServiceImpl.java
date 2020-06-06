@@ -3,23 +3,30 @@ package com.yanlaoge.gulimall.search.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.collect.Lists;
+import com.yanlaoge.common.utils.R;
+import com.yanlaoge.common.utils.ResponseVo;
+import com.yanlaoge.gulimall.search.model.BrandEntity;
+import com.yanlaoge.gulimall.product.vo.AttrResVo;
 import com.yanlaoge.gulimall.search.config.EsConfig;
 import com.yanlaoge.gulimall.search.constant.EsConstant;
+import com.yanlaoge.gulimall.search.feign.ProductFeignService;
 import com.yanlaoge.gulimall.search.model.SkuModel;
 import com.yanlaoge.gulimall.search.service.MallSearchService;
 import com.yanlaoge.gulimall.search.vo.*;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.ml.job.results.Bucket;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.NestedQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
@@ -37,7 +44,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,30 +55,31 @@ import java.util.stream.Collectors;
  * @author rubyle
  */
 @Service
+@Slf4j
 public class MallSearchServiceImpl implements MallSearchService {
     @Resource
     private RestHighLevelClient client;
 
+    @Resource
+    private ProductFeignService productFeignService;
+
     @SneakyThrows
     @Override
     public SearchResponseVo search(SearchParamVo vo) {
-        //2.准备请求
+        //1.准备请求
         SearchRequest searchRequest = builderSearchRequest(vo);
-        //3. 执行请求
-
-        //4. 处理请求
+        //2. 执行请求
         SearchResponse response = client.search(searchRequest, EsConfig.COMMON_OPTIONS);
-
-        //5. 封装成结果
-        SearchResponseVo res = builderSearchResponseVo(response,vo);
+        //3. 封装成结果
+        SearchResponseVo res = builderSearchResponseVo(response, vo);
         return res;
     }
 
-    private SearchResponseVo builderSearchResponseVo(SearchResponse response,SearchParamVo vo) {
+    private SearchResponseVo builderSearchResponseVo(SearchResponse response, SearchParamVo vo) {
         SearchResponseVo searchResponseVo = new SearchResponseVo();
         // 查询所有商品
         SearchHits hits = response.getHits();
-        searchResponseVo.setProducts(getSkuModels(hits,vo));
+        searchResponseVo.setProducts(getSkuModels(hits, vo));
         // 聚合信息
         Aggregations aggregations = response.getAggregations();
         searchResponseVo.setCatalogs(getCatalogVos(aggregations));
@@ -81,10 +90,74 @@ public class MallSearchServiceImpl implements MallSearchService {
         searchResponseVo.setPageNum(vo.getPageNum());
         Long total = hits.getTotalHits().value;
         searchResponseVo.setTotal(total);
-        Integer totalPages = (int)( total /  EsConstant.PAGESIZE == 0 ? total / EsConstant.PAGESIZE :
+        Integer totalPages = (int) (total / EsConstant.PAGESIZE == 0 ? total / EsConstant.PAGESIZE :
                 (total / EsConstant.PAGESIZE) + 1);
         searchResponseVo.setTotalPages(totalPages);
+
+        //面包屑导航
+        searchResponseVo.setNavs(getNavVos(vo,searchResponseVo));
+
         return searchResponseVo;
+    }
+
+    private List<NavVo> getNavVos(SearchParamVo vo,SearchResponseVo result) {
+        List<NavVo> collect = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(vo.getAttrs())) {
+            collect = vo.getAttrs().stream().map(attr -> {
+                NavVo navVo = new NavVo();
+                // 设置值
+                String[] s = attr.split("_");
+                navVo.setNavValue(s[1]);
+                //设置名称
+                R res = productFeignService.attrInfo(Long.parseLong(s[0]));
+                result.getAttrIds().add(Long.parseLong(s[0]));
+                if (res.getMapCode() != 0) {
+                    navVo.setNavName(s[0]);
+                }
+                AttrResVo attrResVo = res.getData("attr", new TypeReference<AttrResVo>() {});
+                navVo.setNavName(attrResVo.getAttrName());
+                // 删除后的跳转url
+                String navUrl = replaceQueryString(vo, attr, "attrs");
+                navVo.setLink(EsConstant.SEARCH_URL + navUrl);
+                return navVo;
+            }).collect(Collectors.toList());
+        }
+        //品牌的面包屑
+        if (!CollectionUtils.isEmpty(vo.getBrandId())) {
+            NavVo navVo = new NavVo();
+            //设置名称
+            navVo.setNavName("品牌");
+            //设置值
+            List<Long> brandIds = vo.getBrandId();
+            ResponseVo<List<BrandEntity>> res = productFeignService.infos(brandIds);
+            if (res.getCode() != 0) {
+                log.error("[getNavVos] error res : {}", res);
+            }
+            List<BrandEntity> brands = res.getData();
+            StringBuffer stringBuffer = new StringBuffer();
+            String url = "";
+            for (BrandEntity brand : brands) {
+                stringBuffer.append(brand.getName()).append(";");
+                url = replaceQueryString(vo, String.valueOf(brand.getBrandId()), "brandId");
+            }
+            navVo.setNavValue(stringBuffer.toString());
+            //删除设置
+            navVo.setLink(EsConstant.SEARCH_URL + url);
+            collect.add(navVo);
+        }
+        //TODO 分类: 不需要取消
+        return collect;
+    }
+
+    private String replaceQueryString(SearchParamVo vo, String value, String key) {
+        String encode = null;
+        try {
+            encode = URLEncoder.encode(value, "UTF-8");
+            encode = encode.replace("+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return vo.getQueryString().replace("&" + key + "=" + encode, "");
     }
 
     private List<AttrVo> getAttrVos(Aggregations aggregations) {
@@ -118,9 +191,9 @@ public class MallSearchServiceImpl implements MallSearchService {
             BrandVo brandVo = new BrandVo();
             brandVo.setBrandId(bucket.getKeyAsNumber().longValue());
             String img =
-                    ((ParsedStringTerms)bucket.getAggregations().get("brand_img_agg")).getBuckets().get(0).getKeyAsString();
+                    ((ParsedStringTerms) bucket.getAggregations().get("brand_img_agg")).getBuckets().get(0).getKeyAsString();
             String brandName =
-                    ((ParsedStringTerms)bucket.getAggregations().get("brand_name_agg")).getBuckets().get(0).getKeyAsString();
+                    ((ParsedStringTerms) bucket.getAggregations().get("brand_name_agg")).getBuckets().get(0).getKeyAsString();
             brandVo.setBrandImg(img);
             brandVo.setBrandName(brandName);
             brandVos.add(brandVo);
@@ -146,13 +219,13 @@ public class MallSearchServiceImpl implements MallSearchService {
         return catalogVos;
     }
 
-    private List<SkuModel> getSkuModels(SearchHits hits,SearchParamVo vo) {
+    private List<SkuModel> getSkuModels(SearchHits hits, SearchParamVo vo) {
         List<SkuModel> list = Lists.newArrayList();
-        if(!ArrayUtils.isEmpty(hits.getHits())){
+        if (!ArrayUtils.isEmpty(hits.getHits())) {
             for (SearchHit hit : hits.getHits()) {
                 String sourceAsString = hit.getSourceAsString();
-                SkuModel skuModel = JSON.parseObject(sourceAsString,SkuModel.class);
-                if(!StringUtils.isEmpty(vo.getKeyword())){
+                SkuModel skuModel = JSON.parseObject(sourceAsString, SkuModel.class);
+                if (!StringUtils.isEmpty(vo.getKeyword())) {
                     HighlightField highlightField = hit.getHighlightFields().get("skuTitle");
                     String highlight = highlightField.getFragments()[0].string();
                     skuModel.setSkuTitle(highlight);
@@ -166,37 +239,37 @@ public class MallSearchServiceImpl implements MallSearchService {
     private QueryBuilder builderQuery(SearchParamVo vo) {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         // 1.基本查询
-        if(!StringUtils.isEmpty(vo.getKeyword())){
-            queryBuilder.must(QueryBuilders.matchQuery("skuTitle",vo.getKeyword()));
+        if (!StringUtils.isEmpty(vo.getKeyword())) {
+            queryBuilder.must(QueryBuilders.matchQuery("skuTitle", vo.getKeyword()));
         }
 
         // 2.过滤
         // 2.1 分类id
-        if(vo.getCatalog3Id() != null){
-            queryBuilder.filter(QueryBuilders.termQuery("catalogId",vo.getCatalog3Id()));
+        if (vo.getCatalog3Id() != null) {
+            queryBuilder.filter(QueryBuilders.termQuery("catalogId", vo.getCatalog3Id()));
         }
         // 2.2 品牌id
-        if(!CollectionUtils.isEmpty(vo.getBrandId())){
-            queryBuilder.filter(QueryBuilders.termsQuery("brandId",vo.getBrandId()));
+        if (!CollectionUtils.isEmpty(vo.getBrandId())) {
+            queryBuilder.filter(QueryBuilders.termsQuery("brandId", vo.getBrandId()));
         }
         // 2.3 属性
-        if(!CollectionUtils.isEmpty(vo.getAttrs())){
+        if (!CollectionUtils.isEmpty(vo.getAttrs())) {
             for (String attr : vo.getAttrs()) {
                 BoolQueryBuilder nestedBoolQueryBuilder = QueryBuilders.boolQuery();
                 // attrs=1_5寸:8寸
                 String[] s = attr.split("_");
                 String attrId = s[0];
                 String[] attrValue = s[1].split(":");
-                nestedBoolQueryBuilder.must(QueryBuilders.termQuery("attrs.attrId",attrId));
-                nestedBoolQueryBuilder.must(QueryBuilders.termsQuery("attrs.attrValue",attrValue));
+                nestedBoolQueryBuilder.must(QueryBuilders.termQuery("attrs.attrId", attrId));
+                nestedBoolQueryBuilder.must(QueryBuilders.termsQuery("attrs.attrValue", attrValue));
                 NestedQueryBuilder nestedQueryBuilder = QueryBuilders.nestedQuery("attrs", nestedBoolQueryBuilder, ScoreMode.None);
                 queryBuilder.filter(nestedQueryBuilder);
             }
 
         }
         // 2.4 库存
-        if(vo.getHasStock() != null){
-            queryBuilder.filter(QueryBuilders.termQuery("hasStock",vo.getHasStock() == 1));
+        if (vo.getHasStock() != null) {
+            queryBuilder.filter(QueryBuilders.termQuery("hasStock", vo.getHasStock() == 1));
         }
 
         // 2.5 价格区间
@@ -226,15 +299,15 @@ public class MallSearchServiceImpl implements MallSearchService {
         QueryBuilder queryBuilder = builderQuery(vo);
         sourceBuilder.query(queryBuilder);
         //排序条件
-        buiderSort(sourceBuilder,vo);
+        buiderSort(sourceBuilder, vo);
         //分页条件
-        buiderPage(sourceBuilder,vo);
+        buiderPage(sourceBuilder, vo);
         //高亮
-        buiderHighlight(sourceBuilder,vo);
+        buiderHighlight(sourceBuilder, vo);
         //聚合
-        builderAgg(sourceBuilder,vo);
+        builderAgg(sourceBuilder, vo);
 
-        return new SearchRequest(new String[]{EsConstant.PRODUCT_INDEX},sourceBuilder);
+        return new SearchRequest(new String[]{EsConstant.PRODUCT_INDEX}, sourceBuilder);
     }
 
     private void builderAgg(SearchSourceBuilder sourceBuilder, SearchParamVo vo) {
@@ -266,7 +339,7 @@ public class MallSearchServiceImpl implements MallSearchService {
     }
 
     private void buiderHighlight(SearchSourceBuilder sourceBuilder, SearchParamVo vo) {
-        if(!StringUtils.isEmpty(vo.getKeyword())){
+        if (!StringUtils.isEmpty(vo.getKeyword())) {
             HighlightBuilder highlightBuilder = new HighlightBuilder();
             highlightBuilder.field("skuTitle");
             highlightBuilder.preTags("<b style='color:red'>");
@@ -276,16 +349,16 @@ public class MallSearchServiceImpl implements MallSearchService {
     }
 
     private void buiderPage(SearchSourceBuilder sourceBuilder, SearchParamVo vo) {
-        sourceBuilder.from((vo.getPageNum() -1)*EsConstant.PAGESIZE);
+        sourceBuilder.from((vo.getPageNum() - 1) * EsConstant.PAGESIZE);
         sourceBuilder.size(EsConstant.PAGESIZE);
     }
 
-    private void buiderSort(SearchSourceBuilder sourceBuilder,SearchParamVo vo) {
-        if(!StringUtils.isEmpty(vo.getSort())){
+    private void buiderSort(SearchSourceBuilder sourceBuilder, SearchParamVo vo) {
+        if (!StringUtils.isEmpty(vo.getSort())) {
             String sort = vo.getSort();
             String[] s = sort.split("_");
-            SortOrder sortOrder = EsConstant.ASC.equalsIgnoreCase(s[1]) ? SortOrder.ASC: SortOrder.DESC;
-            sourceBuilder.sort(s[0],sortOrder);
+            SortOrder sortOrder = EsConstant.ASC.equalsIgnoreCase(s[1]) ? SortOrder.ASC : SortOrder.DESC;
+            sourceBuilder.sort(s[0], sortOrder);
         }
     }
 }

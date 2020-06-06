@@ -19,6 +19,7 @@
     <description>检索服务</description>
 
     <dependencies>
+
         <dependency>
             <groupId>com.yanlaoge.gulimall</groupId>
             <artifactId>gulimall-common</artifactId>

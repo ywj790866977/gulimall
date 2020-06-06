@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
+
+import com.yanlaoge.gulimall.product.vo.SpuItemAttrGroupVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -71,5 +73,11 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
 		}).collect(Collectors.toList());
 
 	}
+
+    @Override
+    public List<SpuItemAttrGroupVo> getAttrGroupwithSpuId( Long spuId,Long catalogId) {
+        // 所有分组信息和对应的值
+		return baseMapper.getAttrGroupwithSpuId(spuId,catalogId);
+    }
 
 }

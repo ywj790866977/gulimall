@@ -9,6 +9,8 @@ import com.yanlaoge.gulimall.product.dao.BrandDao;
 import com.yanlaoge.gulimall.product.entity.BrandEntity;
 import com.yanlaoge.gulimall.product.service.BrandService;
 import com.yanlaoge.gulimall.product.service.CategoryBrandRelationService;
+
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,11 @@ public class BrandServiceImpl extends ServiceImpl<BrandDao, BrandEntity> impleme
             categoryBrandRelationService.updateByBrandId(brand.getBrandId(),brand.getName());
             //TODO 冗余更新表数据
         }
+    }
+
+    @Override
+    public List<BrandEntity> getBrandsByIds(List<Long> ids) {
+        return  listByIds(ids);
     }
 
 }

@@ -50,4 +50,8 @@ public class SearchParamVo {
      * 页码
      */
     private Integer pageNum = 1;
+    /**
+     * queryString
+     */
+    private String queryString;
 }

@@ -10,6 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication(scanBasePackages ={"com.yanlaoge.gulimall","com.yanlaoge.common"})
 @EnableDiscoveryClient
 @MapperScan("com.yanlaoge.gulimall.coupon.dao")
+@EnableFeignClients(basePackages = "com.yanlaoge.gulimall")
 public class GulimallCouponApplication {
 
 	public static void main(String[] args) {

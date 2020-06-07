@@ -6,16 +6,17 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * 会员
  * 
  * @author rubyle
- * @email besokuser@163.com
  * @date 2020-05-13 15:19:47
  */
 @Data
 @TableName("ums_member")
+@Accessors(chain = true)
 public class MemberEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 

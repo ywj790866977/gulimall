@@ -2,7 +2,7 @@ package com.yanlaoge.gulimall.ware.service.impl;
 
 import com.yanlaoge.common.utils.R;
 import com.yanlaoge.gulimall.product.entity.SkuInfoEntity;
-import com.yanlaoge.gulimall.ware.feign.ProductFeignService;
+import com.yanlaoge.gulimall.product.feign.ProductFeignService;
 import com.yanlaoge.gulimall.ware.vo.SkuHasStockVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

@@ -1,4 +1,4 @@
-package com.yanlaoge.gulimall.product.feign;
+package com.yanlaoge.gulimall.search.feign;
 
 import com.yanlaoge.common.utils.ResponseVo;
 import com.yanlaoge.gulimall.search.model.SkuModel;

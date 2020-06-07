@@ -1,20 +1,22 @@
 package com.yanlaoge.gulimall.ware.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
+import com.yanlaoge.common.utils.ResponseVo;
+import com.yanlaoge.gulimall.product.feign.ProductFeignService;
+import com.yanlaoge.gulimall.search.model.BrandEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.yanlaoge.gulimall.ware.entity.WareInfoEntity;
 import com.yanlaoge.gulimall.ware.service.WareInfoService;
 import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.common.utils.R;
 
+import javax.annotation.Resource;
 
 
 /**
@@ -29,7 +31,14 @@ import com.yanlaoge.common.utils.R;
 public class WareInfoController {
     @Autowired
     private WareInfoService wareInfoService;
+    @Resource
+    private ProductFeignService productFeignService;
 
+    @GetMapping("test")
+    public void test01(){
+        ResponseVo<List<BrandEntity>> r = productFeignService.infos(Lists.newArrayList());
+        System.out.println(r);
+    }
     /**
      * 列表
      */

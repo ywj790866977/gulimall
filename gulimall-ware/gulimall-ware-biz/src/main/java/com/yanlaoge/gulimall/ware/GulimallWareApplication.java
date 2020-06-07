@@ -8,7 +8,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableTransactionManagement
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.yanlaoge.gulimall", "com.yanlaoge.common"})
 @MapperScan("com.yanlaoge.gulimall.ware.dao")
 @EnableDiscoveryClient
 @EnableFeignClients("com.yanlaoge.gulimall")

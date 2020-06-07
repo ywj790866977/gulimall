@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ComponentScans;
  *
  * @author rubyle
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages ={"com.yanlaoge.gulimall","com.yanlaoge.common"})
 @EnableDiscoveryClient
 @MapperScan("com.yanlaoge.gulimall.member.dao")
 public class GulimallMemberApplication {

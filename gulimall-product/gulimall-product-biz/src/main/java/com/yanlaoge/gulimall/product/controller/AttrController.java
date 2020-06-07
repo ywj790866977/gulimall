@@ -1,5 +1,9 @@
 package com.yanlaoge.gulimall.product.controller;
 
+import com.google.common.collect.Lists;
+import com.yanlaoge.common.to.SkuReductionTo;
+import com.yanlaoge.common.utils.ResponseVo;
+import com.yanlaoge.gulimall.coupon.feign.CouponFeignService;
 import com.yanlaoge.gulimall.product.entity.ProductAttrValueEntity;
 import com.yanlaoge.gulimall.product.service.ProductAttrValueService;
 import com.yanlaoge.gulimall.product.vo.AttrGroupRelationVo;
@@ -10,14 +14,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.yanlaoge.gulimall.search.feign.SearchFeignService;
+import com.yanlaoge.gulimall.search.model.SkuModel;
+import com.yanlaoge.gulimall.ware.feign.WareFeignService;
+import com.yanlaoge.gulimall.ware.vo.SkuHasStockVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.yanlaoge.gulimall.product.service.AttrService;
 import com.yanlaoge.common.utils.PageUtils;
@@ -36,11 +38,26 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("product/attr")
 public class AttrController {
-
+    @Resource
+    private SearchFeignService searchFeignService;
+    @Resource
+    private CouponFeignService couponFeignService;
+    @Resource
+    private WareFeignService wareFeignService;
     @Autowired
     private AttrService attrService;
     @Resource
     private ProductAttrValueService productAttrValueService;
+
+    @PostMapping("/test")
+    public void test(){
+//        List<SkuModel> skuModelList = Lists.newArrayList();
+//        ResponseVo<Void> res= searchFeignService.productStatusUp(skuModelList);
+        List<Long> skuIds = Lists.newArrayList();
+        ResponseVo<List<SkuHasStockVo>> res = wareFeignService.getSkuHasStock(skuIds);
+        System.out.println(res);
+    }
+
 
     /**
      * baseAttrList

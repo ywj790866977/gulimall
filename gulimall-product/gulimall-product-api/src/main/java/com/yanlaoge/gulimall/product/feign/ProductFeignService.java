@@ -1,4 +1,9 @@
-package com.yanlaoge.gulimall.search.feign;
+package com.yanlaoge.gulimall.product.feign;
+
+import com.yanlaoge.common.utils.R;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.yanlaoge.common.utils.R;
 import com.yanlaoge.common.utils.ResponseVo;
@@ -6,6 +11,7 @@ import com.yanlaoge.gulimall.search.model.BrandEntity;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -33,4 +39,13 @@ public interface ProductFeignService {
      */
     @GetMapping("product/brand/infos")
     ResponseVo<List<BrandEntity>> infos(@RequestParam("brandIds") List<Long> ids);
+
+    /**
+     * 获取skuinfo
+     *
+     * @param skuId skuid
+     * @return R
+     */
+    @RequestMapping("product/skuinfo/info/{skuId}")
+    R info(@PathVariable("skuId") Long skuId);
 }

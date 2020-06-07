@@ -2,8 +2,11 @@ package com.yanlaoge.gulimall.member.controller;
 
 import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.common.utils.R;
+import com.yanlaoge.common.utils.ResponseHelper;
+import com.yanlaoge.common.utils.ResponseVo;
 import com.yanlaoge.gulimall.member.entity.MemberEntity;
 import com.yanlaoge.gulimall.member.service.MemberService;
+import com.yanlaoge.gulimall.member.vo.MemberRegisterVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +26,11 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
+    @PostMapping("/register")
+    public ResponseVo<String> regist(@RequestBody MemberRegisterVo vo){
+        memberService.register(vo);
+        return ResponseHelper.success();
+    }
 
     /**
      * 列表

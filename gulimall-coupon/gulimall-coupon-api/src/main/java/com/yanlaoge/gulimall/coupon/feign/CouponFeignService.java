@@ -1,5 +1,4 @@
-package com.yanlaoge.gulimall.product.feign;
-
+package com.yanlaoge.gulimall.coupon.feign;
 
 import com.yanlaoge.common.to.SkuReductionTo;
 import com.yanlaoge.common.to.SpuBoundsTo;

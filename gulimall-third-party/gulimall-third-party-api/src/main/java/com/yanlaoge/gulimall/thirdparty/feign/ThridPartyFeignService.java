@@ -1,4 +1,4 @@
-package com.yanlaoge.gulimall.auth.feign;
+package com.yanlaoge.gulimall.thirdparty.feign;
 
 import com.yanlaoge.common.utils.ResponseVo;
 import org.springframework.cloud.openfeign.FeignClient;

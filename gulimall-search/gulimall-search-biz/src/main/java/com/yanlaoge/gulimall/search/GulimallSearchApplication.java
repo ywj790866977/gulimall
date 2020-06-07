@@ -10,9 +10,9 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  *
  * @author rubyle
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.yanlaoge.gulimall", "com.yanlaoge.common"})
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients(basePackages = "com.yanlaoge.gulimall")
 public class GulimallSearchApplication {
 
     public static void main(String[] args) {

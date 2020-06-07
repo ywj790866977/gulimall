@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Resource;
 
+import com.yanlaoge.gulimall.thirdparty.component.SmsComponent;
 import com.yanlaoge.gulimall.thirdparty.utils.HttpUtils;
 import org.apache.http.HttpResponse;
 import org.junit.Test;
@@ -26,6 +27,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class TestDemo01 {
     @Resource
     OSSClient ossClient;
+    @Resource
+    private SmsComponent smsComponent;
 
     @Test
     public void test02() throws FileNotFoundException {
@@ -76,5 +79,10 @@ public class TestDemo01 {
             e.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void test04(){
+        smsComponent.sendSmsCode("1352324","123");
     }
 }

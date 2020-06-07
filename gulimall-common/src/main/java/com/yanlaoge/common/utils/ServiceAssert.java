@@ -33,11 +33,18 @@ public class ServiceAssert {
         }
     }
 
+    public static void isFalse(boolean expression, int code, String msg) {
+        if (!expression) {
+            throw serviceException(code, msg);
+        }
+    }
+
     public static void isFalse(boolean expression, Integer code, String msg) {
         if (!expression) {
             throw serviceException(code, msg);
         }
     }
+
 
     public static void isFalse(boolean expression, Integer code, String msg, Object data) {
         if (!expression) {

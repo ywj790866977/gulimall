@@ -5987,7 +5987,7 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
         <div class="register-box">
             <label for="username" class="other_label">
                 <span>中国 0086∨</span>
-                <input class="phone" maxlength="20" type="text" placeholder="建议使用常用手机">
+                <input id="phone_num" class="phone" maxlength="20" type="text" placeholder="建议使用常用手机">
             </label>
             <div class="tips">
 
@@ -6257,6 +6257,13 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 		if($(this).hasClass("disabled")){
 
 		}else {
+			//1.发送验证码
+			$.get("/sms/sendcode?phone="+ $("#phone_num").val(),function (res) {
+				if(res.code != 0){
+					alert(res.msg);
+				}
+			})
+			//2. 倒计时
 			timeoutChangeStyle()
 		}
 

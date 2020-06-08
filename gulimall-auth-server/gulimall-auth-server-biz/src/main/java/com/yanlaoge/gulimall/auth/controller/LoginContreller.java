@@ -1,17 +1,25 @@
 package com.yanlaoge.gulimall.auth.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.RandomUtil;
+import com.google.common.collect.Maps;
 import com.yanlaoge.common.utils.RedisUtil;
 import com.yanlaoge.common.utils.ResponseHelper;
 import com.yanlaoge.common.utils.ResponseVo;
 import com.yanlaoge.gulimall.auth.constant.AuthServerconstant;
 import com.yanlaoge.gulimall.auth.enums.SmsStatusEnum;
+import com.yanlaoge.gulimall.auth.vo.UserLoginVo;
 import com.yanlaoge.gulimall.auth.vo.UserRegisterVo;
+import com.yanlaoge.gulimall.member.entity.MemberEntity;
 import com.yanlaoge.gulimall.member.feign.MemberFeignService;
+import com.yanlaoge.gulimall.member.vo.MemberLoginVo;
 import com.yanlaoge.gulimall.member.vo.MemberRegisterVo;
 import com.yanlaoge.gulimall.thirdparty.feign.ThridPartyFeignService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -32,6 +40,7 @@ import java.util.stream.Collectors;
  * @date 2020-6-06
  */
 @Controller
+@Slf4j
 public class LoginContreller {
 
     @Resource
@@ -74,25 +83,39 @@ public class LoginContreller {
         String[] s = code.split("_");
         String key = AuthServerconstant.SMS_PREFIX + vo.getPassword();
         String redisCode = (String) redisUtil.get(key);
+        HashMap<String, String> errMap = MapUtil.newHashMap();
         if (StringUtils.isEmpty(redisCode) || !code.equals(s[0])) {
-            HashMap<String, String> errMap = MapUtil.newHashMap();
             errMap.put("code", SmsStatusEnum.SMS_CODE_NULL.getMsg());
             model.addFlashAttribute("errors", errMap);
             return "redirect:http://auth.gulimall.com/reg.html";
         }
         // 校验成功进行注册
-
+        MemberRegisterVo memberRegisterVo = new MemberRegisterVo();
+        BeanUtils.copyProperties(vo,memberRegisterVo);
+        ResponseVo<String> responseVo = memberFeignService.regist(memberRegisterVo);
+        if(responseVo.getCode() !=0){
+            log.error("[reg] error res:{}",responseVo);
+            errMap.put("msg",responseVo.getMsg());
+            model.addFlashAttribute("errors",errMap);
+            return "redirect:http://auth.gulimall.com/reg.html";
+        }
         // 删除
         redisUtil.del(key);
-        return "redirect:/login.html";
+        return "redirect:http://auth.gulimall.com/login.html";
     }
 
-    @ResponseBody
-    @GetMapping("/test")
-    public void test(){
-//        MemberRegisterVo memberRegisterVo = new MemberRegisterVo();
-//        ResponseVo<String> res = memberFeignService.regist(memberRegisterVo);
-        ResponseVo<String> res = thridPartyFeignService.sendCode("123", "123");
-        System.out.println(res);
+    @PostMapping("login")
+    public String login(UserLoginVo vo,RedirectAttributes attributes){
+        MemberLoginVo loginVo = new MemberLoginVo();
+        BeanUtil.copyProperties(vo,loginVo);
+        ResponseVo<MemberEntity> responseVo = memberFeignService.login(loginVo);
+        if(responseVo.getCode() !=0){
+            HashMap<String, String> errMap = Maps.newHashMap();
+            errMap.put("msg",responseVo.getMsg());
+            attributes.addFlashAttribute("errors",errMap);
+            return "redirect:http://auth.gulimall.com/login.html";
+
+        }
+        return "redirect:http://gulimall.com/";
     }
 }

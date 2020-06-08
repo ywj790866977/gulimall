@@ -70,6 +70,11 @@ public class ServiceAssert {
         }
     }
 
+    public static void isNull(Object object, int code, String msg) {
+        if (object == null) {
+            throw serviceException(code, msg);
+        }
+    }
     public static void isNull(Object object, Integer code, String msg) {
         if (object == null) {
             throw serviceException(code, msg);

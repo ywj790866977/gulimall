@@ -16,6 +16,7 @@ import org.springframework.context.annotation.ComponentScans;
 @SpringBootApplication(scanBasePackages ={"com.yanlaoge.gulimall","com.yanlaoge.common"})
 @EnableDiscoveryClient
 @MapperScan("com.yanlaoge.gulimall.member.dao")
+@EnableFeignClients(basePackages = "com.yanlaoge.gulimall")
 public class GulimallMemberApplication {
 
 	public static void main(String[] args) {

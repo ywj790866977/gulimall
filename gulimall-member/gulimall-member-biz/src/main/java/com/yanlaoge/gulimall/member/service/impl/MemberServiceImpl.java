@@ -4,6 +4,7 @@ import com.yanlaoge.common.utils.ServiceAssert;
 import com.yanlaoge.gulimall.member.entity.MemberLevelEntity;
 import com.yanlaoge.gulimall.member.enums.MemberStatusEnum;
 import com.yanlaoge.gulimall.member.service.MemberLevelService;
+import com.yanlaoge.gulimall.member.vo.MemberLoginVo;
 import com.yanlaoge.gulimall.member.vo.MemberRegisterVo;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,16 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         int count = count(new QueryWrapper<MemberEntity>().eq("username", userName));
         ServiceAssert.isFalse( count <=0,
                 MemberStatusEnum.NOT_USERNAME.getCode(),MemberStatusEnum.NOT_USERNAME.getMsg());
+    }
+
+    @Override
+    public MemberEntity login(MemberLoginVo vo) {
+        MemberEntity entity = getOne(new QueryWrapper<MemberEntity>()
+                .eq("username", vo.getLoginacct()).or().eq("mobile", vo.getLoginacct()));
+        ServiceAssert.isNull(entity,MemberStatusEnum.NOT_USER.getCode(),MemberStatusEnum.NOT_USER.getMsg());
+        boolean isOk = new BCryptPasswordEncoder().matches(vo.getPassword(), entity.getPassword());
+        ServiceAssert.isFalse(isOk,MemberStatusEnum.NOT_PASSWORD.getCode(),MemberStatusEnum.NOT_PASSWORD.getMsg());
+        return entity;
     }
 
 }

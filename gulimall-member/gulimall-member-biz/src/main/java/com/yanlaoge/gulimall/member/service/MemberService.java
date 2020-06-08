@@ -3,6 +3,7 @@ package com.yanlaoge.gulimall.member.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.gulimall.member.entity.MemberEntity;
+import com.yanlaoge.gulimall.member.vo.MemberLoginVo;
 import com.yanlaoge.gulimall.member.vo.MemberRegisterVo;
 
 import java.util.Map;
@@ -47,6 +48,14 @@ public interface MemberService extends IService<MemberEntity> {
      */
     void checkUserNameUnique(String userName);
 
+
+    /**
+     * 登录
+     *
+     * @param vo vo
+     * @return entity
+     */
+    MemberEntity login(MemberLoginVo vo);
 
 }
 

@@ -17,7 +17,15 @@ public enum MemberStatusEnum {
     /**
      * 手机号已存在
      */
-    NOT_PHONE(15002,"手机号已存在");
+    NOT_PHONE(15002,"手机号已存在"),
+    /**
+     * 用户不存在
+     */
+    NOT_USER(15003,"用户不存在"),
+    /**
+     *
+     */
+    NOT_PASSWORD(15004,"用户密码错误");
     private Integer code;
     private String msg;
 }

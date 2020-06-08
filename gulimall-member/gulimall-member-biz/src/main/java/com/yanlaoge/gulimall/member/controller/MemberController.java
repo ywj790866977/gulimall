@@ -8,6 +8,7 @@ import com.yanlaoge.gulimall.member.entity.MemberEntity;
 import com.yanlaoge.gulimall.member.service.MemberService;
 import com.yanlaoge.gulimall.member.vo.MemberLoginVo;
 import com.yanlaoge.gulimall.member.vo.MemberRegisterVo;
+import com.yanlaoge.gulimall.member.vo.SocialUserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,11 @@ import java.util.Map;
 public class MemberController {
     @Autowired
     private MemberService memberService;
+
+    @PostMapping("/oauth/login")
+    public ResponseVo<MemberEntity> oauthLogin(@RequestBody SocialUserVo vo){
+        return ResponseHelper.success(memberService.oauthLogin(vo));
+    }
 
     @PostMapping("/login")
     public ResponseVo<MemberEntity> login(@RequestBody MemberLoginVo vo){

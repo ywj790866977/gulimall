@@ -4,6 +4,7 @@ import com.yanlaoge.common.utils.ResponseVo;
 import com.yanlaoge.gulimall.member.entity.MemberEntity;
 import com.yanlaoge.gulimall.member.vo.MemberLoginVo;
 import com.yanlaoge.gulimall.member.vo.MemberRegisterVo;
+import com.yanlaoge.gulimall.member.vo.SocialUserVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,4 +34,13 @@ public interface MemberFeignService {
      */
     @PostMapping("/member/member/login")
     ResponseVo<MemberEntity> login(@RequestBody MemberLoginVo vo);
+
+    /**
+     * 社交登录
+     *
+     * @param vo vo
+     * @return r
+     */
+    @PostMapping("member/member/oauth/login")
+    ResponseVo<MemberEntity> oauthLogin(@RequestBody SocialUserVo vo);
 }

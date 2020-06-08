@@ -5,6 +5,7 @@ import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.gulimall.member.entity.MemberEntity;
 import com.yanlaoge.gulimall.member.vo.MemberLoginVo;
 import com.yanlaoge.gulimall.member.vo.MemberRegisterVo;
+import com.yanlaoge.gulimall.member.vo.SocialUserVo;
 
 import java.util.Map;
 
@@ -57,5 +58,12 @@ public interface MemberService extends IService<MemberEntity> {
      */
     MemberEntity login(MemberLoginVo vo);
 
+    /**
+     * 社交登录
+     *
+     * @param vo vo
+     * @return entity
+     */
+    MemberEntity oauthLogin(SocialUserVo vo);
 }
 

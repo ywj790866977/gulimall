@@ -25,7 +25,11 @@ public enum MemberStatusEnum {
     /**
      *
      */
-    NOT_PASSWORD(15004,"用户密码错误");
+    NOT_PASSWORD(15004,"用户密码错误"),
+    /**
+     * 查询用户信息失败
+     */
+    NOT_QUERY_USER_INFO(15004,"用户密码错误");
     private Integer code;
     private String msg;
 }

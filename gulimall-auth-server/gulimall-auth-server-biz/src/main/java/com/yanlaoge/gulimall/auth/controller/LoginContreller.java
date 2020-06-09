@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.yanlaoge.common.utils.RedisUtil;
 import com.yanlaoge.common.utils.ResponseHelper;
 import com.yanlaoge.common.utils.ResponseVo;
+import com.yanlaoge.common.vo.MemberRespVo;
 import com.yanlaoge.gulimall.auth.constant.AuthServerconstant;
 import com.yanlaoge.gulimall.auth.enums.SmsStatusEnum;
 import com.yanlaoge.gulimall.auth.vo.UserLoginVo;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -76,7 +78,7 @@ public class LoginContreller {
                     FieldError::getDefaultMessage));
             model.addFlashAttribute("errors", errMap);
             //TODO: seesion共享数据, 但是在分布式环境中, session可能丢失
-            return "redirect:http://auth.gulimall.com/reg.html";
+            return AuthServerconstant.REDIRECT_REG_DOMAIN;
         }
         //注册
         String code = vo.getCode();
@@ -87,35 +89,46 @@ public class LoginContreller {
         if (StringUtils.isEmpty(redisCode) || !code.equals(s[0])) {
             errMap.put("code", SmsStatusEnum.SMS_CODE_NULL.getMsg());
             model.addFlashAttribute("errors", errMap);
-            return "redirect:http://auth.gulimall.com/reg.html";
+            return AuthServerconstant.REDIRECT_REG_DOMAIN;
         }
         // 校验成功进行注册
         MemberRegisterVo memberRegisterVo = new MemberRegisterVo();
-        BeanUtils.copyProperties(vo,memberRegisterVo);
+        BeanUtils.copyProperties(vo, memberRegisterVo);
         ResponseVo<String> responseVo = memberFeignService.regist(memberRegisterVo);
-        if(responseVo.getCode() !=0){
-            log.error("[reg] error res:{}",responseVo);
-            errMap.put("msg",responseVo.getMsg());
-            model.addFlashAttribute("errors",errMap);
-            return "redirect:http://auth.gulimall.com/reg.html";
+        if (responseVo.getCode() != 0) {
+            log.error("[reg] error res:{}", responseVo);
+            errMap.put("msg", responseVo.getMsg());
+            model.addFlashAttribute("errors", errMap);
+            return AuthServerconstant.REDIRECT_REG_DOMAIN;
         }
         // 删除
         redisUtil.del(key);
-        return "redirect:http://auth.gulimall.com/login.html";
+        return AuthServerconstant.REDIRECT_LOGIN_DOMAIN;
     }
 
     @PostMapping("login")
-    public String login(UserLoginVo vo,RedirectAttributes attributes){
+    public String login(UserLoginVo vo, RedirectAttributes attributes, HttpSession session) {
         MemberLoginVo loginVo = new MemberLoginVo();
-        BeanUtil.copyProperties(vo,loginVo);
+        BeanUtil.copyProperties(vo, loginVo);
         ResponseVo<MemberEntity> responseVo = memberFeignService.login(loginVo);
-        if(responseVo.getCode() !=0){
+        if (responseVo.getCode() != 0) {
             HashMap<String, String> errMap = Maps.newHashMap();
-            errMap.put("msg",responseVo.getMsg());
-            attributes.addFlashAttribute("errors",errMap);
-            return "redirect:http://auth.gulimall.com/login.html";
+            errMap.put("msg", responseVo.getMsg());
+            attributes.addFlashAttribute("errors", errMap);
+            return AuthServerconstant.REDIRECT_LOGIN_DOMAIN;
 
         }
-        return "redirect:http://gulimall.com/";
+        MemberRespVo respVo = new MemberRespVo();
+        BeanUtils.copyProperties(responseVo.getData(), respVo);
+        session.setAttribute(AuthServerconstant.LOGIN_USER, respVo);
+        return AuthServerconstant.REDIRECT_GULIMALL_DOMAIN;
+    }
+
+    @GetMapping("/login.html")
+    public String loginPage(HttpSession session) {
+        if (session.getAttribute(AuthServerconstant.LOGIN_USER) != null) {
+            return AuthServerconstant.REDIRECT_GULIMALL_DOMAIN;
+        }
+        return "login";
     }
 }

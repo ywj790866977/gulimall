@@ -1,20 +1,29 @@
-server:
-  port: 10003
-  servlet:
-    session:
-      timeout: 30m
-spring:
-  application:
-    name: gulimall-auth-server
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
-  thymeleaf:
-    cache: false
-
-  redis:
-    host: 192.168.52.128
-    port: 6379
-  session:
-    store-type: redis
+#server:
+#  port: 10003
+#  servlet:
+#    session:
+#      timeout: 30m
+#spring:
+#  application:
+#    name: gulimall-auth-server
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: 127.0.0.1:8848
+#  thymeleaf:
+#    cache: false
+#
+#  redis:
+##    host: 192.168.52.128
+#    host: 10.211.55.20
+#    port: 6379
+#  session:
+#    store-type: redis
+#gulimall:
+#  oauth2:
+#    weibo:
+#      host: https://api.weibo.com
+#      path: /oauth2/access_token
+#      client-id: 1734806084
+#      client-secret: 1a186d5b8056c3a41367c710b835a21c
+#      redirect-uri: http://auth.gulimall.com/oauth2.0/weibo/success

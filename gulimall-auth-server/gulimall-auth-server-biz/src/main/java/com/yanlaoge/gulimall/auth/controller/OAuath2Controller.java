@@ -41,7 +41,6 @@ public class OAuath2Controller {
     @GetMapping("/oauth2.0/weibo/success")
     public String weibo(@RequestParam("code") String code, HttpSession session){
         // 1. 获取 token
-        System.out.println(weiboConfigProperties.getClientId());
         HttpResponse response = getWeiboResp(code);
         // 2. 跳转
         if(!AuthServerconstant.HTTP_SUCCESS_CODE.equals(response.getStatusLine().getStatusCode())){

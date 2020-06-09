@@ -1,0 +1,9 @@
+server:
+  port: 8080
+spring:
+  redis:
+    host: 192.168.51.128
+    port: 6379
+sso:
+  server:
+    url: http://sso.com

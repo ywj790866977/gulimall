@@ -16,7 +16,7 @@
         <!--品牌官方网站-->
         <div class="min">
             <ul class="header_ul_left">
-                <li class="glyphicon glyphicon-home"><a href="/static/item/shouye.html" class="aa">京东首页</a></li>
+                <li class="glyphicon glyphicon-home"><a href="http://gulimall.com" class="aa">京东首页</a></li>
                 <li class="glyphicon glyphicon-map-marker"><a href="javascript:;">北京</a>
                     <ol id="beijing">
                         <li style="background: red;"><a href="javascript:;" style="color: white;">北京</a></li>
@@ -58,8 +58,18 @@
                 </li>
             </ul>
             <ul class="header_ul_right">
-                <li style="border: 0;"><a href="/static/item/../登录页面\index.html" class="aa">你好，请登录</a></li>
-                <li><a href="/static/item/../注册页面\index.html" style="color: red;">免费注册</a> |</li>
+                <li style="border: 0;">
+                    <a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser == null }" class="aa">
+                        你好，请登录</a>
+                    <a href="http://auth.gulimall.com/login.html" class="aa"
+                       th:else
+                    >[[${session.loginUser.username}]]</a>
+                </li>
+                <li>
+                    <a href="http://auth.gulimall.com/reg.html" style="color: red;"
+                       th:if="${session.loginUser == null }">免费注册
+                    </a> |
+                </li>
                 <li><a href="javascript:;" class="aa">我的订单</a> |</li>
                 <li class="jingdong"><a href="javascript:;">我的京东</a><span class="glyphicon glyphicon-menu-down">|</span>
                     <ol class="jingdong_ol">
@@ -254,7 +264,7 @@
     <nav>
         <div class="nav_min">
             <div class="nav_top">
-                <div class="nav_top_one"><a href="#"><img src="/static/item/img/111.png"/></a></div>
+                <div class="nav_top_one"><a href="http://gulimall.com"><img src="/static/item/img/111.png"/></a></div>
                 <div class="nav_top_two"><input type="text"/>
                     <button>搜索</button>
                 </div>
@@ -1345,7 +1355,7 @@
             elm = $(elm).filter(skus[i])
         }
         //4. 跳转
-        location.href = "http://item.gulimall.com/"+elm[0] +".html"
+        location.href = "http://item.gulimall.com/" + elm[0] + ".html"
     })
 
     $(function () {

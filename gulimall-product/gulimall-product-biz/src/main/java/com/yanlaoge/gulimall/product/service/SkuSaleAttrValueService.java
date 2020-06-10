@@ -30,5 +30,13 @@ public interface SkuSaleAttrValueService extends IService<SkuSaleAttrValueEntity
      * @return 集合
      */
     List<SkuItemSaleAttrVo> getSaleAttrsBySpuId(Long spuId);
+
+    /**
+     * 根据skuid查询属性
+     *
+     * @param skuId skuid
+     * @return 集合
+     */
+    List<String> getSaleAttrsBySkuId(Long skuId);
 }
 

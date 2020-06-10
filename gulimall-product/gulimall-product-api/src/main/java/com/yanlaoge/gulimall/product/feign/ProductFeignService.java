@@ -48,4 +48,13 @@ public interface ProductFeignService {
      */
     @RequestMapping("product/skuinfo/info/{skuId}")
     R info(@PathVariable("skuId") Long skuId);
+
+    /**
+     * 获取sku销售属性
+     *
+     * @param skuId skuId
+     * @return R
+     */
+    @GetMapping("/stringList/{skuId}")
+    ResponseVo<List<String>> getSkuSaleAttrValues(@PathVariable("skuId") Long skuId);
 }

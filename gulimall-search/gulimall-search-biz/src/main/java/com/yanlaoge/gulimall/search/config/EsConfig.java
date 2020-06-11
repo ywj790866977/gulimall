@@ -4,6 +4,7 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2020-05-25 22:43
  **/
 @Configuration
+@EnableConfigurationProperties(ElasticSearchConfigProperties.class)
 public class EsConfig {
     public static final RequestOptions COMMON_OPTIONS;
     static {
@@ -24,9 +26,9 @@ public class EsConfig {
     }
 
     @Bean
-    public RestHighLevelClient esRestClient(){
+    public RestHighLevelClient esRestClient(ElasticSearchConfigProperties configProperties){
         return new RestHighLevelClient(
                 RestClient.builder(
-                        new HttpHost("10.211.55.20", 9200, "http")));
+                        new HttpHost(configProperties.getHost(), configProperties.getPort(), "http")));
     }
 }

@@ -4,12 +4,14 @@ import com.yanlaoge.common.exception.ServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.io.Serializable;
+
 /**
  * 断言某些对象或值是否符合规定，否则抛出异常。经常用于做变量检查
  *
  * @author rubyle
  */
-public class ServiceAssert {
+public class ServiceAssert implements Serializable {
 
     public static ServiceException serviceException(Integer code, String msg) {
         return new ServiceException(code, msg);

@@ -60,6 +60,7 @@
             </div>
             <form action="/login" method="post">
                 <div style="color: red"
+                     [[${errors}]]
                      th:text="${errors != null? (#maps.containsKey(errors,'msg') ? errors.msg:'') : ''}"></div>
 
                 <ul>

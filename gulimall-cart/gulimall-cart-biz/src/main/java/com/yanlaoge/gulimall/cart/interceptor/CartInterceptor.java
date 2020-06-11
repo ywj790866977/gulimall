@@ -28,7 +28,7 @@ public class CartInterceptor implements HandlerInterceptor {
         UserInfoTo userInfoTo = new UserInfoTo();
         HttpSession session = request.getSession();
         MemberRespVo memberRespVo = (MemberRespVo) session.getAttribute(StaticConstant.LOGIN_USER);
-        if(memberRespVo == null){
+        if(memberRespVo != null){
             userInfoTo.setUserId(memberRespVo.getId());
         }
         Cookie[] cookies = request.getCookies();

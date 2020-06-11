@@ -62,7 +62,7 @@
                     <a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser == null }" class="aa">
                         你好，请登录</a>
                     <a href="http://auth.gulimall.com/login.html" class="aa"
-                       th:else
+                       th:if="${session.loginUser != null }"
                     >[[${session.loginUser.username}]]</a>
                 </li>
                 <li>
@@ -520,7 +520,7 @@
                         <li>京东价</li>
                         <li>
                             <span>￥</span>
-                            <span th:text="${#numbers.formatDecimal(item.getInfo().getPrice(),6,2)}">4499.00</span>
+                            <span th:text="${#numbers.formatDecimal(item.getInfo().getPrice(),4,2)}">4499.00</span>
                         </li>
                         <li>
                             预约享资格
@@ -614,7 +614,7 @@
                 <div class="box-attr-3">
                     <div class="box-attr clear" th:each=" attr :${item.getSaleAttr()}">
                         <dl>
-                            <dt>选择[[${attr.attrName}}]]</dt>
+                            <dt>选择[[${attr.attrName}]]</dt>
                             <dd th:each="vals : ${attr.getAttrValues()}">
                                 <a th:attr="
                                    skus=${vals.getSkuIds()},
@@ -625,7 +625,7 @@
                                    }"
                                 >
                                     <!--                                    <img src="/static/item/img/59ddfcb1Nc3edb8f1.jpg"/>-->
-                                    [[${vals.attrValue}}]]
+                                    [[${vals.attrValue}]]
                                 </a>
                             </dd>
                         </dl>

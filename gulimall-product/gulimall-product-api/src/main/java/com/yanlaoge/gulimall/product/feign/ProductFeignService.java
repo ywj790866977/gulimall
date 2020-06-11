@@ -55,6 +55,6 @@ public interface ProductFeignService {
      * @param skuId skuId
      * @return R
      */
-    @GetMapping("/stringList/{skuId}")
+    @GetMapping("product/skusaleattrvalue/stringList/{skuId}")
     ResponseVo<List<String>> getSkuSaleAttrValues(@PathVariable("skuId") Long skuId);
 }

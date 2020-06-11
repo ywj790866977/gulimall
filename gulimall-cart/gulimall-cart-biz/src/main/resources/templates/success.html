@@ -4,9 +4,9 @@
 <head>
     <meta charset="utf-8"/>
     <title></title>
-    <script type="text/javascript" src="/static/cart/img/js/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="/static/cart/img/bootstrap/js/bootstrap.js"></script>
-    <script type="text/javascript" src="/static/cart/img/js/swiper.min.js"></script>
+    <script type="text/javascript" src="/static/cart/js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="/static/cart/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/static/cart/js/swiper.min.js"></script>
     <script src="/static/cart/js/swiper.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/cart/css/swiper.min.css"/>
     <link rel="stylesheet" type="text/css" href="/static/cart/bootstrap/css/bootstrap.css"/>
@@ -27,8 +27,11 @@
 
         <ul class="hd_wrap_right">
             <li class="forel">
-                <a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser == null }" class="link_login">你好,请登录</a>&nbsp;
-                <a th:else class="link_login">[[${session.loginUser.username}]]</a>&nbsp;
+                <a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser == null }" class="link_login">
+                    你好,请登录
+                </a>&nbsp;
+                <a th:if="${session.loginUser != null }"class="link_login" width="150px">[[${session.loginUser
+                    .username}]]</a>&nbsp;
                 <a href="http://auth.gulimall.com/reg.html" class="link_regist">免费注册</a>
             </li>
             <li class="spacer"></li>
@@ -48,7 +51,7 @@
 
         <div class="nav_top">
             <div class="nav_top_one">
-                <a href="/#"><img src="/static/cart/img/img/logo1.jpg" style="height: 60px;width:180px;"/></a>
+                <a href="/#"><img src="/static/cart/img/logo1.jpg" style="height: 60px;width:180px;"/></a>
             </div>
             <div class="nav_top_two"><input type="text"/>
                 <button>搜索</button>
@@ -77,10 +80,10 @@
                             </div>
                             <div class="p-info">
                                 <div class="p-name">
-                                    <a th:href="'http://item.gulimall.com/'+${item.skuId}+'.html'"
-                                       th:text="${item.title}">TCL 55A950C 55英寸32核人工智能 HDR曲面超薄4K电视金属机身（枪色）</a>
+                                    <a th:href="'http://item.gulimall.com/'+${item.getSkuId()}+'.html'"
+                                       th:text="${item.getTitle()}">TCL 55A950C 55英寸32核人工智能 HDR曲面超薄4K电视金属机身（枪色）</a>
                                 </div>
-                                <div class="p-extra"><span class="txt" th:text="'数量：'+${item.count}">  数量：1</span></div>
+                                <div class="p-extra"><span class="txt" th:text="'数量：'+${item.getCount()}">  数量：1</span></div>
                             </div>
                             <div class="clr"></div>
                         </div>
@@ -104,6 +107,6 @@
 
 </div>
 </body>
-<script type="text/javascript" src="/static/cart/img/js/success.js"></script>
+<script type="text/javascript" src="/static/cart/js/success.js"></script>
 
 </html>

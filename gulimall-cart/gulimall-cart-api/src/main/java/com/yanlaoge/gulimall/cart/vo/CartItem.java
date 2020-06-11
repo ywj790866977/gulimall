@@ -12,7 +12,6 @@ import java.util.List;
 public class CartItem {
     private Long skuId;
     private Boolean check = true;
-    private String skuTitle;
     private String title;
     private String image;
     private List<String> skuAttr;

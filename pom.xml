@@ -29,6 +29,8 @@
         <module>gulimall-search</module>
         <module>gulimall-auth-server</module>
         <module>gulimall-cart</module>
+        <module>gulimall-sso-server</module>
+        <module>gulimall-sso-client</module>
     </modules>
 
     <properties>

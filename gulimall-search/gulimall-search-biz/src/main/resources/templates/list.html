@@ -68,7 +68,7 @@
                 <a href="http://auth.gulimall.com/login.html" class="li_2" th:if="${session.loginUser == null}">你好，请登录
                 </a>
                 <a href="http://auth.gulimall.com/login.html" class="li_2" style="width: 100px"
-                   th:else>[[${session.loginUser.username}]]
+                   th:if="${session.loginUser != null}">[[${session.loginUser.username}]]
                 </a>
             </li>
             <li>

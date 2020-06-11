@@ -1,5 +1,6 @@
 package com.yanlaoge.gulimall.cart.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.yanlaoge.common.utils.R;
 import com.yanlaoge.common.utils.RedisUtil;
@@ -47,8 +48,13 @@ public class CartServiceImpl implements CartService {
 
         CompletableFuture.allOf(getSkuInfo,getSkuAttr).get();
 
-        redisUtil.hSet(cartKey,skuId.toString(),cartItem);
+        setCartRedis(skuId, cartItem, cartKey);
         return cartItem;
+    }
+
+    private void setCartRedis(Long skuId, CartItem cartItem, String cartKey) {
+        String jsonString = JSON.toJSONString(cartItem);
+        redisUtil.hSet(cartKey,skuId.toString(),jsonString);
     }
 
     private String getCartKey() {
@@ -65,7 +71,7 @@ public class CartServiceImpl implements CartService {
         return CompletableFuture.runAsync(() -> {
                 ResponseVo<List<String>> responseVo = productFeignService.getSkuSaleAttrValues(skuId);
                 if (responseVo.getCode() != 0) {
-                    log.error("[] productFeignService and getSkuSaleAttrValues method is error , res: {}", responseVo);
+                    log.error("[getSkuAttr] productFeignService and getSkuSaleAttrValues method is error , res: {}", responseVo);
                 }
                 List<String> data = responseVo.getData();
                 cartItem.setSkuAttr(data);
@@ -75,13 +81,15 @@ public class CartServiceImpl implements CartService {
     private CompletableFuture<Void> getSkuInfo(Long skuId, Integer num, CartItem cartItem) {
         return CompletableFuture.runAsync(() -> {
                 R r = productFeignService.info(skuId);
-                SkuInfoEntity skuInfo = r.getData("skuInfo", new TypeReference<SkuInfoEntity>() {
-                });
+                if(r.getMapCode() != 0 ){
+                    log.error("[getSkuInfo] remote is err ,res : {}",r);
+                }
+                SkuInfoEntity skuInfo = r.getData("skuInfo", new TypeReference<SkuInfoEntity>(){});
                 cartItem.setCheck(true);
                 cartItem.setCount(num);
                 cartItem.setImage(skuInfo.getSkuDefaultImg());
                 cartItem.setPrice(skuInfo.getPrice());
-                cartItem.setSkuTitle(skuInfo.getSkuTitle());
+                cartItem.setTitle(skuInfo.getSkuTitle());
                 cartItem.setSkuId(skuId);
             }, executor);
     }

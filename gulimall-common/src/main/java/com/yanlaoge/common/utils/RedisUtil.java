@@ -227,6 +227,10 @@ public class RedisUtil {
         return redisTemplate.opsForHash().entries(key);
     }
 
+    public List<Object> hAllGet(String key) {
+        return redisTemplate.opsForHash().values(key);
+    }
+
     /**
      * HashSet
      *

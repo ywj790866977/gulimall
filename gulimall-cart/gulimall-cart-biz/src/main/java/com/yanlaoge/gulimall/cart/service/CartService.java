@@ -31,4 +31,26 @@ public interface CartService {
      */
     Cart getCart();
 
+    /**
+     * 选中商品
+     *
+     * @param skuId skuId
+     * @param check 状态
+     */
+    void checkCartItem(Long skuId, Integer check);
+
+    /**
+     * 更新 数量
+     *
+     * @param skuId skuid
+     * @param num   数量
+     */
+    void countItem(Long skuId, Integer num);
+
+    /**
+     * 删除item
+     *
+     * @param skuId skuid
+     */
+    void deleteItem(Long skuId);
 }

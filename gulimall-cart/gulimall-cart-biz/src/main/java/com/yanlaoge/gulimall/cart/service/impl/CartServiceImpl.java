@@ -18,11 +18,13 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 /**
  * @author rubyle
@@ -61,14 +63,52 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart getCart() {
+        Cart cart = new Cart();
         UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
+        String tempCartKey = CartConstant.CART_PREFIX + userInfoTo.getUserkey();
         if (userInfoTo.getUserId() == null) {
             // 没登录
-            String cartKey = CartConstant.CART_PREFIX + userInfoTo.getUserkey();
-            List<Object> objects = redisUtil.hAllGet(cartKey);
-//            objects.stream().map(item->{
-//                CartItem cartItem = new CartItem();
-//            })
+            cart.setItems(getCartItems(tempCartKey));
+            return cart;
+        }
+        // 登录的购物车
+        // 判断临时购物车有无数据,进行合并
+        List<CartItem> tempCarts = getCartItems(tempCartKey);
+        if(!CollectionUtils.isEmpty(tempCarts)){
+            tempCarts.forEach(item->{
+                addToCart(item.getSkuId(),item.getCount());
+            });
+            redisUtil.del(tempCartKey);
+        }
+        cart.setItems(getCartItems(CartConstant.CART_PREFIX + userInfoTo.getUserId()));
+        return cart;
+    }
+
+    @Override
+    public void checkCartItem(Long skuId, Integer check) {
+        CartItem cartItem = getCartItem(skuId);
+        cartItem.setCheck(check == 1);
+        redisUtil.hSet(getCartKey(),skuId.toString(),JSON.toJSONString(cartItem));
+    }
+
+    @Override
+    public void countItem(Long skuId, Integer num) {
+        CartItem cartItem = getCartItem(skuId);
+        cartItem.setCount(num);
+        redisUtil.hSet(getCartKey(),skuId.toString(),JSON.toJSONString(cartItem));
+    }
+
+    @Override
+    public void deleteItem(Long skuId) {
+        redisUtil.hDel(getCartKey(),skuId.toString());
+    }
+
+    private List<CartItem> getCartItems(String cartKey) {
+        List<Object> objects = redisUtil.hAllGet(cartKey);
+        if(!CollectionUtils.isEmpty(objects)){
+             return objects.stream().map(item ->
+                 JSON.parseObject((String) item, CartItem.class)).collect(Collectors.toList());
+
         }
         return null;
     }

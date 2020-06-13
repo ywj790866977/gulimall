@@ -1,59 +1,63 @@
-#spring:
-#  application:
-#    name: gulimall-gateway
-#  cloud:
-#    nacos:
-#      discovery:
-#        server-addr: 127.0.0.1:8848
-#    gateway:
-#      routes:
-#        - id: gulimall-ware
-#          uri: lb://gulimall-ware
-#          predicates:
-#            - Path=/api/ware/**
-#          filters:
-#            - RewritePath=/api/(?<sement>.*),/$\{sement}
-#        - id: gulimall-member
-#          uri: lb://gulimall-member
-#          predicates:
-#            - Path=/api/member/**
-#          filters:
-#            - RewritePath=/api/(?<sement>.*),/$\{sement}
-#        - id: gulimall-product
-#          uri: lb://gulimall-product
-#          predicates:
-#            - Path=/api/product/**
-#          filters:
-#            - RewritePath=/api/(?<sement>.*),/$\{sement}
-#        - id: third_party_route
-#          uri: lb://gulimall-third-party
-#          predicates:
-#            - Path=/api/thirdparty/**
-#          filters:
-#            - RewritePath=/api/thirdparty/(?<sement>.*),/$\{sement}
-#        - id: admin_rote
-#          uri: lb://renren-fast
-#          predicates:
-#            - Path=/api/**
-#          filters:
-#            - RewritePath=/api/(?<sement>.*),/renren-fast/$\{sement}
-#        - id: gulimall_cart_host
-#          uri: lb://gulimall-cart
-#          predicates:
-#            - Host=cart.gulimall.com
-#        - id: gulimall_auth_host
-#          uri: lb://gulimall-auth-server
-#          predicates:
-#            - Host=auth.gulimall.com
-#        - id: gulimall_search_host
-#          uri: lb://gulimall-search
-#          predicates:
-#            - Host=search.gulimall.com
-#        - id: gulimall_host
-#          uri: lb://gulimall-product
-#          predicates:
-#            - Host=gulimall.com,item.gulimall.com
-#
-#
-#server:
-#  port: 9000
+spring:
+  application:
+    name: gulimall-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+    gateway:
+      routes:
+        - id: gulimall-ware
+          uri: lb://gulimall-ware
+          predicates:
+            - Path=/api/ware/**
+          filters:
+            - RewritePath=/api/(?<sement>.*),/$\{sement}
+        - id: gulimall-member
+          uri: lb://gulimall-member
+          predicates:
+            - Path=/api/member/**
+          filters:
+            - RewritePath=/api/(?<sement>.*),/$\{sement}
+        - id: gulimall-product
+          uri: lb://gulimall-product
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/(?<sement>.*),/$\{sement}
+        - id: third_party_route
+          uri: lb://gulimall-third-party
+          predicates:
+            - Path=/api/thirdparty/**
+          filters:
+            - RewritePath=/api/thirdparty/(?<sement>.*),/$\{sement}
+        - id: admin_rote
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**
+          filters:
+            - RewritePath=/api/(?<sement>.*),/renren-fast/$\{sement}
+        - id: gulimall_order_route
+          uri: lb://gulimall-order
+          predicates:
+            - Host=order.gulimall.com
+        - id: gulimall_cart_route
+          uri: lb://gulimall-cart
+          predicates:
+            - Host=cart.gulimall.com
+        - id: gulimall_auth_route
+          uri: lb://gulimall-auth-server
+          predicates:
+            - Host=auth.gulimall.com
+        - id: gulimall_search_route
+          uri: lb://gulimall-search
+          predicates:
+            - Host=search.gulimall.com
+        - id: gulimall_route
+          uri: lb://gulimall-product
+          predicates:
+            - Host=gulimall.com,item.gulimall.com
+
+
+server:
+  port: 9000

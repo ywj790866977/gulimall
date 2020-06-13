@@ -11,7 +11,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @SpringBootApplication(scanBasePackages ={"com.yanlaoge.gulimall","com.yanlaoge.common"})
 @EnableDiscoveryClient
-@MapperScan("com.yanlaoge.gulimall.member.dao")
+@MapperScan("com.yanlaoge.gulimall.cart.dao")
 @EnableFeignClients(basePackages = "com.yanlaoge.gulimall")
 public class GulimallCartApplication {
 

@@ -1,14 +1,13 @@
 package com.yanlaoge.gulimall.product.controller;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.yanlaoge.common.utils.ResponseHelper;
+import com.yanlaoge.common.utils.ResponseVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.yanlaoge.gulimall.product.entity.SkuInfoEntity;
 import com.yanlaoge.gulimall.product.service.SkuInfoService;
@@ -28,6 +27,12 @@ import com.yanlaoge.common.utils.R;
 public class SkuInfoController {
     @Autowired
     private SkuInfoService skuInfoService;
+
+    @GetMapping("/{skuId}/price")
+    public ResponseVo<BigDecimal> getSkuPrice(@PathVariable("skuId") Long skuId){
+        SkuInfoEntity entity = skuInfoService.getById(skuId);
+        return ResponseHelper.success(entity.getPrice());
+    }
 
     /**
      * 列表

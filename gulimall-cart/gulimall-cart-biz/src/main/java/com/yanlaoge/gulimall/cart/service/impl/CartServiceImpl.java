@@ -2,11 +2,10 @@ package com.yanlaoge.gulimall.cart.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.yanlaoge.common.utils.R;
-import com.yanlaoge.common.utils.RedisUtil;
-import com.yanlaoge.common.utils.ResponseVo;
+import com.yanlaoge.common.utils.*;
 import com.yanlaoge.gulimall.cart.constant.CartConstant;
 import com.yanlaoge.gulimall.cart.controller.CartController;
+import com.yanlaoge.gulimall.cart.enums.CartStatusEnum;
 import com.yanlaoge.gulimall.cart.interceptor.CartInterceptor;
 import com.yanlaoge.gulimall.cart.service.CartService;
 import com.yanlaoge.gulimall.cart.to.UserInfoTo;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -103,6 +103,21 @@ public class CartServiceImpl implements CartService {
         redisUtil.hDel(getCartKey(),skuId.toString());
     }
 
+    @Override
+    public List<CartItem> getUserCartItems() {
+        UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
+        if(userInfoTo.getUserId() == null){
+            return null;
+        }
+        String cartKey = CartConstant.CART_PREFIX + userInfoTo.getUserId();
+        List<CartItem> cartItems = getCartItems(cartKey);
+//        ServiceAssert.isEmpty(cartItems,13001,"购物车为空");
+        if(CollectionUtils.isEmpty(cartItems)){
+            return null;
+        }
+        return cartItems.stream().filter(CartItem::getCheck).map(this::apply).collect(Collectors.toList());
+    }
+
     private List<CartItem> getCartItems(String cartKey) {
         List<Object> objects = redisUtil.hAllGet(cartKey);
         if(!CollectionUtils.isEmpty(objects)){
@@ -168,5 +183,16 @@ public class CartServiceImpl implements CartService {
             cartItem.setTitle(skuInfo.getSkuTitle());
             cartItem.setSkuId(skuId);
         }, executor);
+    }
+
+    private CartItem apply(CartItem item) {
+        ResponseVo<BigDecimal> responseVo = productFeignService.getSkuPrice(item.getSkuId());
+        if (responseVo == null || responseVo.getCode() != 0) {
+            log.error("[getUserCartItems] getSkuPrice is Exception  res = {}", responseVo);
+            ResponseHelper.execption(
+                    CartStatusEnum.NOT_REMOTE_GETPRICE.getCode(), CartStatusEnum.NOT_REMOTE_GETPRICE.getMsg());
+        }
+        item.setPrice(responseVo.getData());
+        return item;
     }
 }

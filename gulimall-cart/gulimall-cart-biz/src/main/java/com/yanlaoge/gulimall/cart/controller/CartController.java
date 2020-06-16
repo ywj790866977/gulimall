@@ -1,5 +1,7 @@
 package com.yanlaoge.gulimall.cart.controller;
 
+import com.yanlaoge.common.utils.ResponseHelper;
+import com.yanlaoge.common.utils.ResponseVo;
 import com.yanlaoge.gulimall.cart.interceptor.CartInterceptor;
 import com.yanlaoge.gulimall.cart.service.CartService;
 import com.yanlaoge.gulimall.cart.to.UserInfoTo;
@@ -10,10 +12,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 /**
  * @author rubyle
@@ -61,5 +65,11 @@ public class CartController {
     public String deleteItem(@RequestParam("skuId") Long skuId){
         cartService.deleteItem(skuId);
         return "redirect:http://cart.gulimall.com/cart.html";
+    }
+
+    @GetMapping("/getUserCartItems")
+    @ResponseBody
+    public ResponseVo<List<CartItem>> getUserCartItems(){
+        return ResponseHelper.success(cartService.getUserCartItems());
     }
 }

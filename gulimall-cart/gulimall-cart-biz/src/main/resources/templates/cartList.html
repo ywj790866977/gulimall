@@ -22,12 +22,12 @@
 
             </ul>
             <ul class="header-right">
-                <li>
+                <li style="width: 100px">
                     <a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser == null }"
                        style="color: red;">请登录</a>
                     <a th:if="${session.loginUser != null }" style="color: red;">[[${session.loginUser.username}]]</a>
                 </li>
-                <li><a th:if="${session.loginUser == null }" href="http://auth.gulimall.com/login.html">免费注册</a></li>
+                <li th:if="${session.loginUser == null }" ><a  href="http://auth.gulimall.com/login.html">免费注册</a></li>
                 <li class="spacer"></li>
                 <li><a href="">我的订单</a></li>
                 <li class="spacer"></li>
@@ -226,7 +226,7 @@
 <script src="/static/cart/js/index.js" charset="utf-8"></script>
 <script type="text/javascript">
     function toTrade() {
-        window.location.href = "http://cart.gmall.com:8087/toTrade";
+        window.location.href = "http://order.gulimall.com/toTrade";
     }
 
     function toItem(skuId) {

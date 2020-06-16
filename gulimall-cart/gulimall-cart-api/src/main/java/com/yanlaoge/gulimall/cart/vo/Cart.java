@@ -45,7 +45,8 @@ public class Cart {
      */
     public BigDecimal getTotalAmount() {
         if (!CollectionUtils.isEmpty(this.items)) {
-            return this.items.stream().map(CartItem::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add)
+            return this.items.stream().filter(CartItem::getCheck).map(CartItem::getTotalPrice).reduce(BigDecimal.ZERO,
+                    BigDecimal::add)
                     .subtract(getReduce());
         }
         return totalAmount;

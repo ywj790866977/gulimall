@@ -14,7 +14,7 @@
 #    store-type: redis
 #
 #server:
-#  port: 10005
+#  port: 10007
 #
 #gulimall:
 #  elasticsearch:

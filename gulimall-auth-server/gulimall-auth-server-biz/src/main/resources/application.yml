@@ -1,5 +1,5 @@
 #server:
-#  port: 10003
+#  port: 10001
 #  servlet:
 #    session:
 #      timeout: 30m

@@ -3,6 +3,8 @@ package com.yanlaoge.gulimall.cart.service;
 import com.yanlaoge.gulimall.cart.vo.Cart;
 import com.yanlaoge.gulimall.cart.vo.CartItem;
 
+import java.util.List;
+
 /**
  * @author rubyle
  */
@@ -53,4 +55,12 @@ public interface CartService {
      * @param skuId skuid
      */
     void deleteItem(Long skuId);
+
+    /**
+     * 获取用户的购物车内容
+     *
+     * @return 集合
+     */
+    List<CartItem> getUserCartItems();
+
 }

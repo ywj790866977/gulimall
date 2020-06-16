@@ -1,39 +1,47 @@
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.11.128:3306/gulimall_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
-  application:
-    name: gulimall-order
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
-  redis:
-    host: 192.168.52.128
-    port: 6379
-  session:
-    store-type: redis
-  rabbitmq:
-    host: 192.168.52.128
-    port: 5672
-    virtual-host: /
-    #开启发送到确认
-    publisher-confirms: true
-    # 开启发送消息抵达队列确认
-    publisher-returns: true
-    # 只要抵达队列,优先回调return
-    template:
-      mandatory: true
-    listener:
-      direct:
-        # 手动回复
-        acknowledge-mode: manual
-mybatis-plus:
-  mapper-locations: classpath*:/mapper/**/*.xml
-  global-config:
-    db-config:
-      id-type: auto
-server:
-  port: 10003
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://192.168.11.128:3306/gulimall_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+#    username: root
+#    password: root
+#  application:
+#    name: gulimall-order
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: 127.0.0.1:8848
+#  redis:
+#    host: 192.168.52.128
+#    port: 6379
+#  session:
+#    store-type: redis
+#  rabbitmq:
+#    host: 192.168.52.128
+#    port: 5672
+#    virtual-host: /
+#    #开启发送到确认
+#    publisher-confirms: true
+#    # 开启发送消息抵达队列确认
+#    publisher-returns: true
+#    # 只要抵达队列,优先回调return
+#    template:
+#      mandatory: true
+#    listener:
+#      direct:
+#        # 手动回复
+#        acknowledge-mode: manual
+#  thymeleaf:
+#    cache: false
+#mybatis-plus:
+#  mapper-locations: classpath*:/mapper/**/*.xml
+#  global-config:
+#    db-config:
+#      id-type: auto
+#server:
+#  port: 10005
+#
+#gulimall:
+#  thread:
+#    core-size: 20
+#    max-size: 200
+#    keep-alive-time: 10

@@ -64,15 +64,15 @@
             </div>
         </b>
         <ul>
-            <li>
+            <li style="width: 100px">
                 <a href="http://auth.gulimall.com/login.html" class="li_2" th:if="${session.loginUser == null}">你好，请登录
                 </a>
                 <a href="http://auth.gulimall.com/login.html" class="li_2" style="width: 100px"
                    th:if="${session.loginUser != null}">[[${session.loginUser.username}]]
                 </a>
             </li>
-            <li>
-                <a href="http://auth.gulimall.com" th:if="${session.loginUser == null}">免费注册</a>
+            <li th:if="${session.loginUser == null}" >
+                <a href="http://auth.gulimall.com" >免费注册</a>
             </li>
             <span>|</span>
             <li>

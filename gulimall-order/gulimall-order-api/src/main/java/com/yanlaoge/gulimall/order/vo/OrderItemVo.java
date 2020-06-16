@@ -18,6 +18,8 @@ public class OrderItemVo {
     private BigDecimal price;
     private Integer count;
     private BigDecimal totalPrice;
+    private Boolean hasStock;
+    private BigDecimal weight;
 
     public BigDecimal getTotalPrice() {
         return this.price.multiply(new BigDecimal(String.valueOf(this.count)));

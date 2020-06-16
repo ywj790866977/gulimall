@@ -36,6 +36,17 @@ public class OrderConfirmVo {
      * 订单防重令牌
      */
     private String orderToken;
+    /**
+     * 总数量
+     */
+    private Integer totalCount;
+
+    public Integer getTotalCount() {
+        if (!CollectionUtils.isEmpty(this.items)) {
+            return this.items.stream().mapToInt(OrderItemVo::getCount).sum();
+        }
+        return totalCount;
+    }
 
     //发票...
 

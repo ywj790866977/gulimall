@@ -1,40 +1,38 @@
 package com.yanlaoge.gulimall.order.service.impl;
 
-import com.yanlaoge.common.utils.ResponseHelper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yanlaoge.common.utils.PageUtils;
+import com.yanlaoge.common.utils.Query;
 import com.yanlaoge.common.utils.ResponseVo;
 import com.yanlaoge.common.vo.MemberRespVo;
 import com.yanlaoge.gulimall.cart.feign.CartFeignService;
 import com.yanlaoge.gulimall.cart.vo.CartItem;
 import com.yanlaoge.gulimall.member.entity.MemberReceiveAddressEntity;
 import com.yanlaoge.gulimall.member.feign.MemberFeignService;
+import com.yanlaoge.gulimall.order.dao.OrderDao;
+import com.yanlaoge.gulimall.order.entity.OrderEntity;
 import com.yanlaoge.gulimall.order.interceptor.LoginInterceptor;
+import com.yanlaoge.gulimall.order.service.OrderService;
 import com.yanlaoge.gulimall.order.vo.MemberAddressVo;
 import com.yanlaoge.gulimall.order.vo.OrderConfirmVo;
 import com.yanlaoge.gulimall.order.vo.OrderItemVo;
+import com.yanlaoge.gulimall.ware.feign.WareFeignService;
+import com.yanlaoge.gulimall.ware.vo.SkuHasStockVo;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yanlaoge.common.utils.PageUtils;
-import com.yanlaoge.common.utils.Query;
-
-import com.yanlaoge.gulimall.order.dao.OrderDao;
-import com.yanlaoge.gulimall.order.entity.OrderEntity;
-import com.yanlaoge.gulimall.order.service.OrderService;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-
-import javax.annotation.Resource;
 
 
 @Service("orderService")
@@ -46,6 +44,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     private CartFeignService cartFeignService;
     @Resource
     private ThreadPoolExecutor executor;
+    @Resource
+    private WareFeignService wareFeignService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -73,7 +73,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         CompletableFuture<Void> orderItemFuture = CompletableFuture.runAsync(() -> {
             RequestContextHolder.setRequestAttributes(requestAttributes);
             confirmVo.setItems(getOrderItemVos());
-        }, executor);
+        }, executor).thenRunAsync(()->{
+            List<Long> collect = confirmVo.getItems().stream().map(OrderItemVo::getSkuId).collect(Collectors.toList());
+            ResponseVo<List<SkuHasStockVo>> skuHasStockResp = wareFeignService.getSkuHasStock(collect);
+            if(skuHasStockResp == null || skuHasStockResp.getCode() != 0){
+                log.error("[confirmOrder] getSkuHasStock is Exception res = {}",skuHasStockResp);
+            }
+            List<SkuHasStockVo> skuHasStockVos = skuHasStockResp.getData();
+        },executor);
         //3. 用户积分信息
         confirmVo.setIntegration(memberRespVo.getIntegration());
         //4.

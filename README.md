@@ -330,6 +330,7 @@ PUT product
 14 物流
 15 用户
 16 
+21 库存
 ```
 ### rabbitMq
 ```shell script

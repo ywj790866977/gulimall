@@ -3,6 +3,7 @@ package com.yanlaoge.gulimall.order.web;
 import com.yanlaoge.gulimall.order.service.OrderService;
 import com.yanlaoge.gulimall.order.vo.OrderConfirmVo;
 import com.yanlaoge.gulimall.order.vo.OrderSubmitVo;
+import com.yanlaoge.gulimall.order.vo.SubmitOrderResponseVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +29,11 @@ public class OrderWebController {
 
     @PostMapping("/orderSubmit")
     public String submit(OrderSubmitVo vo) {
+        SubmitOrderResponseVo res = orderService.orderSubmit(vo);
+        if(res.getCode() == 0){
 
-        return "";
+            return "pay";
+        }
+        return "redirect:http://order.gulimall.com/toTrade";
     }
 }

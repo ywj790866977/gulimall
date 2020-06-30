@@ -1,9 +1,14 @@
 package com.yanlaoge.gulimall.ware.service.impl;
 
 import com.yanlaoge.common.utils.R;
+import com.yanlaoge.common.utils.ResponseHelper;
 import com.yanlaoge.gulimall.product.entity.SkuInfoEntity;
 import com.yanlaoge.gulimall.product.feign.ProductFeignService;
+import com.yanlaoge.gulimall.ware.dto.SkuWareHasStockDto;
+import com.yanlaoge.gulimall.ware.enums.WareStockStatusEnum;
+import com.yanlaoge.gulimall.ware.vo.OrderItemLockVo;
 import com.yanlaoge.gulimall.ware.vo.SkuHasStockVo;
+import com.yanlaoge.gulimall.ware.vo.WareSkuLockVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -22,6 +27,7 @@ import com.yanlaoge.common.utils.Query;
 import com.yanlaoge.gulimall.ware.dao.WareSkuDao;
 import com.yanlaoge.gulimall.ware.entity.WareSkuEntity;
 import com.yanlaoge.gulimall.ware.service.WareSkuService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -89,6 +95,49 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             skuHasStockVo.setSkuId(skuId);
             return skuHasStockVo;
         }).collect(Collectors.toList());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Boolean orderLockStock(WareSkuLockVo vo) {
+        // TODO 按照下单送货地址,找就近仓库
+
+        // 找到每个商品在哪个仓库有库存
+        List<OrderItemLockVo> locks = vo.getLocks();
+        List<SkuWareHasStockDto> collect = locks.stream().map(item -> {
+            SkuWareHasStockDto skuWareHasStockDto = new SkuWareHasStockDto();
+            Long skuId = item.getSkuId();
+            skuWareHasStockDto.setSkuId(skuId);
+            skuWareHasStockDto.setNum(item.getCount());
+            // 查询仓库
+            List<Long> wareIds = baseMapper.queryWaresBySku(skuId);
+            skuWareHasStockDto.setWareId(wareIds);
+            return skuWareHasStockDto;
+        }).collect(Collectors.toList());
+
+        //锁定
+        for (SkuWareHasStockDto stockDto : collect) {
+            boolean skuStocked = false;
+            Long skuId = stockDto.getSkuId();
+            List<Long> wareIds = stockDto.getWareId();
+            if(CollectionUtils.isEmpty(wareIds)){
+                ResponseHelper.execption(WareStockStatusEnum.NOT_STOCK.getCode(),WareStockStatusEnum.NOT_STOCK.getMsg());
+            }
+            for (Long wareId : wareIds) {
+                Long count = baseMapper.lockSkuStock(skuId,wareId,stockDto.getNum());
+                if(count != 0){
+                    skuStocked = true;
+                    break;
+                }
+            }
+            //如果有一个没锁成功就,抛出异常
+            if(!skuStocked){
+                ResponseHelper.execption(WareStockStatusEnum.STOCK_LOCK_ERROR.getCode(),
+                    WareStockStatusEnum.STOCK_LOCK_ERROR.getMsg());
+            }
+        }
+        //锁定成功
+        return true;
     }
 
 }

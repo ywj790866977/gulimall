@@ -6,4 +6,5 @@ package com.yanlaoge.gulimall.order.constant;
  **/
 public class OrderConstant {
     public static final String USER_ORDER_TOKEN_PRE= "order:token:";
+    public static final double PRICE_DIFFERENCE = 0.01;
 }

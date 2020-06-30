@@ -6,7 +6,9 @@ import java.util.Map;
 
 import com.yanlaoge.common.utils.ResponseHelper;
 import com.yanlaoge.common.utils.ResponseVo;
+import com.yanlaoge.gulimall.ware.vo.LockStockResVo;
 import com.yanlaoge.gulimall.ware.vo.SkuHasStockVo;
+import com.yanlaoge.gulimall.ware.vo.WareSkuLockVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,24 @@ public class WareSkuController {
     @Autowired
     private WareSkuService wareSkuService;
 
+    /**
+     * 锁定库存
+     * @param vo vo
+     * @return R
+     */
+    @PostMapping("/lock/order")
+    public ResponseVo<Boolean> orderLockStock(@RequestBody WareSkuLockVo vo) {
+        if (!wareSkuService.orderLockStock(vo)) {
+            return ResponseHelper.error();
+        }
+        return ResponseHelper.success();
+    }
+
+    /**
+     * 查询库存信息
+     * @param skuIds skuIds
+     * @return 信息vo
+     */
     @PostMapping("/hasStock")
     public ResponseVo<List<SkuHasStockVo>> getSkuHasStock(@RequestBody List<Long> skuIds) {
         List<SkuHasStockVo> list = wareSkuService.getSkuHasStock(skuIds);

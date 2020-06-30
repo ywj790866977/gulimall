@@ -29,8 +29,24 @@ public class SpuInfoController {
     @Autowired
     private SpuInfoService spuInfoService;
 
+    /**
+     * 根据skuId查询spu信息
+     *
+     * @param id sku信息
+     * @return R
+     */
+    @GetMapping("/skuId/{id}")
+    public ResponseVo<SpuInfoEntity> getSpuInfoBySkuId(@PathVariable("id") Long id) {
+        return ResponseHelper.success(spuInfoService.getSpuInfoBySkuId(id));
+    }
+
+    /**
+     * 上架
+     * @param spuId spuid
+     * @return R
+     */
     @PostMapping("/{spuId}/up")
-    public ResponseVo<Void> spuUp(@PathVariable("spuId") Long spuId){
+    public ResponseVo<Void> spuUp(@PathVariable("spuId") Long spuId) {
         spuInfoService.up(spuId);
         return ResponseHelper.success();
     }

@@ -37,15 +37,17 @@ public class WareInfoController {
     @Resource
     private ProductFeignService productFeignService;
 
+    /**
+     * 查询运费
+     *
+     * @param addrId 地址id
+     * @return r
+     */
     @GetMapping("/fare")
-    public ResponseVo<FareVo> getFare(@RequestParam("addrId") Long addrId ){
+    public ResponseVo<FareVo> getFare(@RequestParam("addrId") Long addrId) {
         return ResponseHelper.success(wareInfoService.getFare(addrId));
     }
-    @GetMapping("test")
-    public void test01(){
-        ResponseVo<List<BrandEntity>> r = productFeignService.infos(Lists.newArrayList());
-        System.out.println(r);
-    }
+
     /**
      * 列表
      */

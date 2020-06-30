@@ -1,6 +1,7 @@
 package com.yanlaoge.gulimall.product.feign;
 
 import com.yanlaoge.common.utils.R;
+import com.yanlaoge.gulimall.product.entity.SpuInfoEntity;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,4 +68,13 @@ public interface ProductFeignService {
      */
     @GetMapping("product/skuinfo/{skuId}/price")
     ResponseVo<BigDecimal> getSkuPrice(@PathVariable("skuId") Long skuId);
+
+    /**
+     * 根据skuId查询spu信息
+     *
+     * @param id sku信息
+     * @return R
+     */
+    @GetMapping("product/spuinfo/skuId/{id}")
+    ResponseVo<SpuInfoEntity> getSpuInfoBySkuId(@PathVariable("id") Long id);
 }

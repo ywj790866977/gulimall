@@ -3,10 +3,12 @@ package com.yanlaoge.common.utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,7 +34,7 @@ public class RedisUtil {
      *
      * @param key  键
      * @param time 时间(秒)
-     * @return
+     * @return b
      */
     public boolean expire(String key, long time) {
         try {
@@ -617,4 +619,14 @@ public class RedisUtil {
         }
     }
 
+    /**
+     * 执行脚本
+     * @param script 脚本
+     * @param key 处理的key
+     * @param expect 期望的值
+     * @return 0/1
+     */
+    public Long executeScript(String script,String key,String expect){
+        return redisTemplate.execute(new DefaultRedisScript<Long>(script,Long.class), Arrays.asList(key),expect);
+    }
 }

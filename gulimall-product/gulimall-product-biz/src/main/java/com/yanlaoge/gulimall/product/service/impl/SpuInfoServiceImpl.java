@@ -236,6 +236,12 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         baseMapper.updateSpuStatus(spuId, ProductStatusEnum.SPU_UP.getCode());
     }
 
+    @Override
+    public SpuInfoEntity getSpuInfoBySkuId(Long skuId) {
+        SkuInfoEntity skuInfo = skuInfoService.getById(skuId);
+        return this.getById(skuInfo.getSpuId());
+    }
+
     private boolean saveModel(List<SkuModel> skuModelList) {
         try {
             ResponseVo<Void> voidResponseVo = searchFeignService.productStatusUp(skuModelList);

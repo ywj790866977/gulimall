@@ -597,8 +597,8 @@
     </div>
 
     <!--地址-->
-    <div class="top-3" th:each=" addr : ${orderConfirmData.getAddress()}">
-        <p th:text="${addr.getName()}">家里</p>
+    <div class="top-3 addr-item" th:each=" addr : ${orderConfirmData.getAddress()}">
+        <p th:attr="def=${addr.getDefaultStatus()},addrId=${addr.getId()}" th:text="${addr.getName()}">家里</p>
         <span>
             [[${addr.getName()}]] [[${addr.getProvince()}]] [[${addr.getCity()}]]  [[${addr.getDetailAddress()}]]
             [[${addr.getPhone()}]]
@@ -681,8 +681,13 @@
                 <p>
                     [[${item.getTitle()}]]
                     <span style="color: red;"> ￥ [[${#numbers.formatDecimal(item.getPrice(),1,2)}]]</span>
-                    <span th:text="'x'+${item.getCount()}"> x1</span>
-                    <span >无货</span>
+                    <span> x1[[${item.getCount()}]]</span>
+                    <span th:if="${orderConfirmData.getStocks() != null}">
+                        [[${orderConfirmData.getStocks().get(item.getSkuId()) ? '有货' : '无货'}]]
+                    </span>
+                    <!--                    <span th:if="${orderConfirmData.getStocks() == null}">-->
+                    <!--                        无货-->
+                    <!--                    </span>-->
                 </p>
                 <p><span>0.095kg</span></p>
                 <p class="tui-1"><img src="/static/order/confirm/img/i_07.png"/>支持7天无理由退货</p>
@@ -732,7 +737,7 @@
         </p>
         <p class="qian_y">
             <span>运费： </span>
-            <span class="rmb"> &nbsp ￥0.00</span>
+            <span class="rmb"> &nbsp ￥<b id="fare">0.00</b></span>
         </p>
         <p class="qian_y">
             <span>服务费： </span>
@@ -748,11 +753,17 @@
     <div class="yfze">
         <p class="yfze_a">
             <span class="z">应付总额：</span>
-            <span class="hq" >￥[[${#numbers.formatDecimal(orderConfirmData.getPayPrice(),1,2)}]]</span>
+            <span class="hq">￥
+                <b id="payPrice">[[${#numbers.formatDecimal(orderConfirmData.getPayPrice(),1,2)}]]</b></span>
         </p>
-        <p class="yfze_b">寄送至： 北京 朝阳区 三环到四环之间 朝阳北路复兴国际大厦23层麦田房产 IT-中心研发二部 收货人：赵存权 188****5052</p>
+        <p class="yfze_b">寄送至：<span id="recieveAddress"> </span>  收货人：<span id="reciever"> </span></p>
     </div>
-    <button class="tijiao">提交订单</button>
+    <form action="http://order.gulimall.com/orderSubmit" method="post">
+        <input id="payPriceInput" type="hidden" name="payPrice" th:value="${orderConfirmData.getOrderToken()}">
+        <input id="addrIdInput" type="hidden" name="addrId" th:value="${orderConfirmData.getOrderToken()}">
+        <input type="hidden" name="orderToken" th:value="${orderConfirmData.getOrderToken()}">
+        <button class="tijiao" type="submit">提交订单</button>
+    </form>
 </div>
 </div>
 
@@ -985,7 +996,40 @@
         }, function () {
             $('.h-r-1').css('display', 'none')
         })
+        higthlight();
+        var addrId = $(".addr-item p[def='1']").attr("addrId")
+        getFare(addrId);
     })
+
+
+    function higthlight() {
+        $(".addr-item p").css({"border": "2px solid red"})
+        $(".addr-item p[def='1']").css({"border": "2px solid red"})
+    }
+
+    $(".addr-item p").click(function () {
+        $(".addr-item").attr("def", "0");
+        $(this).attr("def", "1");
+        higthlight();
+        //获取地址id
+        var addrId = $(this).attr("attrId");
+        //获取运费信息
+        getFare(addrId)
+    })
+
+    function getFare(addrId) {
+        $("#addrIdInput").val(addrId);
+        $.get("http://gulimall.com/api/ware/wareinfo/fare?addrId=" + addrId, function (res) {
+            $("#fare").text(res.data.fare);
+            var total = [[${orderConfirmData.getTotal()}]];
+            var payPrice = total * 1 + res.data.fare * 1;
+            $("#payPrice").text(payPrice);
+            $("#payPriceInput").val(payPrice);
+            $("#recieveAddress").text(res.data.address.province+" "+ res.data.address.detailAddress);
+
+            $("#reciever").text(res.data.address.name + " " +res.data.address.phone);
+        })
+    }
 
 
 </script>

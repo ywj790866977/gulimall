@@ -23,6 +23,12 @@
           <version>0.0.1-SNAPSHOT</version>
           <scope>compile</scope>
       </dependency>
+      <dependency>
+          <groupId>com.yanlaoge.gulimall.member</groupId>
+          <artifactId>gulimall-member-api</artifactId>
+          <version>0.0.1-SNAPSHOT</version>
+          <scope>compile</scope>
+      </dependency>
   </dependencies>
 
 

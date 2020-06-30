@@ -5,12 +5,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.common.utils.Query;
+import com.yanlaoge.common.utils.RedisUtil;
 import com.yanlaoge.common.utils.ResponseVo;
 import com.yanlaoge.common.vo.MemberRespVo;
 import com.yanlaoge.gulimall.cart.feign.CartFeignService;
 import com.yanlaoge.gulimall.cart.vo.CartItem;
 import com.yanlaoge.gulimall.member.entity.MemberReceiveAddressEntity;
 import com.yanlaoge.gulimall.member.feign.MemberFeignService;
+import com.yanlaoge.gulimall.order.constant.OrderConstant;
 import com.yanlaoge.gulimall.order.dao.OrderDao;
 import com.yanlaoge.gulimall.order.entity.OrderEntity;
 import com.yanlaoge.gulimall.order.interceptor.LoginInterceptor;
@@ -24,12 +26,14 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
@@ -46,6 +50,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     private ThreadPoolExecutor executor;
     @Resource
     private WareFeignService wareFeignService;
+    @Resource
+    private RedisUtil redisUtil;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -80,11 +86,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 log.error("[confirmOrder] getSkuHasStock is Exception res = {}",skuHasStockResp);
             }
             List<SkuHasStockVo> skuHasStockVos = skuHasStockResp.getData();
+            if(!CollectionUtils.isEmpty(skuHasStockVos)){
+                Map<Long, Boolean> map = skuHasStockVos.stream()
+                        .collect(Collectors.toMap(SkuHasStockVo::getSkuId, SkuHasStockVo::getHasStock));
+                confirmVo.setStocks(map);
+            }
         },executor);
         //3. 用户积分信息
         confirmVo.setIntegration(memberRespVo.getIntegration());
-        //4.
-
+        //4. 防重令牌
+        String token = UUID.randomUUID().toString().replaceAll("-", "");
+        redisUtil.set(OrderConstant.USER_ORDER_TOKEN_PRE+memberRespVo.getId(),token,30);
+        confirmVo.setOrderToken(token);
         CompletableFuture.allOf(addressFurure,orderItemFuture).get();
         return confirmVo;
     }

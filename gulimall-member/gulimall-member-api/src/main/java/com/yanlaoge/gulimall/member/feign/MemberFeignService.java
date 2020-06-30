@@ -1,5 +1,6 @@
 package com.yanlaoge.gulimall.member.feign;
 
+import com.yanlaoge.common.utils.R;
 import com.yanlaoge.common.utils.ResponseVo;
 import com.yanlaoge.gulimall.member.entity.MemberEntity;
 import com.yanlaoge.gulimall.member.entity.MemberReceiveAddressEntity;
@@ -8,10 +9,7 @@ import com.yanlaoge.gulimall.member.vo.MemberRegisterVo;
 import com.yanlaoge.gulimall.member.vo.SocialUserVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -49,6 +47,21 @@ public interface MemberFeignService {
     @PostMapping("member/member/oauth/login")
     ResponseVo<MemberEntity> oauthLogin(@RequestBody SocialUserVo vo);
 
+    /**
+     * 获取地址列表
+     *
+     * @param memberId 用户
+     * @return 集合
+     */
     @GetMapping("member/memberreceiveaddress/{memberId}/addresses")
     ResponseVo<List<MemberReceiveAddressEntity>> getAddress(@PathVariable("memberId") Long memberId);
+
+    /**
+     * 根据id获取地址
+     *
+     * @param id 地址id
+     * @return 地址
+     */
+    @RequestMapping("member/memberreceiveaddress/info/{id}")
+    R info(@PathVariable("id") Long id);
 }

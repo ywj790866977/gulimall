@@ -1,13 +1,16 @@
 package com.yanlaoge.gulimall.ware.controller;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
+import com.yanlaoge.common.utils.ResponseHelper;
 import com.yanlaoge.common.utils.ResponseVo;
 import com.yanlaoge.gulimall.product.feign.ProductFeignService;
 import com.yanlaoge.gulimall.search.model.BrandEntity;
+import com.yanlaoge.gulimall.ware.vo.FareVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +37,10 @@ public class WareInfoController {
     @Resource
     private ProductFeignService productFeignService;
 
+    @GetMapping("/fare")
+    public ResponseVo<FareVo> getFare(@RequestParam("addrId") Long addrId ){
+        return ResponseHelper.success(wareInfoService.getFare(addrId));
+    }
     @GetMapping("test")
     public void test01(){
         ResponseVo<List<BrandEntity>> r = productFeignService.infos(Lists.newArrayList());

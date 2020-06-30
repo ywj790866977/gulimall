@@ -19,15 +19,12 @@ public class FeignConfig {
     @Bean("requestInterceptor")
     public RequestInterceptor requestInterceptor() {
 
-        return new RequestInterceptor() {
-            @Override
-            public void apply(RequestTemplate requestTemplate) {
-                ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-                if(attributes != null){
-                    HttpServletRequest request = attributes.getRequest();
-                    String cookie = request.getHeader("Cookie");
-                    requestTemplate.header("Cookie",cookie);
-                }
+        return requestTemplate -> {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if(attributes != null){
+                HttpServletRequest request = attributes.getRequest();
+                String cookie = request.getHeader("Cookie");
+                requestTemplate.header("Cookie",cookie);
             }
         };
     }

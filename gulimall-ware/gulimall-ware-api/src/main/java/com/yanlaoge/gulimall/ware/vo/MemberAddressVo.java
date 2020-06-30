@@ -1,16 +1,19 @@
-package com.yanlaoge.gulimall.order.vo;
+package com.yanlaoge.gulimall.ware.vo;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
  * @author 好人
- * @date 2020-06-14 13:18
+ * @date 2020-06-30 17:20
  **/
 @Data
 public class MemberAddressVo {
+
     /**
      * id
      */
+    @TableId
     private Long id;
     /**
      * member_id
@@ -52,4 +55,5 @@ public class MemberAddressVo {
      * 是否默认
      */
     private Integer defaultStatus;
+
 }

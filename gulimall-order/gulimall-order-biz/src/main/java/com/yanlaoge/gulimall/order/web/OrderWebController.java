@@ -2,9 +2,11 @@ package com.yanlaoge.gulimall.order.web;
 
 import com.yanlaoge.gulimall.order.service.OrderService;
 import com.yanlaoge.gulimall.order.vo.OrderConfirmVo;
+import com.yanlaoge.gulimall.order.vo.OrderSubmitVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.annotation.Resource;
 
@@ -22,5 +24,11 @@ public class OrderWebController {
         OrderConfirmVo orderConfirmVo = orderService.confirmOrder();
         model.addAttribute("orderConfirmData", orderConfirmVo);
         return "confirm";
+    }
+
+    @PostMapping("/orderSubmit")
+    public String submit(OrderSubmitVo vo) {
+
+        return "";
     }
 }

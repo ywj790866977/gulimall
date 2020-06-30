@@ -5,6 +5,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 好人
@@ -40,6 +41,10 @@ public class OrderConfirmVo {
      * 总数量
      */
     private Integer totalCount;
+    /**
+     * 库存
+     */
+    private Map<Long,Boolean> stocks;
 
     public Integer getTotalCount() {
         if (!CollectionUtils.isEmpty(this.items)) {

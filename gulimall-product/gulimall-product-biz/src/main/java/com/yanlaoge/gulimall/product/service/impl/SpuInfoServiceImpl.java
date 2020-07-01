@@ -25,6 +25,7 @@ import com.yanlaoge.gulimall.search.model.Attrs;
 import com.yanlaoge.gulimall.search.model.SkuModel;
 import com.yanlaoge.gulimall.ware.feign.WareFeignService;
 import com.yanlaoge.gulimall.ware.vo.SkuHasStockVo;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -78,6 +79,12 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         return new PageUtils(page);
     }
 
+    /**
+     * 后台的简单操作可以使用seata的 AT模式来进行分布式事务控制
+     *
+     * @param saveVo 保存vo
+     */
+    @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveSpuInfo(SpuSaveVo saveVo) {

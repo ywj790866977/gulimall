@@ -11,6 +11,7 @@ import com.yanlaoge.gulimall.cart.vo.CartItem;
 import com.yanlaoge.gulimall.member.entity.MemberReceiveAddressEntity;
 import com.yanlaoge.gulimall.member.feign.MemberFeignService;
 import com.yanlaoge.gulimall.order.constant.OrderConstant;
+import com.yanlaoge.gulimall.order.constant.OrderRespStatus;
 import com.yanlaoge.gulimall.order.dao.OrderDao;
 import com.yanlaoge.gulimall.order.entity.OrderEntity;
 import com.yanlaoge.gulimall.order.entity.OrderItemEntity;
@@ -24,6 +25,7 @@ import com.yanlaoge.gulimall.product.entity.SpuInfoEntity;
 import com.yanlaoge.gulimall.product.feign.ProductFeignService;
 import com.yanlaoge.gulimall.ware.feign.WareFeignService;
 import com.yanlaoge.gulimall.ware.vo.*;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -112,6 +114,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return confirmVo;
     }
 
+    /**
+     * 提交订单
+     * 不适用于使用 AT模式的分布式事务控制, 因为会将并发串行化
+     *
+     * @param vo vo
+     * @return 订单
+     */
+    //@GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
     @Override
     public SubmitOrderResponseVo orderSubmit(OrderSubmitVo vo) {
@@ -120,29 +130,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         MemberRespVo memberRespVo = LoginInterceptor.threadLocal.get();
         //1. 原子验证令牌
         Long isOk = atomTokenCheck(vo, memberRespVo.getId());
-        if (isOk != 1) {
-            //失败
-            responseVo.setCode(1);
-            return responseVo;
-        }
+        ServiceAssert.isFalse(isOk==1,OrderRespStatus.TOKEND_ERROR);
         //2. 创建订单
         CreateOrderTo orderTo = createOrder(vo);
         //3. 验价
-        if (orderTo.getOrder().getPayAmount().subtract(vo.getPayPrice()).abs().doubleValue() >= OrderConstant.PRICE_DIFFERENCE) {
-            //验证价格失败
-            responseVo.setCode(2);
-            return responseVo;
-        }
+        boolean isPrice =
+                orderTo.getOrder().getPayAmount().subtract(vo.getPayPrice()).abs().doubleValue() < OrderConstant.PRICE_DIFFERENCE;
+        ServiceAssert.isFalse(isPrice,OrderRespStatus.PRICE_ERROR);
         //4.保存订单
         saveOrder(orderTo);
         //6.锁定库存
+        // 6.1 如果失败,发消息,让服务进行回滚
+        // 6.2 库存自动解锁
         WareSkuLockVo wareSkuLockVo = builderWareLockVo(orderTo);
         ResponseVo<List<LockStockResVo>> lockRes = wareFeignService.orderLockStock(wareSkuLockVo);
         if (lockRes == null || lockRes.getCode() != 0) {
             log.error("[wareFeignService] remote method orderLockStock is error res={}", lockRes);
+            ResponseHelper.execption(OrderRespStatus.STOCK_ERROR);
         }
-
-
+        //7. 成功
+        responseVo.setOrder(orderTo.getOrder());
         return responseVo;
     }
 
@@ -213,7 +220,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderTo.setOrderItems(orderItemEntities);
         //3.计算价格
         computePrice(orderEntity, orderItemEntities);
-
         return orderTo;
     }
 

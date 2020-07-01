@@ -9,5 +9,4 @@ import lombok.Data;
 @Data
 public class SubmitOrderResponseVo {
     private OrderEntity order;
-    private Integer code;
 }

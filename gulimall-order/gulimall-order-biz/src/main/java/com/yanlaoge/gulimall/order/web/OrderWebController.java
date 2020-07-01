@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
 
@@ -28,12 +29,14 @@ public class OrderWebController {
     }
 
     @PostMapping("/orderSubmit")
-    public String submit(OrderSubmitVo vo) {
-        SubmitOrderResponseVo res = orderService.orderSubmit(vo);
-        if(res.getCode() == 0){
-
+    public String submit(OrderSubmitVo vo, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            SubmitOrderResponseVo res = orderService.orderSubmit(vo);
+            model.addAttribute("submitOrderResp",res.getOrder());
             return "pay";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("msg",e.getMessage());
+            return "redirect:http://order.gulimall.com/toTrade";
         }
-        return "redirect:http://order.gulimall.com/toTrade";
     }
 }

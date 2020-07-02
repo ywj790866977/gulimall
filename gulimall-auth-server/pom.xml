@@ -19,7 +19,6 @@
     <description>认证中心(社交登录,OAuth2.0,单点登录)</description>
 
 
-
     <dependencies>
         <dependency>
             <groupId>com.yanlaoge.gulimall</groupId>
@@ -29,6 +28,10 @@
                 <exclusion>
                     <groupId>com.baomidou</groupId>
                     <artifactId>mybatis-plus-boot-starter</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.alibaba.cloud</groupId>
+                    <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

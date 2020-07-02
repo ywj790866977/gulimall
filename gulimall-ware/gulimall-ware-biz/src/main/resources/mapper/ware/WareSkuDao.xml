@@ -30,7 +30,7 @@
     </select>
 
     <select id="queryWaresBySku" resultType="java.lang.Long">
-        SELECT ware_id FROM `wms_ware_sku` where  sku_id = #{skuId} AND (tock - stock_locked) > 0
+        SELECT ware_id FROM `wms_ware_sku` where  sku_id = #{skuId} AND (stock - stock_locked) > 0
     </select>
 
 

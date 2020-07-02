@@ -246,7 +246,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     @Override
     public SpuInfoEntity getSpuInfoBySkuId(Long skuId) {
         SkuInfoEntity skuInfo = skuInfoService.getById(skuId);
-        return this.getById(skuInfo.getSpuId());
+        SpuInfoEntity spuInfoEntity = this.getById(skuInfo.getSpuId());
+        return spuInfoEntity;
     }
 
     private boolean saveModel(List<SkuModel> skuModelList) {

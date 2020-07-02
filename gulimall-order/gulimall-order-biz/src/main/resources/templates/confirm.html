@@ -681,7 +681,7 @@
                 <p>
                     [[${item.getTitle()}]]
                     <span style="color: red;"> ￥ [[${#numbers.formatDecimal(item.getPrice(),1,2)}]]</span>
-                    <span> x1[[${item.getCount()}]]</span>
+                    <span> x[[${item.getCount()}]]</span>
                     <span th:if="${orderConfirmData.getStocks() != null}">
                         [[${orderConfirmData.getStocks().get(item.getSkuId()) ? '有货' : '无货'}]]
                     </span>
@@ -729,7 +729,7 @@
         <p class="qian_y">
             <span th:text="${orderConfirmData.getTotalCount()}">1</span>
             <span>件商品，总商品金额：[[${#numbers.formatDecimal(orderConfirmData.getTotal(),1,2)}]]</span>
-            <span class="rmb">￥28.90</span>
+<!--            <span class="rmb">￥28.90</span>-->
         </p>
         <p class="qian_y">
             <span>返现：</span>
@@ -737,7 +737,7 @@
         </p>
         <p class="qian_y">
             <span>运费： </span>
-            <span class="rmb"> &nbsp ￥<b id="fare">0.00</b></span>
+            <span class="rmb"> &nbsp ￥<span id="fare">0.00</span></span>
         </p>
         <p class="qian_y">
             <span>服务费： </span>
@@ -998,36 +998,43 @@
         })
         higthlight();
         var addrId = $(".addr-item p[def='1']").attr("addrId")
+        console.log(addrId)
         getFare(addrId);
     })
 
 
     function higthlight() {
-        $(".addr-item p").css({"border": "2px solid red"})
+        console.log("higthlight")
+        $(".addr-item p").css({"border": "0px"})
         $(".addr-item p[def='1']").css({"border": "2px solid red"})
     }
 
     $(".addr-item p").click(function () {
-        $(".addr-item").attr("def", "0");
+        $(".addr-item p").attr("def", "0");
         $(this).attr("def", "1");
         higthlight();
         //获取地址id
-        var addrId = $(this).attr("attrId");
+        var addrId = $(this).attr("addrId");
+        console.log(addrId)
         //获取运费信息
         getFare(addrId)
     })
 
     function getFare(addrId) {
         $("#addrIdInput").val(addrId);
+        // console.log(addrId)
         $.get("http://gulimall.com/api/ware/wareinfo/fare?addrId=" + addrId, function (res) {
-            $("#fare").text(res.data.fare);
-            var total = [[${orderConfirmData.getTotal()}]];
-            var payPrice = total * 1 + res.data.fare * 1;
-            $("#payPrice").text(payPrice);
-            $("#payPriceInput").val(payPrice);
-            $("#recieveAddress").text(res.data.address.province+" "+ res.data.address.detailAddress);
+            if(res.code == 0 ){
+                $("#fare").text(res.data.fare);
+                var total = [[${orderConfirmData.getTotal()}]];
+                var payPrice = total * 1 + res.data.fare * 1;
+                $("#payPrice").text(payPrice);
+                $("#payPriceInput").val(payPrice);
+                $("#recieveAddress").text(res.data.address.province+" "+ res.data.address.detailAddress);
 
-            $("#reciever").text(res.data.address.name + " " +res.data.address.phone);
+                $("#reciever").text(res.data.address.name + " " +res.data.address.phone);
+            }
+            console.log(res)
         })
     }
 

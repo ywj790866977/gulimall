@@ -1,9 +1,12 @@
 package com.yanlaoge.gulimall.order.web;
 
+import com.yanlaoge.common.exception.ServiceException;
+import com.yanlaoge.gulimall.order.constant.OrderRespStatus;
 import com.yanlaoge.gulimall.order.service.OrderService;
 import com.yanlaoge.gulimall.order.vo.OrderConfirmVo;
 import com.yanlaoge.gulimall.order.vo.OrderSubmitVo;
 import com.yanlaoge.gulimall.order.vo.SubmitOrderResponseVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +20,7 @@ import javax.annotation.Resource;
  * @date 2020-06-14 12:03
  **/
 @Controller
+@Slf4j
 public class OrderWebController {
     @Resource
     private OrderService orderService;
@@ -32,11 +36,15 @@ public class OrderWebController {
     public String submit(OrderSubmitVo vo, Model model, RedirectAttributes redirectAttributes) {
         try {
             SubmitOrderResponseVo res = orderService.orderSubmit(vo);
-            model.addAttribute("submitOrderResp",res.getOrder());
+            model.addAttribute("submitOrderResp", res.getOrder());
             return "pay";
+        } catch (ServiceException e) {
+            log.error("[orderSubmit] is error ", e);
+            redirectAttributes.addFlashAttribute("msg", ((ServiceException) e).getMsg());
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("msg",e.getMessage());
-            return "redirect:http://order.gulimall.com/toTrade";
+            log.error("[orderSubmit] is error ", e);
+            redirectAttributes.addFlashAttribute("msg", OrderRespStatus.ERROR.getMsg());
         }
+        return "redirect:http://order.gulimall.com/toTrade";
     }
 }

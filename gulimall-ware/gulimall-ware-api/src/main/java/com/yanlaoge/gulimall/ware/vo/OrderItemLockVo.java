@@ -22,6 +22,9 @@ public class OrderItemLockVo {
     private BigDecimal weight;
 
     public BigDecimal getTotalPrice() {
-        return this.price.multiply(new BigDecimal(String.valueOf(this.count)));
+        if(this.price!=null){
+            return this.price.multiply(new BigDecimal(String.valueOf(this.count)));
+        }
+        return BigDecimal.ZERO;
     }
 }

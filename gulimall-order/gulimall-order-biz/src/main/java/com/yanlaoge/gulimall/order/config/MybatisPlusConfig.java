@@ -30,8 +30,6 @@ public class MybatisPlusConfig {
         return paginationInterceptor;
     }
 
-    @Autowired
-    private DataSourceProperties dataSourceProperties;
 
     /**
      * seata配置
@@ -41,7 +39,10 @@ public class MybatisPlusConfig {
      */
     @Bean
     public DataSource dataSource(DataSourceProperties dataSourceProperties) {
-        HikariDataSource dataSource = dataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
+        HikariDataSource dataSource = dataSourceProperties
+                .initializeDataSourceBuilder()
+                .type(HikariDataSource.class)
+                .build();
         if (StringUtils.hasText(dataSourceProperties.getName())) {
             dataSource.setPoolName(dataSourceProperties.getName());
         }

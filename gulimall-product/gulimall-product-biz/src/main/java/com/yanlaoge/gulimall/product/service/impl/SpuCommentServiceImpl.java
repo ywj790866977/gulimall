@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.product.dao.SpuCommentDao;
 import com.yanlaoge.gulimall.product.entity.SpuCommentEntity;
 import com.yanlaoge.gulimall.product.service.SpuCommentService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("spuCommentService")
 public class SpuCommentServiceImpl extends ServiceImpl<SpuCommentDao, SpuCommentEntity> implements SpuCommentService {
 

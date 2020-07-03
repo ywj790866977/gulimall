@@ -10,11 +10,16 @@ import java.util.Map;
  * 成长值变化历史记录
  *
  * @author rubyle
- * @email besokuser@163.com
  * @date 2020-05-13 15:19:47
  */
 public interface GrowthChangeHistoryService extends IService<GrowthChangeHistoryEntity> {
 
+    /**
+     * 分页查询
+     *
+     * @param params 分页参数
+     * @return 分页
+     */
     PageUtils queryPage(Map<String, Object> params);
 }
 

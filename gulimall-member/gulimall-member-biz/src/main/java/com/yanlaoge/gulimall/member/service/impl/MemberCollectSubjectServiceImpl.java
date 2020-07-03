@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.member.dao.MemberCollectSubjectDao;
 import com.yanlaoge.gulimall.member.entity.MemberCollectSubjectEntity;
 import com.yanlaoge.gulimall.member.service.MemberCollectSubjectService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("memberCollectSubjectService")
 public class MemberCollectSubjectServiceImpl extends ServiceImpl<MemberCollectSubjectDao, MemberCollectSubjectEntity> implements MemberCollectSubjectService {
 

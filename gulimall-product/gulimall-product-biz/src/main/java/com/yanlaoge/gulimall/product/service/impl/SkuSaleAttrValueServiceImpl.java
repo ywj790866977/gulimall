@@ -15,7 +15,10 @@ import com.yanlaoge.gulimall.product.dao.SkuSaleAttrValueDao;
 import com.yanlaoge.gulimall.product.entity.SkuSaleAttrValueEntity;
 import com.yanlaoge.gulimall.product.service.SkuSaleAttrValueService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("skuSaleAttrValueService")
 public class SkuSaleAttrValueServiceImpl extends ServiceImpl<SkuSaleAttrValueDao, SkuSaleAttrValueEntity> implements SkuSaleAttrValueService {
 

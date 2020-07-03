@@ -10,11 +10,15 @@ import java.util.Map;
  * 退货原因
  *
  * @author rubyle
- * @email besokuser@163.com
  * @date 2020-05-13 15:41:34
  */
 public interface OrderReturnReasonService extends IService<OrderReturnReasonEntity> {
-
+    /**
+     * 分页查询
+     *
+     * @param params 分页参数
+     * @return 分页
+     */
     PageUtils queryPage(Map<String, Object> params);
 }
 

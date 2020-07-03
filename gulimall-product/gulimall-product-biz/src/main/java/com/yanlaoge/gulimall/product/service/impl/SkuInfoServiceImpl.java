@@ -28,7 +28,10 @@ import com.yanlaoge.gulimall.product.entity.SkuInfoEntity;
 
 import javax.annotation.Resource;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("skuInfoService")
 public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> implements SkuInfoService {
 

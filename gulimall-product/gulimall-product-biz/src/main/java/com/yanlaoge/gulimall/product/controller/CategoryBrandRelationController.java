@@ -41,7 +41,6 @@ public class CategoryBrandRelationController {
      * @return 品牌集合
      */
     @GetMapping("/brands/list")
-    //@RequiresPermissions("product:categorybrandrelation:list")
     public R brandList(@RequestParam(value = "catId",required = true) Long catId){
         List<BrandEntity> brands = categoryBrandRelationService.getBrandsByCatId(catId);
         List<BrandVo> collect = brands.stream().map(item -> {
@@ -57,7 +56,6 @@ public class CategoryBrandRelationController {
      * 列表
      */
     @GetMapping("/list")
-    //@RequiresPermissions("product:categorybrandrelation:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = categoryBrandRelationService.queryPage(params);
 
@@ -68,7 +66,6 @@ public class CategoryBrandRelationController {
      * 列表
      */
     @GetMapping("/catelog/list")
-    //@RequiresPermissions("product:categorybrandrelation:list")
     public R catelogList(@RequestParam("brandId") Long brandId){
         QueryWrapper<CategoryBrandRelationEntity> wrapper = new QueryWrapper<>();
         wrapper.eq("brand_id",brandId);
@@ -81,7 +78,6 @@ public class CategoryBrandRelationController {
      * 信息
      */
     @GetMapping("/info/{id}")
-    //@RequiresPermissions("product:categorybrandrelation:info")
     public R info(@PathVariable("id") Long id){
 		CategoryBrandRelationEntity categoryBrandRelation = categoryBrandRelationService.getById(id);
 
@@ -92,7 +88,6 @@ public class CategoryBrandRelationController {
      * 保存
      */
     @PostMapping("/save")
-    //@RequiresPermissions("product:categorybrandrelation:save")
     public R save(@RequestBody CategoryBrandRelationEntity categoryBrandRelation){
 		categoryBrandRelationService.saveDetail(categoryBrandRelation);
 
@@ -103,7 +98,6 @@ public class CategoryBrandRelationController {
      * 修改
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("product:categorybrandrelation:update")
     public R update(@RequestBody CategoryBrandRelationEntity categoryBrandRelation){
 		categoryBrandRelationService.updateById(categoryBrandRelation);
 
@@ -114,7 +108,6 @@ public class CategoryBrandRelationController {
      * 删除
      */
     @RequestMapping("/delete")
-    //@RequiresPermissions("product:categorybrandrelation:delete")
     public R delete(@RequestBody Long[] ids){
 		categoryBrandRelationService.removeByIds(Arrays.asList(ids));
 

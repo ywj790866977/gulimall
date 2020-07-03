@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.coupon.dao.SkuLadderDao;
 import com.yanlaoge.gulimall.coupon.entity.SkuLadderEntity;
 import com.yanlaoge.gulimall.coupon.service.SkuLadderService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("skuLadderService")
 public class SkuLadderServiceImpl extends ServiceImpl<SkuLadderDao, SkuLadderEntity> implements SkuLadderService {
 

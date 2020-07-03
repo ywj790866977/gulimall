@@ -50,7 +50,6 @@ public class IndexController {
         myLock.lock();
         try {
             System.out.printf("加锁成功,执行业务.."+Thread.currentThread().getId());
-//            Thread.sleep(30000);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.product.dao.SpuInfoDescDao;
 import com.yanlaoge.gulimall.product.entity.SpuInfoDescEntity;
 import com.yanlaoge.gulimall.product.service.SpuInfoDescService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("spuInfoDescService")
 public class SpuInfoDescServiceImpl extends ServiceImpl<SpuInfoDescDao, SpuInfoDescEntity> implements SpuInfoDescService {
 

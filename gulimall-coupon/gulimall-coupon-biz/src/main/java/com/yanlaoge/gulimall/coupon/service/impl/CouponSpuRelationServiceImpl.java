@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.coupon.dao.CouponSpuRelationDao;
 import com.yanlaoge.gulimall.coupon.entity.CouponSpuRelationEntity;
 import com.yanlaoge.gulimall.coupon.service.CouponSpuRelationService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("couponSpuRelationService")
 public class CouponSpuRelationServiceImpl extends ServiceImpl<CouponSpuRelationDao, CouponSpuRelationEntity> implements CouponSpuRelationService {
 

@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.coupon.dao.SpuBoundsDao;
 import com.yanlaoge.gulimall.coupon.entity.SpuBoundsEntity;
 import com.yanlaoge.gulimall.coupon.service.SpuBoundsService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("spuBoundsService")
 public class SpuBoundsServiceImpl extends ServiceImpl<SpuBoundsDao, SpuBoundsEntity> implements SpuBoundsService {
 

@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.member.dao.UndoLogDao;
 import com.yanlaoge.gulimall.member.entity.UndoLogEntity;
 import com.yanlaoge.gulimall.member.service.UndoLogService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("undoLogService")
 public class UndoLogServiceImpl extends ServiceImpl<UndoLogDao, UndoLogEntity> implements UndoLogService {
 

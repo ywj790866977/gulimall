@@ -12,11 +12,15 @@ import java.util.Map;
  * 仓库信息
  *
  * @author rubyle
- * @email besokuser@163.com
  * @date 2020-05-13 15:47:12
  */
 public interface WareInfoService extends IService<WareInfoEntity> {
-
+    /**
+     * 分页查询
+     *
+     * @param params 分页参数
+     * @return 分页
+     */
     PageUtils queryPage(Map<String, Object> params);
 
     /**

@@ -13,11 +13,15 @@ import java.util.Map;
  * 订单
  *
  * @author rubyle
- * @email besokuser@163.com
  * @date 2020-05-13 15:41:34
  */
 public interface OrderService extends IService<OrderEntity> {
-
+    /**
+     * 分页查询
+     *
+     * @param params 分页参数
+     * @return 分页
+     */
     PageUtils queryPage(Map<String, Object> params);
 
     /**
@@ -35,5 +39,20 @@ public interface OrderService extends IService<OrderEntity> {
      */
     SubmitOrderResponseVo orderSubmit(OrderSubmitVo vo);
 
+    /**
+     * 查询订单
+     *
+     * @param orderSn 订单号
+     * @return 订单
+     */
+    OrderEntity getOrderByOrderSn(String orderSn);
+
+
+    /**
+     * 关闭订单
+     *
+     * @param orderEntity 订单实体
+     */
+    void closeOrder(OrderEntity orderEntity);
 }
 

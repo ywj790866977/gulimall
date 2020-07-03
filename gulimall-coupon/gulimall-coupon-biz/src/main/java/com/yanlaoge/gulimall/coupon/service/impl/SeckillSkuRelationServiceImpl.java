@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.coupon.dao.SeckillSkuRelationDao;
 import com.yanlaoge.gulimall.coupon.entity.SeckillSkuRelationEntity;
 import com.yanlaoge.gulimall.coupon.service.SeckillSkuRelationService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("seckillSkuRelationService")
 public class SeckillSkuRelationServiceImpl extends ServiceImpl<SeckillSkuRelationDao, SeckillSkuRelationEntity> implements SeckillSkuRelationService {
 

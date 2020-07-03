@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.order.dao.MqMessageDao;
 import com.yanlaoge.gulimall.order.entity.MqMessageEntity;
 import com.yanlaoge.gulimall.order.service.MqMessageService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("mqMessageService")
 public class MqMessageServiceImpl extends ServiceImpl<MqMessageDao, MqMessageEntity> implements MqMessageService {
 

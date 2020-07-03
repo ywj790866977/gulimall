@@ -45,7 +45,7 @@ public class ShiroConfig {
         shiroFilter.setSecurityManager(securityManager);
 
         //oauth过滤
-        Map<String, Filter> filters = new HashMap<>();
+        Map<String, Filter> filters = new HashMap<>(16);
         filters.put("oauth2", new OAuth2Filter());
         shiroFilter.setFilters(filters);
 

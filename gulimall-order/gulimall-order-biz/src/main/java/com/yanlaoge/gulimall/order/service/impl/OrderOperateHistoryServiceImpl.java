@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.order.dao.OrderOperateHistoryDao;
 import com.yanlaoge.gulimall.order.entity.OrderOperateHistoryEntity;
 import com.yanlaoge.gulimall.order.service.OrderOperateHistoryService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("orderOperateHistoryService")
 public class OrderOperateHistoryServiceImpl extends ServiceImpl<OrderOperateHistoryDao, OrderOperateHistoryEntity> implements OrderOperateHistoryService {
 

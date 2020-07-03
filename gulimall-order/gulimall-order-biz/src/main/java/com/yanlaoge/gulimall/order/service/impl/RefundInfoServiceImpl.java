@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.order.dao.RefundInfoDao;
 import com.yanlaoge.gulimall.order.entity.RefundInfoEntity;
 import com.yanlaoge.gulimall.order.service.RefundInfoService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("refundInfoService")
 public class RefundInfoServiceImpl extends ServiceImpl<RefundInfoDao, RefundInfoEntity> implements RefundInfoService {
 

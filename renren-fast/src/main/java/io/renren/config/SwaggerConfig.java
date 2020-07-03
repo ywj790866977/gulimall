@@ -24,7 +24,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig implements WebMvcConfigurer {

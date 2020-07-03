@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.ware.dao.WareOrderTaskDao;
 import com.yanlaoge.gulimall.ware.entity.WareOrderTaskEntity;
 import com.yanlaoge.gulimall.ware.service.WareOrderTaskService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("wareOrderTaskService")
 public class WareOrderTaskServiceImpl extends ServiceImpl<WareOrderTaskDao, WareOrderTaskEntity> implements WareOrderTaskService {
 

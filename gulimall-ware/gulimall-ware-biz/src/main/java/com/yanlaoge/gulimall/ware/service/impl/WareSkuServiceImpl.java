@@ -1,43 +1,44 @@
 package com.yanlaoge.gulimall.ware.service.impl;
 
-import com.yanlaoge.common.utils.R;
-import com.yanlaoge.common.utils.ResponseHelper;
-import com.yanlaoge.gulimall.product.entity.SkuInfoEntity;
-import com.yanlaoge.gulimall.product.feign.ProductFeignService;
-import com.yanlaoge.gulimall.ware.constant.WareConsTant;
-import com.yanlaoge.gulimall.ware.dto.SkuWareHasStockDto;
-import com.yanlaoge.gulimall.ware.dto.StockLockedDto;
-import com.yanlaoge.gulimall.ware.entity.WareOrderTaskDetailEntity;
-import com.yanlaoge.gulimall.ware.entity.WareOrderTaskEntity;
-import com.yanlaoge.gulimall.ware.enums.WareStockStatusEnum;
-import com.yanlaoge.gulimall.ware.service.WareOrderTaskDetailService;
-import com.yanlaoge.gulimall.ware.service.WareOrderTaskService;
-import com.yanlaoge.gulimall.ware.vo.OrderItemLockVo;
-import com.yanlaoge.gulimall.ware.vo.SkuHasStockVo;
-import com.yanlaoge.gulimall.ware.vo.WareSkuLockVo;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yanlaoge.common.utils.PageUtils;
-import com.yanlaoge.common.utils.Query;
-
+import com.yanlaoge.common.utils.*;
+import com.yanlaoge.gulimall.order.entity.OrderEntity;
+import com.yanlaoge.gulimall.order.feign.OrderFeignService;
+import com.yanlaoge.gulimall.product.entity.SkuInfoEntity;
+import com.yanlaoge.gulimall.product.feign.ProductFeignService;
+import com.yanlaoge.gulimall.ware.constant.WareConsTant;
+import com.yanlaoge.gulimall.ware.constant.WareRespStatus;
 import com.yanlaoge.gulimall.ware.dao.WareSkuDao;
+import com.yanlaoge.gulimall.ware.dto.SkuWareHasStockDto;
+import com.yanlaoge.gulimall.ware.dto.StockLockDetailDto;
+import com.yanlaoge.gulimall.ware.dto.StockLockedDto;
+import com.yanlaoge.gulimall.ware.entity.WareOrderTaskDetailEntity;
+import com.yanlaoge.gulimall.ware.entity.WareOrderTaskEntity;
 import com.yanlaoge.gulimall.ware.entity.WareSkuEntity;
+import com.yanlaoge.gulimall.ware.enums.OrderStatusEnum;
+import com.yanlaoge.gulimall.ware.enums.WareStockStatusEnum;
+import com.yanlaoge.gulimall.ware.service.WareOrderTaskDetailService;
+import com.yanlaoge.gulimall.ware.service.WareOrderTaskService;
 import com.yanlaoge.gulimall.ware.service.WareSkuService;
+import com.yanlaoge.gulimall.ware.vo.OrderItemLockVo;
+import com.yanlaoge.gulimall.ware.vo.SkuHasStockVo;
+import com.yanlaoge.gulimall.ware.vo.WareSkuLockVo;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 /**
@@ -55,6 +56,8 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
     private WareOrderTaskDetailService wareOrderTaskDetailService;
     @Resource
     private WareOrderTaskService wareOrderTaskService;
+    @Resource
+    private OrderFeignService orderFeignService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -77,8 +80,8 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
 
     @Override
     public void addStock(Long skuId, Long wareId, Integer skuNum) {
-        List<WareSkuEntity> list = this.list(new QueryWrapper<WareSkuEntity>().eq("sku_id", skuId).eq("ware_id",
-                wareId));
+        List<WareSkuEntity> list = this.list(new QueryWrapper<WareSkuEntity>().eq("sku_id", skuId)
+                .eq("ware_id", wareId));
         if (!CollectionUtils.isEmpty(list)) {
             WareSkuEntity wareSkuEntity = new WareSkuEntity();
             wareSkuEntity.setSkuId(skuId);
@@ -141,33 +144,71 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             boolean skuStocked = false;
             Long skuId = stockDto.getSkuId();
             List<Long> wareIds = stockDto.getWareId();
-            if(CollectionUtils.isEmpty(wareIds)){
-                ResponseHelper.execption(WareStockStatusEnum.NOT_STOCK.getCode(),WareStockStatusEnum.NOT_STOCK.getMsg());
+            if (CollectionUtils.isEmpty(wareIds)) {
+                ResponseHelper.execption(WareRespStatus.STOCK_ERROR);
             }
             for (Long wareId : wareIds) {
-                Long count = baseMapper.lockSkuStock(skuId,wareId,stockDto.getNum());
-                if(count != 0){
+                Long count = baseMapper.lockSkuStock(skuId, wareId, stockDto.getNum());
+                if (count != 0) {
                     skuStocked = true;
                     // 保存锁定详情
                     WareOrderTaskDetailEntity detailEntity = new WareOrderTaskDetailEntity();
                     detailEntity.setSkuId(skuId).setSkuNum(stockDto.getNum()).setTaskId(taskEntity.getId())
-                            .setWareId(wareId).setLockStatus(1).setSkuName("");
+                            .setWareId(wareId).setLockStatus(WareStockStatusEnum.LOCK.getCode()).setSkuName("");
                     wareOrderTaskDetailService.save(detailEntity);
-                    StockLockedDto stockLockedDto = new StockLockedDto();
-                    stockLockedDto.setId(taskEntity.getId());
-                    stockLockedDto.setDetailId(detailEntity.getId());
-                    rabbitTemplate.convertAndSend(WareConsTant.STOC_KEVENT_EXCHANGE,WareConsTant.STOCK_LOCKED,stockLockedDto);
+                    // 发送锁定消息
+                    StockLockDetailDto lockDetailDto = new StockLockDetailDto();
+                    BeanUtils.copyProperties(detailEntity, lockDetailDto);
+                    StockLockedDto lockedDto = StockLockedDto.builder().id(taskEntity.getId()).detailTo(lockDetailDto).build();
+                    rabbitTemplate.convertAndSend(WareConsTant.STOC_KEVENT_EXCHANGE, WareConsTant.STOCK_LOCKED, lockedDto);
                     break;
                 }
             }
             //如果有一个没锁成功就,抛出异常
-            if(!skuStocked){
-                ResponseHelper.execption(WareStockStatusEnum.STOCK_LOCK_ERROR.getCode(),
-                    WareStockStatusEnum.STOCK_LOCK_ERROR.getMsg());
+            if (!skuStocked) {
+                ResponseHelper.execption(WareRespStatus.STOCK_LOCK_ERROR);
             }
         }
         //锁定成功
         return true;
+    }
+
+    @SneakyThrows
+    @Override
+    public void releaseStockLock(StockLockedDto dto) {
+        // 先查询任务单状态是否为,已锁定
+        WareOrderTaskDetailEntity detailEntity = wareOrderTaskDetailService.getById(dto.getId());
+        if(!WareStockStatusEnum.LOCK.getCode().equals(detailEntity.getLockStatus())){
+            return;
+        }
+        // 查询订单状态是否成功
+        WareOrderTaskEntity taskEntity = wareOrderTaskService.getById(detailEntity.getTaskId());
+        ResponseVo<OrderEntity> orderRes = orderFeignService.getOrder(taskEntity.getOrderSn());
+        if (orderRes == null || orderRes.getCode() != 0) {
+            log.error("[orderFeignService] remote getOrder method is error  res = {}", orderRes);
+            ResponseHelper.execption(WareRespStatus.REMOTE_ERROR);
+        }
+        OrderEntity orderEntity = orderRes.getData();
+        //订单不存在,或者为"已取消"状态, 都需要解锁
+        if (orderEntity == null || OrderStatusEnum.CANCLED.getCode().equals(orderEntity.getStatus())) {
+            unLockStock(detailEntity.getSkuId(), detailEntity.getWareId(), detailEntity.getSkuNum(), detailEntity.getId());
+        }
+    }
+
+    /**
+     * 解锁
+     *
+     * @param skuId        skuId
+     * @param wareId       仓库id
+     * @param num          数量
+     * @param taskDetailId 任务详情id
+     */
+    private void unLockStock(Long skuId, Long wareId, Integer num, Long taskDetailId) {
+        baseMapper.unLockStock(skuId,wareId,num);
+        //更新工作单状态
+        WareOrderTaskDetailEntity detailEntity = new WareOrderTaskDetailEntity();
+        detailEntity.setId(taskDetailId).setLockStatus(WareStockStatusEnum.UN_LOCK.getCode());
+        wareOrderTaskDetailService.updateById(detailEntity);
     }
 
 }

@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.order.dao.OrderReturnApplyDao;
 import com.yanlaoge.gulimall.order.entity.OrderReturnApplyEntity;
 import com.yanlaoge.gulimall.order.service.OrderReturnApplyService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("orderReturnApplyService")
 public class OrderReturnApplyServiceImpl extends ServiceImpl<OrderReturnApplyDao, OrderReturnApplyEntity> implements OrderReturnApplyService {
 

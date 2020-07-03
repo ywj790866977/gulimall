@@ -15,7 +15,10 @@ import com.yanlaoge.gulimall.product.entity.SpuImagesEntity;
 import com.yanlaoge.gulimall.product.service.SpuImagesService;
 import org.springframework.util.CollectionUtils;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("spuImagesService")
 public class SpuImagesServiceImpl extends ServiceImpl<SpuImagesDao, SpuImagesEntity> implements SpuImagesService {
 

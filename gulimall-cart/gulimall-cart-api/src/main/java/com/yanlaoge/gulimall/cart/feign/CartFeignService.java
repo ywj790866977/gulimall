@@ -14,6 +14,11 @@ import java.util.List;
  **/
 @FeignClient("gulimall-cart")
 public interface CartFeignService {
+    /**
+     * getUserCartItems
+     *
+     * @return R
+     */
     @GetMapping("/getUserCartItems")
     @ResponseBody
     ResponseVo<List<CartItem>> getUserCartItems();

@@ -34,7 +34,6 @@ public class WareOrderTaskController {
      * 列表
      */
     @RequestMapping("/list")
-    //@RequiresPermissions("ware:wareordertask:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = wareOrderTaskService.queryPage(params);
 
@@ -46,7 +45,6 @@ public class WareOrderTaskController {
      * 信息
      */
     @RequestMapping("/info/{id}")
-    //@RequiresPermissions("ware:wareordertask:info")
     public R info(@PathVariable("id") Long id){
 		WareOrderTaskEntity wareOrderTask = wareOrderTaskService.getById(id);
 
@@ -57,7 +55,6 @@ public class WareOrderTaskController {
      * 保存
      */
     @RequestMapping("/save")
-    //@RequiresPermissions("ware:wareordertask:save")
     public R save(@RequestBody WareOrderTaskEntity wareOrderTask){
 		wareOrderTaskService.save(wareOrderTask);
 
@@ -68,7 +65,6 @@ public class WareOrderTaskController {
      * 修改
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("ware:wareordertask:update")
     public R update(@RequestBody WareOrderTaskEntity wareOrderTask){
 		wareOrderTaskService.updateById(wareOrderTask);
 
@@ -79,7 +75,6 @@ public class WareOrderTaskController {
      * 删除
      */
     @RequestMapping("/delete")
-    //@RequiresPermissions("ware:wareordertask:delete")
     public R delete(@RequestBody Long[] ids){
 		wareOrderTaskService.removeByIds(Arrays.asList(ids));
 

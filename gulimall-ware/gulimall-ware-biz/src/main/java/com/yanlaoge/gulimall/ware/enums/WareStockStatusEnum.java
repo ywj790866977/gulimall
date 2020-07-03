@@ -10,13 +10,19 @@ import lombok.Getter;
 @Getter
 public enum WareStockStatusEnum {
     /**
-     * 商品无库存
+     * 已锁定
      */
-    NOT_STOCK(21001,"商品无库存"),
+    LOCK(1,"已锁定"),
     /**
-     *
+     *已解锁
      */
-    STOCK_LOCK_ERROR(21002,"锁定库存失败");
+    UN_LOCK(2,"已解锁"),
+    /**
+     * 已完成
+     */
+    SUCCESS(3,"已完成");
+
+
     private Integer code ;
     private String msg;
 }

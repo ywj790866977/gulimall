@@ -11,8 +11,10 @@ import com.yanlaoge.common.utils.Query;
 import com.yanlaoge.gulimall.member.dao.MemberStatisticsInfoDao;
 import com.yanlaoge.gulimall.member.entity.MemberStatisticsInfoEntity;
 import com.yanlaoge.gulimall.member.service.MemberStatisticsInfoService;
-
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("memberStatisticsInfoService")
 public class MemberStatisticsInfoServiceImpl extends ServiceImpl<MemberStatisticsInfoDao, MemberStatisticsInfoEntity> implements MemberStatisticsInfoService {
 

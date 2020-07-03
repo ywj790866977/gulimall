@@ -23,7 +23,10 @@ import com.yanlaoge.gulimall.product.service.CategoryBrandRelationService;
 
 import javax.annotation.Resource;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("categoryBrandRelationService")
 public class CategoryBrandRelationServiceImpl extends
 		ServiceImpl<CategoryBrandRelationDao, CategoryBrandRelationEntity> implements CategoryBrandRelationService {

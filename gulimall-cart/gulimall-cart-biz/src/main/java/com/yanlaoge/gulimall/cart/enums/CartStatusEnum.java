@@ -10,7 +10,13 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum CartStatusEnum {
+    /**
+     * 查询商品价格异常
+     */
     NOT_REMOTE_GETPRIC(13001,"查询商品价格异常"),
+    /**
+     * 查询商品价格异常
+     */
     NOT_REMOTE_GETPRICE(13002,"查询商品价格异常");
     private Integer code;
     private String msg;

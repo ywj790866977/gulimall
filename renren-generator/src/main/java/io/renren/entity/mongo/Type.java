@@ -1,7 +1,10 @@
 package io.renren.entity.mongo;
 
 import java.util.Objects;
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 public enum Type {
 
     /***

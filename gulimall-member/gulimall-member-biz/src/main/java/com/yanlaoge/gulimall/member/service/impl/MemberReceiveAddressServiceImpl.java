@@ -14,7 +14,10 @@ import com.yanlaoge.gulimall.member.dao.MemberReceiveAddressDao;
 import com.yanlaoge.gulimall.member.entity.MemberReceiveAddressEntity;
 import com.yanlaoge.gulimall.member.service.MemberReceiveAddressService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("memberReceiveAddressService")
 public class MemberReceiveAddressServiceImpl extends ServiceImpl<MemberReceiveAddressDao, MemberReceiveAddressEntity> implements MemberReceiveAddressService {
 

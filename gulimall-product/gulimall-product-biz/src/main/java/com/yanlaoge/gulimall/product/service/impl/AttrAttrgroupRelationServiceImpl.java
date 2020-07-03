@@ -17,7 +17,10 @@ import com.yanlaoge.gulimall.product.dao.AttrAttrgroupRelationDao;
 import com.yanlaoge.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import com.yanlaoge.gulimall.product.service.AttrAttrgroupRelationService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("attrAttrgroupRelationService")
 public class AttrAttrgroupRelationServiceImpl extends ServiceImpl<AttrAttrgroupRelationDao, AttrAttrgroupRelationEntity> implements AttrAttrgroupRelationService {
 

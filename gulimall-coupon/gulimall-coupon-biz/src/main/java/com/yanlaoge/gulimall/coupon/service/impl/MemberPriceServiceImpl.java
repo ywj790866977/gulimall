@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.coupon.dao.MemberPriceDao;
 import com.yanlaoge.gulimall.coupon.entity.MemberPriceEntity;
 import com.yanlaoge.gulimall.coupon.service.MemberPriceService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("memberPriceService")
 public class MemberPriceServiceImpl extends ServiceImpl<MemberPriceDao, MemberPriceEntity> implements MemberPriceService {
 

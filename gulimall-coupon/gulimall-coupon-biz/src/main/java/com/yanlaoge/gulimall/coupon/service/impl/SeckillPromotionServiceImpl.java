@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.coupon.dao.SeckillPromotionDao;
 import com.yanlaoge.gulimall.coupon.entity.SeckillPromotionEntity;
 import com.yanlaoge.gulimall.coupon.service.SeckillPromotionService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("seckillPromotionService")
 public class SeckillPromotionServiceImpl extends ServiceImpl<SeckillPromotionDao, SeckillPromotionEntity> implements SeckillPromotionService {
 

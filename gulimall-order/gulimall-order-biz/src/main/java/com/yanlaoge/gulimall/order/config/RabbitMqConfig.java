@@ -1,7 +1,9 @@
 package com.yanlaoge.gulimall.order.config;
 
+import com.google.common.collect.Maps;
+import com.yanlaoge.gulimall.order.constant.OrderConstant;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -11,6 +13,8 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.Map;
+
 
 /**
  * @author rubyle
@@ -58,5 +62,52 @@ public class RabbitMqConfig {
                                 "routingKey:{}",message,replyCode, replyText,exchange,routingKey);
             }
         });
+    }
+
+
+    /**
+     * 死信队列
+     *
+     * @return queue
+     */
+    @Bean
+    public Queue orderDelayQueue() {
+        Map<String, Object> arguments = Maps.newHashMap();
+        arguments.put("x-dead-letter-exchange", OrderConstant.ORDER_EVENT_EXCHANGE);
+        arguments.put("x-dead-letter-routeing-key","order.release.order");
+        arguments.put("x-message-ttl",60000);
+        return new Queue(OrderConstant.ORDER_DELAY_QUEUE, true, false, false,arguments);
+    }
+
+    @Bean
+    public Queue orderReleaseOrderQueue() {
+        return new Queue(OrderConstant.ORDER_RELEASE_ORDER_QUEUE,true,false,false);
+    }
+
+    @Bean
+    public Exchange orderEventExchange() {
+        return new TopicExchange(OrderConstant.ORDER_EVENT_EXCHANGE,true,false);
+    }
+
+    @Bean
+    public Binding orderCreateOrderBinding() {
+        return new Binding(
+                OrderConstant.ORDER_DELAY_QUEUE,
+                Binding.DestinationType.QUEUE,
+                OrderConstant.ORDER_EVENT_EXCHANGE,
+                OrderConstant.ORDER_CREATE_ORDER,
+                null
+        );
+    }
+
+    @Bean
+    public Binding orderReleaseOrderBinding() {
+        return new Binding(
+                OrderConstant.ORDER_RELEASE_ORDER_QUEUE,
+                Binding.DestinationType.QUEUE,
+                OrderConstant.ORDER_EVENT_EXCHANGE,
+                "order.release.order",
+                null
+        );
     }
 }

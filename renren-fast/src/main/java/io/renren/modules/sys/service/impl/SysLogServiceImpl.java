@@ -21,7 +21,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("sysLogService")
 public class SysLogServiceImpl extends ServiceImpl<SysLogDao, SysLogEntity> implements SysLogService {
 

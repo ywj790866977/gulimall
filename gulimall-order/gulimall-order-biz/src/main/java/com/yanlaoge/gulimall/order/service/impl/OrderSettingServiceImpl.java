@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.order.dao.OrderSettingDao;
 import com.yanlaoge.gulimall.order.entity.OrderSettingEntity;
 import com.yanlaoge.gulimall.order.service.OrderSettingService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("orderSettingService")
 public class OrderSettingServiceImpl extends ServiceImpl<OrderSettingDao, OrderSettingEntity> implements OrderSettingService {
 

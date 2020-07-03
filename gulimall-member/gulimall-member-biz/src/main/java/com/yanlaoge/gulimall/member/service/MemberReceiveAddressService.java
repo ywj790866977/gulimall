@@ -11,11 +11,15 @@ import java.util.Map;
  * 会员收货地址
  *
  * @author rubyle
- * @email besokuser@163.com
  * @date 2020-05-13 15:19:47
  */
 public interface MemberReceiveAddressService extends IService<MemberReceiveAddressEntity> {
-
+    /**
+     * 分页查询
+     *
+     * @param params 分页参数
+     * @return 分页
+     */
     PageUtils queryPage(Map<String, Object> params);
 
     /**

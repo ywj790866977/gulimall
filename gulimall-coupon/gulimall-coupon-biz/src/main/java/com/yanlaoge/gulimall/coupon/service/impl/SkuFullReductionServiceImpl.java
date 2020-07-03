@@ -24,7 +24,10 @@ import com.yanlaoge.gulimall.coupon.dao.SkuFullReductionDao;
 import com.yanlaoge.gulimall.coupon.entity.SkuFullReductionEntity;
 import com.yanlaoge.gulimall.coupon.service.SkuFullReductionService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("skuFullReductionService")
 public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao, SkuFullReductionEntity> implements SkuFullReductionService {
 

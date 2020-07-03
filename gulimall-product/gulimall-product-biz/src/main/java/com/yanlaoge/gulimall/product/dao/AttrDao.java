@@ -9,12 +9,17 @@ import java.util.List;
 
 /**
  * 商品属性
- * 
+ *
  * @author rubyle
  * @date 2020-05-13 14:21:04
  */
 @Mapper
 public interface AttrDao extends BaseMapper<AttrEntity> {
-
+    /**
+     * selectSearchAttr
+     *
+     * @param attrIds attrIds
+     * @return 集合
+     */
     List<Long> selectSearchAttr(@Param("attrIds") List<Long> attrIds);
 }

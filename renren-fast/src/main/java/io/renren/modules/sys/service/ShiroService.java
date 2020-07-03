@@ -1,8 +1,8 @@
 /**
  * Copyright (c) 2016-2019 人人开源 All rights reserved.
- *
+ * <p>
  * https://www.renren.io
- *
+ * <p>
  * 版权所有，侵权必究！
  */
 
@@ -21,14 +21,25 @@ import java.util.Set;
 public interface ShiroService {
     /**
      * 获取用户权限列表
+     *
+     * @param userId userId
+     * @return 集合
      */
     Set<String> getUserPermissions(long userId);
 
+    /**
+     * 查询token
+     *
+     * @param token token
+     * @return token
+     */
     SysUserTokenEntity queryByToken(String token);
 
     /**
      * 根据用户ID，查询用户
-     * @param userId
+     *
+     * @param userId userid
+     * @return entity
      */
     SysUserEntity queryUser(Long userId);
 }

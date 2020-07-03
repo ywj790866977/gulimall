@@ -26,9 +26,27 @@ import java.util.Map;
  * @since 2018-07-24
  */
 public interface GeneratorDao {
+    /**
+     * 查询集合
+     *
+     * @param map map
+     * @return List<Map>
+     */
     List<Map<String, Object>> queryList(Map<String, Object> map);
 
+    /**
+     * 查询表
+     *
+     * @param tableName 名
+     * @return Map
+     */
     Map<String, String> queryTable(String tableName);
 
+    /**
+     * 查询列
+     *
+     * @param tableName 名
+     * @return 集合
+     */
     List<Map<String, String>> queryColumns(String tableName);
 }

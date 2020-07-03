@@ -37,7 +37,6 @@ public class MemberReceiveAddressController {
      * 列表
      */
     @RequestMapping("/list")
-    //@RequiresPermissions("member:memberreceiveaddress:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = memberReceiveAddressService.queryPage(params);
 
@@ -59,7 +58,6 @@ public class MemberReceiveAddressController {
      * 保存
      */
     @RequestMapping("/save")
-    //@RequiresPermissions("member:memberreceiveaddress:save")
     public R save(@RequestBody MemberReceiveAddressEntity memberReceiveAddress){
 		memberReceiveAddressService.save(memberReceiveAddress);
 
@@ -70,7 +68,6 @@ public class MemberReceiveAddressController {
      * 修改
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("member:memberreceiveaddress:update")
     public R update(@RequestBody MemberReceiveAddressEntity memberReceiveAddress){
 		memberReceiveAddressService.updateById(memberReceiveAddress);
 
@@ -81,7 +78,6 @@ public class MemberReceiveAddressController {
      * 删除
      */
     @RequestMapping("/delete")
-    //@RequiresPermissions("member:memberreceiveaddress:delete")
     public R delete(@RequestBody Long[] ids){
 		memberReceiveAddressService.removeByIds(Arrays.asList(ids));
 

@@ -23,7 +23,9 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 public class RedisUtil {
-    // 这个是关键↓↓↓
+    /**
+     * 这个是关键↓↓↓
+     */
     @Resource
     private RedisTemplate<Object, Object> redisTemplate;
 

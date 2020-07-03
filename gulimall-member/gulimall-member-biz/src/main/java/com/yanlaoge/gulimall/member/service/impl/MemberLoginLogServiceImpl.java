@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.member.dao.MemberLoginLogDao;
 import com.yanlaoge.gulimall.member.entity.MemberLoginLogEntity;
 import com.yanlaoge.gulimall.member.service.MemberLoginLogService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("memberLoginLogService")
 public class MemberLoginLogServiceImpl extends ServiceImpl<MemberLoginLogDao, MemberLoginLogEntity> implements MemberLoginLogService {
 

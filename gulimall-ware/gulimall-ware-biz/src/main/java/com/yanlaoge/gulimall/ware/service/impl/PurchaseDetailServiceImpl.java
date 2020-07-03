@@ -15,7 +15,10 @@ import com.yanlaoge.gulimall.ware.dao.PurchaseDetailDao;
 import com.yanlaoge.gulimall.ware.entity.PurchaseDetailEntity;
 import com.yanlaoge.gulimall.ware.service.PurchaseDetailService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("purchaseDetailService")
 public class PurchaseDetailServiceImpl extends ServiceImpl<PurchaseDetailDao, PurchaseDetailEntity> implements PurchaseDetailService {
 

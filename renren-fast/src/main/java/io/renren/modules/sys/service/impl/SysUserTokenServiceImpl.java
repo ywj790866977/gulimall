@@ -18,10 +18,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("sysUserTokenService")
 public class SysUserTokenServiceImpl extends ServiceImpl<SysUserTokenDao, SysUserTokenEntity> implements SysUserTokenService {
-	//12小时后过期
+	/**
+	 * 12小时后过期
+	 */
 	private final static int EXPIRE = 3600 * 12;
 
 

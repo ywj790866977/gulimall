@@ -29,9 +29,9 @@ public class SmsComponent {
     public void sendSmsCode(String phone,String code){
 
         String method = "GET";
-        Map<String,String> headers = new HashMap<>();
+        Map<String,String> headers = new HashMap<>(16);
         headers.put("Authorization","APPCODE "+appcode);
-        Map<String,String> querys = new HashMap<>();
+        Map<String,String> querys = new HashMap<>(16);
 //        querys.put("code",code);
         querys.put("param",code);
         querys.put("phone",phone);

@@ -28,9 +28,13 @@ public class SysOssEntity implements Serializable {
 	
 	@TableId
 	private Long id;
-	//URL地址
+	/**
+	 * URL地址
+	 */
 	private String url;
-	//创建时间
+	/**
+	 * 创建时间
+	 */
 	private Date createDate;
 
 }

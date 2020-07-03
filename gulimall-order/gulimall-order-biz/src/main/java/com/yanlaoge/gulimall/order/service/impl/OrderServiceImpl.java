@@ -30,6 +30,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -47,7 +48,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("orderService")
 @Slf4j
 public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> implements OrderService {
@@ -65,6 +69,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     private OrderItemService itemService;
     @Resource
     private RedisUtil redisUtil;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -151,7 +157,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         }
         //7. 成功
         responseVo.setOrder(orderTo.getOrder());
+        //8.发送消息到队列
+        rabbitTemplate.convertAndSend(OrderConstant.ORDER_EVENT_EXCHANGE,OrderConstant.ORDER_CREATE_ORDER,orderTo.getOrder());
         return responseVo;
+    }
+
+    @Override
+    public OrderEntity getOrderByOrderSn(String orderSn) {
+        return this.getOne(new QueryWrapper<OrderEntity>().eq("order_sn",orderSn));
+    }
+
+    @Override
+    public void closeOrder(OrderEntity orderEntity) {
+        OrderEntity order = this.getById(orderEntity.getId());
+        if(OrderStatusEnum.CREATE_NEW.getCode().equals(order.getStatus())){
+            OrderEntity update = new OrderEntity();
+            update.setId(orderEntity.getId());
+            update.setStatus(OrderStatusEnum.CANCLED.getCode());
+            this.updateById(update);
+        }
     }
 
     /**
@@ -231,8 +255,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @param orderItemEntities 订单项
      */
     private void computePrice(OrderEntity orderEntity, List<OrderItemEntity> orderItemEntities) {
-//        BigDecimal totalAmount = orderItemEntities.stream()
-//                .map(OrderItemEntity::getRealAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal totalAmount = BigDecimal.ZERO;
         BigDecimal promotion = BigDecimal.ZERO;
         BigDecimal couponAmount = BigDecimal.ZERO;
@@ -347,7 +369,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         ResponseVo<List<CartItem>> cartResp = cartFeignService.getUserCartItems();
         if (cartResp == null || cartResp.getCode() != 0) {
             log.error("[confirmOrder] getUserCartItems is Exception res = {} ", cartResp);
-//            ResponseHelper.execption(12001,"调用服务异常");
             return null;
         }
         return cartResp.getData().stream().map(item -> {
@@ -367,7 +388,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         ResponseVo<List<MemberReceiveAddressEntity>> addressResp = memberFeignService.getAddress(memberRespVo.getId());
         if (addressResp == null || addressResp.getCode() != 0) {
             log.error("[confirmOrder] getAddress is Exception res={}", addressResp);
-//            ResponseHelper.execption(12001,"调用服务异常");
             return null;
         }
         return addressResp.getData().stream().map(item -> {

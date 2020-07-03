@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.member.dao.IntegrationChangeHistoryDao;
 import com.yanlaoge.gulimall.member.entity.IntegrationChangeHistoryEntity;
 import com.yanlaoge.gulimall.member.service.IntegrationChangeHistoryService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("integrationChangeHistoryService")
 public class IntegrationChangeHistoryServiceImpl extends ServiceImpl<IntegrationChangeHistoryDao, IntegrationChangeHistoryEntity> implements IntegrationChangeHistoryService {
 

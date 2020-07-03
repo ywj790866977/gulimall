@@ -54,7 +54,7 @@ public class AppLoginController {
         //生成token
         String token = jwtUtils.generateToken(userId);
 
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(16);
         map.put("token", token);
         map.put("expire", jwtUtils.getExpire());
 

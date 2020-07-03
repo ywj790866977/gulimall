@@ -51,8 +51,6 @@ public class AttrController {
 
     @PostMapping("/test")
     public void test(){
-//        List<SkuModel> skuModelList = Lists.newArrayList();
-//        ResponseVo<Void> res= searchFeignService.productStatusUp(skuModelList);
         List<Long> skuIds = Lists.newArrayList();
         ResponseVo<List<SkuHasStockVo>> res = wareFeignService.getSkuHasStock(skuIds);
         System.out.println(res);
@@ -96,7 +94,6 @@ public class AttrController {
      * 列表
      */
     @RequestMapping("/list")
-    //@RequiresPermissions("product:attr:list")
     public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = attrService.queryPage(params);
 
@@ -117,7 +114,6 @@ public class AttrController {
      * 保存
      */
     @RequestMapping("/save")
-    //@RequiresPermissions("product:attr:save")
     public R save(@RequestBody AttrVo attrVo) {
         attrService.saveAttr(attrVo);
 
@@ -128,9 +124,7 @@ public class AttrController {
      * 修改
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("product:attr:update")
     public R update(@RequestBody AttrVo attr) {
-//		attrService.updateById(attr);
         attrService.updateAttr(attr);
         return R.ok();
     }
@@ -139,7 +133,6 @@ public class AttrController {
      * 删除
      */
     @RequestMapping("/delete")
-    //@RequiresPermissions("product:attr:delete")
     public R delete(@RequestBody Long[] attrIds) {
         attrService.removeByIds(Arrays.asList(attrIds));
 

@@ -20,6 +20,11 @@ import java.util.Map;
  * @author Mark sunlightcs@gmail.com
  */
 public interface SysOssService extends IService<SysOssEntity> {
-
+	/**
+	 * 分页查询
+	 *
+	 * @param params 分页参数
+	 * @return 分页
+	 */
 	PageUtils queryPage(Map<String, Object> params);
 }

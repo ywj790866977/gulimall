@@ -12,7 +12,10 @@ import com.yanlaoge.gulimall.product.dao.CommentReplayDao;
 import com.yanlaoge.gulimall.product.entity.CommentReplayEntity;
 import com.yanlaoge.gulimall.product.service.CommentReplayService;
 
-
+/**
+ * @author rubyle
+ * @date 2020/07/04
+ */
 @Service("commentReplayService")
 public class CommentReplayServiceImpl extends ServiceImpl<CommentReplayDao, CommentReplayEntity> implements CommentReplayService {
 

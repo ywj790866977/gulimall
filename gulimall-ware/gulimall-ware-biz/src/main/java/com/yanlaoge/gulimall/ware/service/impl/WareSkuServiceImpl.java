@@ -4,13 +4,20 @@ import com.yanlaoge.common.utils.R;
 import com.yanlaoge.common.utils.ResponseHelper;
 import com.yanlaoge.gulimall.product.entity.SkuInfoEntity;
 import com.yanlaoge.gulimall.product.feign.ProductFeignService;
+import com.yanlaoge.gulimall.ware.constant.WareConsTant;
 import com.yanlaoge.gulimall.ware.dto.SkuWareHasStockDto;
+import com.yanlaoge.gulimall.ware.dto.StockLockedDto;
+import com.yanlaoge.gulimall.ware.entity.WareOrderTaskDetailEntity;
+import com.yanlaoge.gulimall.ware.entity.WareOrderTaskEntity;
 import com.yanlaoge.gulimall.ware.enums.WareStockStatusEnum;
+import com.yanlaoge.gulimall.ware.service.WareOrderTaskDetailService;
+import com.yanlaoge.gulimall.ware.service.WareOrderTaskService;
 import com.yanlaoge.gulimall.ware.vo.OrderItemLockVo;
 import com.yanlaoge.gulimall.ware.vo.SkuHasStockVo;
 import com.yanlaoge.gulimall.ware.vo.WareSkuLockVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,12 +40,21 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 
 
+/**
+ * @author rubyle
+ */
 @Service("wareSkuService")
 @Slf4j
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {
 
     @Resource
     private ProductFeignService productFeignService;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
+    @Resource
+    private WareOrderTaskDetailService wareOrderTaskDetailService;
+    @Resource
+    private WareOrderTaskService wareOrderTaskService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -101,6 +117,11 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
     @Override
     public Boolean orderLockStock(WareSkuLockVo vo) {
         // TODO 按照下单送货地址,找就近仓库
+        // 1.保存库存工作单
+        WareOrderTaskEntity taskEntity = new WareOrderTaskEntity();
+        taskEntity.setOrderSn(vo.getOrderSn());
+        wareOrderTaskService.save(taskEntity);
+
 
         // 找到每个商品在哪个仓库有库存
         List<OrderItemLockVo> locks = vo.getLocks();
@@ -127,6 +148,15 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                 Long count = baseMapper.lockSkuStock(skuId,wareId,stockDto.getNum());
                 if(count != 0){
                     skuStocked = true;
+                    // 保存锁定详情
+                    WareOrderTaskDetailEntity detailEntity = new WareOrderTaskDetailEntity();
+                    detailEntity.setSkuId(skuId).setSkuNum(stockDto.getNum()).setTaskId(taskEntity.getId())
+                            .setWareId(wareId).setLockStatus(1).setSkuName("");
+                    wareOrderTaskDetailService.save(detailEntity);
+                    StockLockedDto stockLockedDto = new StockLockedDto();
+                    stockLockedDto.setId(taskEntity.getId());
+                    stockLockedDto.setDetailId(detailEntity.getId());
+                    rabbitTemplate.convertAndSend(WareConsTant.STOC_KEVENT_EXCHANGE,WareConsTant.STOCK_LOCKED,stockLockedDto);
                     break;
                 }
             }

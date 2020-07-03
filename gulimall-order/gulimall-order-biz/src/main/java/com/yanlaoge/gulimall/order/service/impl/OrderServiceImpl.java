@@ -28,6 +28,7 @@ import com.yanlaoge.gulimall.ware.vo.*;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.annotation.Order;
@@ -175,6 +176,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             update.setId(orderEntity.getId());
             update.setStatus(OrderStatusEnum.CANCLED.getCode());
             this.updateById(update);
+            try {
+                //TODO 发送消息之后,记录到数据库日志,保存消息状态
+                //TODO 定期扫描数据库失败的信息进行再次发送
+                rabbitTemplate.convertAndSend(OrderConstant.ORDER_EVENT_EXCHANGE,"order.release.other",order);
+            } catch (AmqpException e) {
+                log.error("[closeOrder] is error");
+            }
         }
     }
 

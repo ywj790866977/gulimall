@@ -110,4 +110,20 @@ public class RabbitMqConfig {
                 null
         );
     }
+
+    /**
+     * 订单释放和库存释放进行绑定
+     *
+     * @return binding
+     */
+    @Bean
+    public Binding orderReleaseOtherBinding() {
+        return new Binding(
+                OrderConstant.STOC_RELEASE_STOCK_QUEUE,
+                Binding.DestinationType.QUEUE,
+                OrderConstant.ORDER_EVENT_EXCHANGE,
+                "order.release.other.#",
+                null
+        );
+    }
 }

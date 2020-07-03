@@ -10,5 +10,6 @@ public class OrderConstant {
     public static final String ORDER_DELAY_QUEUE = "order.delay.queue";
     public static final String ORDER_RELEASE_ORDER_QUEUE = "order.release.order.queue";
     public static final String ORDER_CREATE_ORDER = "order.create.order";
+    public static final String STOC_RELEASE_STOCK_QUEUE = "stock.release.stock.queue";
     public static final double PRICE_DIFFERENCE = 0.01;
 }

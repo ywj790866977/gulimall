@@ -178,7 +178,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
     public void releaseStockLock(StockLockedDto dto) {
         // 先查询任务单状态是否为,已锁定
         WareOrderTaskDetailEntity detailEntity = wareOrderTaskDetailService.getById(dto.getId());
-        if(!WareStockStatusEnum.LOCK.getCode().equals(detailEntity.getLockStatus())){
+        if (!WareStockStatusEnum.LOCK.getCode().equals(detailEntity.getLockStatus())) {
             return;
         }
         // 查询订单状态是否成功
@@ -196,6 +196,28 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
     }
 
     /**
+     * 防止订单服务处理过慢, 库存解锁消息,优先到期, 然后查询订单状态,导致不能解锁
+     *
+     * @param orderEntity 订单实体
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void releaseStockLock(OrderEntity orderEntity) {
+        //查询工作单状态
+        WareOrderTaskEntity taskEntity =  wareOrderTaskService.getOrderTaskByOrderSn(orderEntity.getOrderSn());
+        //查询详情
+        List<WareOrderTaskDetailEntity> detailEntities = wareOrderTaskDetailService.list(
+                new QueryWrapper<WareOrderTaskDetailEntity>()
+                        .eq("task_id", taskEntity.getId())
+                        .eq("loack_status",WareStockStatusEnum.LOCK.getCode()));
+        if(CollectionUtils.isEmpty(detailEntities)){
+            for (WareOrderTaskDetailEntity detailEntity : detailEntities) {
+                unLockStock(detailEntity.getSkuId(),detailEntity.getWareId(),detailEntity.getSkuNum(),taskEntity.getId());
+            }
+        }
+    }
+
+    /**
      * 解锁
      *
      * @param skuId        skuId
@@ -204,7 +226,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
      * @param taskDetailId 任务详情id
      */
     private void unLockStock(Long skuId, Long wareId, Integer num, Long taskDetailId) {
-        baseMapper.unLockStock(skuId,wareId,num);
+        baseMapper.unLockStock(skuId, wareId, num);
         //更新工作单状态
         WareOrderTaskDetailEntity detailEntity = new WareOrderTaskDetailEntity();
         detailEntity.setId(taskDetailId).setLockStatus(WareStockStatusEnum.UN_LOCK.getCode());

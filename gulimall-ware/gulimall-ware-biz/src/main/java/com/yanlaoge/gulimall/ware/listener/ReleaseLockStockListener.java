@@ -1,6 +1,7 @@
 package com.yanlaoge.gulimall.ware.listener;
 
 import com.rabbitmq.client.Channel;
+import com.yanlaoge.gulimall.order.entity.OrderEntity;
 import com.yanlaoge.gulimall.ware.constant.WareConsTant;
 import com.yanlaoge.gulimall.ware.dto.StockLockedDto;
 import com.yanlaoge.gulimall.ware.service.WareSkuService;
@@ -30,6 +31,7 @@ public class ReleaseLockStockListener {
      *
      * @param dto     消息实体
      * @param message 消息
+     * @param channel 通道
      */
     @SneakyThrows
     @RabbitHandler
@@ -37,12 +39,32 @@ public class ReleaseLockStockListener {
         try {
             log.info("[handleStockLockedRelease] accept message = {} , dto = {}", message, dto);
             wareSkuService.releaseStockLock(dto);
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
-            log.info("[handleStockLockedRelease] is ok , dto = {}",dto);
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+            log.info("[handleStockLockedRelease] is ok , dto = {}", dto);
         } catch (Exception e) {
-            log.error("[handleStockLockedRelease] is error ",e);
-            channel.basicReject(message.getMessageProperties().getDeliveryTag(),true);
+            log.error("[handleStockLockedRelease] is error ", e);
+            channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
         }
     }
 
+    /**
+     * 订单关闭解锁
+     *
+     * @param orderEntity 订单实体
+     * @param message     消息
+     * @param channel     通道
+     */
+    @SneakyThrows
+    @RabbitHandler
+    public void handleOrderCloseRelease(OrderEntity orderEntity, Message message, Channel channel) {
+        try {
+            log.info("[handleOrderCloseRelease] accept message = {} , orderEntity = {}", message, orderEntity);
+            wareSkuService.releaseStockLock(orderEntity);
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+            log.info("[handleOrderCloseRelease] is ok , orderEntity = {}", orderEntity);
+        }catch (Exception e){
+            log.error("[handleOrderCloseRelease] is error ", e);
+            channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
+        }
+    }
 }

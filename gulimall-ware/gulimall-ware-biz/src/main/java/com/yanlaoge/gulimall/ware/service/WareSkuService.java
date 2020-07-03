@@ -3,6 +3,7 @@ package com.yanlaoge.gulimall.ware.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.rabbitmq.client.Channel;
 import com.yanlaoge.common.utils.PageUtils;
+import com.yanlaoge.gulimall.order.entity.OrderEntity;
 import com.yanlaoge.gulimall.ware.dto.StockLockedDto;
 import com.yanlaoge.gulimall.ware.entity.WareSkuEntity;
 import com.yanlaoge.gulimall.ware.vo.SkuHasStockVo;
@@ -59,5 +60,11 @@ public interface WareSkuService extends IService<WareSkuEntity> {
      */
     void releaseStockLock(StockLockedDto dto);
 
+    /**
+     * 订单关闭解锁
+     *
+     * @param orderEntity 订单实体
+     */
+    void releaseStockLock(OrderEntity orderEntity);
 }
 

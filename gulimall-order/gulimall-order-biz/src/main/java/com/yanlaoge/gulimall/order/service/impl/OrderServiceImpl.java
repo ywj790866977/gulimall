@@ -15,14 +15,17 @@ import com.yanlaoge.gulimall.order.constant.OrderRespStatus;
 import com.yanlaoge.gulimall.order.dao.OrderDao;
 import com.yanlaoge.gulimall.order.entity.OrderEntity;
 import com.yanlaoge.gulimall.order.entity.OrderItemEntity;
+import com.yanlaoge.gulimall.order.entity.PaymentInfoEntity;
 import com.yanlaoge.gulimall.order.eunms.OrderStatusEnum;
 import com.yanlaoge.gulimall.order.interceptor.LoginInterceptor;
 import com.yanlaoge.gulimall.order.service.OrderItemService;
 import com.yanlaoge.gulimall.order.service.OrderService;
+import com.yanlaoge.gulimall.order.service.PaymentInfoService;
 import com.yanlaoge.gulimall.order.vo.*;
 import com.yanlaoge.gulimall.order.vo.MemberAddressVo;
 import com.yanlaoge.gulimall.product.entity.SpuInfoEntity;
 import com.yanlaoge.gulimall.product.feign.ProductFeignService;
+import com.yanlaoge.gulimall.thirdparty.vo.PayAsyncVo;
 import com.yanlaoge.gulimall.thirdparty.vo.PayVo;
 import com.yanlaoge.gulimall.ware.feign.WareFeignService;
 import com.yanlaoge.gulimall.ware.vo.*;
@@ -43,6 +46,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +78,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     private RedisUtil redisUtil;
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private PaymentInfoService paymentInfoService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -199,6 +205,37 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         payVo.setSubject(orderItemEntity.getSkuName());
         payVo.setBody(orderItemEntity.getSkuAttrsVals());
         return payVo;
+    }
+
+    @Override
+    public PageUtils queryPageWithitem(Map<String, Object> params) {
+        MemberRespVo memberRespVo = LoginInterceptor.threadLocal.get();
+        IPage<OrderEntity> page = this.page(
+                new Query<OrderEntity>().getPage(params),
+                new QueryWrapper<OrderEntity>().eq("member_id",memberRespVo.getId()).orderByDesc("id")
+        );
+        List<OrderEntity> orders =
+                page.getRecords().stream().peek(
+                        orderEntity -> orderEntity.setItemEntities(itemService.list(
+                                new QueryWrapper<OrderItemEntity>().eq("order_sn", orderEntity.getOrderSn()))
+                        )
+                ).collect(Collectors.toList());
+        page.setRecords(orders);
+        return new PageUtils(page);
+    }
+
+    @Override
+    public String handlerPayResult(PayAsyncVo vo) {
+        //1.保存交易流水
+        PaymentInfoEntity infoEntity = new PaymentInfoEntity();
+        infoEntity.setAlipayTradeNo(vo.getTradeNo());
+        infoEntity.setOrderSn(vo.getOutTradeNo());
+        infoEntity.setPaymentStatus(vo.getTradeStatus());
+        infoEntity.setCallbackTime(vo.getNotifyTime());
+        paymentInfoService.save(infoEntity);
+        //2.修改订单状态
+
+        return null;
     }
 
     /**

@@ -3,6 +3,9 @@ package com.yanlaoge.gulimall.thirdparty.vo;
 import lombok.Data;
 import lombok.ToString;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 /**
  * @author rubyle
  * @date 2020/07/04
@@ -11,16 +14,16 @@ import lombok.ToString;
 @Data
 public class PayAsyncVo {
 
-    private String gmt_create;
+    private String gmtCreate;
     private String charset;
-    private String gmt_payment;
-    private String notify_time;
+    private String gmtPayment;
+    private LocalDateTime notifyTime;
     private String subject;
     private String sign;
     /**
      * 支付者的id
      */
-    private String buyer_id;
+    private String buyerId;
     /**
      * 订单的信息
      */
@@ -28,54 +31,54 @@ public class PayAsyncVo {
     /**
      * 支付金额
      */
-    private String invoice_amount;
+    private BigDecimal invoiceAmount;
     private String version;
     /**
      * 通知id
      */
-    private String notify_id;
-    private String fund_bill_list;
+    private String notifyId;
+    private String fundBillList;
     /**
      * 通知类型； trade_status_sync
      */
-    private String notify_type;
+    private String notifyType;
     /**
      * 订单号
      */
-    private String out_trade_no;
+    private String outTradeNo;
     /**
      * 支付的总额
      */
-    private String total_amount;
+    private BigDecimal totalAmount;
     /**
      * 交易状态  TRADE_SUCCESS
      */
-    private String trade_status;
+    private String tradeStatus;
     /**
      * 流水号
      */
-    private String trade_no;
-    private String auth_app_id;
+    private String tradeNo;
+    private String authAppId;
     /**
      * 商家收到的款
      */
-    private String receipt_amount;
-    private String point_amount;
+    private BigDecimal receiptAmount;
+    private BigDecimal pointAmount;
     /**
      * 应用id
      */
-    private String app_id;
+    private String appId;
     /**
      * 最终支付的金额
      */
-    private String buyer_pay_amount;
+    private BigDecimal buyerPayAmount;
     /**
      * 签名类型
      */
-    private String sign_type;
+    private String signType;
     /**
      * 商家的id
      */
-    private String seller_id;
+    private String sellerId;
 
 }

@@ -39,6 +39,17 @@ public class OrderController {
     }
 
     /**
+     * 查询用户订单信息
+     *
+     * @param params 参数
+     * @return R
+     */
+    @PostMapping("/listWithItem")
+    public ResponseVo<PageUtils> listWithItem(@RequestBody Map<String, Object> params) {
+        return ResponseHelper.success(orderService.queryPageWithitem(params));
+    }
+
+    /**
      * 列表
      */
     @RequestMapping("/list")

@@ -1,11 +1,14 @@
 package com.yanlaoge.gulimall.order.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.math.BigDecimal;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,7 +16,6 @@ import lombok.experimental.Accessors;
  * 订单
  * 
  * @author rubyle
- * @email besokuser@163.com
  * @date 2020-05-13 15:41:34
  */
 @Data
@@ -191,5 +193,10 @@ public class OrderEntity implements Serializable {
 	 * 修改时间
 	 */
 	private Date modifyTime;
+	/**
+	 * 订单项
+	 */
+	@TableField(exist = false)
+	private List<OrderItemEntity> itemEntities;
 
 }

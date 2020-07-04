@@ -6,6 +6,7 @@ import com.yanlaoge.gulimall.order.entity.OrderEntity;
 import com.yanlaoge.gulimall.order.vo.OrderConfirmVo;
 import com.yanlaoge.gulimall.order.vo.OrderSubmitVo;
 import com.yanlaoge.gulimall.order.vo.SubmitOrderResponseVo;
+import com.yanlaoge.gulimall.thirdparty.vo.PayVo;
 
 import java.util.Map;
 
@@ -54,5 +55,13 @@ public interface OrderService extends IService<OrderEntity> {
      * @param orderEntity 订单实体
      */
     void closeOrder(OrderEntity orderEntity);
+
+    /**
+     * 获取支付vo
+     *
+     * @param orderSn 订单号
+     * @return 支付vo
+     */
+    PayVo getOrderPay(String orderSn);
 }
 

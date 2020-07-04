@@ -37,6 +37,10 @@
 #            - Path=/api/**
 #          filters:
 #            - RewritePath=/api/(?<sement>.*),/renren-fast/$\{sement}
+#        - id: gulimall_member_route
+#          uri: lb://gulimall-member
+#          predicates:
+#            - Host=member.gulimall.com
 #        - id: gulimall_order_route
 #          uri: lb://gulimall-order
 #          predicates:

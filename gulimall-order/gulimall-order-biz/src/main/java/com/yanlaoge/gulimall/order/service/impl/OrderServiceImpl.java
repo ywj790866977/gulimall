@@ -23,6 +23,7 @@ import com.yanlaoge.gulimall.order.vo.*;
 import com.yanlaoge.gulimall.order.vo.MemberAddressVo;
 import com.yanlaoge.gulimall.product.entity.SpuInfoEntity;
 import com.yanlaoge.gulimall.product.feign.ProductFeignService;
+import com.yanlaoge.gulimall.thirdparty.vo.PayVo;
 import com.yanlaoge.gulimall.ware.feign.WareFeignService;
 import com.yanlaoge.gulimall.ware.vo.*;
 import io.seata.spring.annotation.GlobalTransactional;
@@ -41,6 +42,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -184,6 +186,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 log.error("[closeOrder] is error");
             }
         }
+    }
+
+    @Override
+    public PayVo getOrderPay(String orderSn) {
+        PayVo payVo = new PayVo();
+        OrderEntity orderEntity = this.getOrderByOrderSn(orderSn);
+        List<OrderItemEntity> items = itemService.list(new QueryWrapper<OrderItemEntity>().eq("order_sn", orderEntity));
+        OrderItemEntity orderItemEntity = items.get(0);
+        payVo.setTotal_amount(orderEntity.getPayAmount().setScale(2, RoundingMode.UP).toString());
+        payVo.setOut_trade_no(orderSn);
+        payVo.setSubject(orderItemEntity.getSkuName());
+        payVo.setBody(orderItemEntity.getSkuAttrsVals());
+        return payVo;
     }
 
     /**

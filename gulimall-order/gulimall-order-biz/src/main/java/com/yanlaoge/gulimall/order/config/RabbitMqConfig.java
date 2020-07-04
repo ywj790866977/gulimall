@@ -42,6 +42,8 @@ public class RabbitMqConfig {
              */
             @Override
             public void confirm(CorrelationData correlationData, boolean b, String s) {
+                //防止消息发送失败
+                //TODO 消息发送之后,将消息状态持久化到数据库,脚本定期扫描发送失败的消息, 进行重新发送
                 log.info("[rabbitmq-confirm] CorrelationData:{}-->ack:{}-->cause:{}",correlationData,b,s);
             }
         });

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
 
@@ -48,10 +49,6 @@ public class SpuCommentEntity implements Serializable {
 	 */
 	private String memberIp;
 	/**
-	 * 创建时间
-	 */
-	private Date createTime;
-	/**
 	 * 显示状态[0-不显示，1-显示]
 	 */
 	private Integer showStatus;
@@ -83,5 +80,13 @@ public class SpuCommentEntity implements Serializable {
 	 * 评论类型[0 - 对商品的直接评论，1 - 对评论的回复]
 	 */
 	private Integer commentType;
+	/**
+	 * 创建时间
+	 */
+	private LocalDateTime createTime;
+	/**
+	 * 更新时间
+	 */
+	private LocalDateTime updateTime;
 
 }

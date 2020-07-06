@@ -18,7 +18,7 @@ import javax.annotation.Resource;
  * @author 好人
  * @date 2020-07-03 10:59
  **/
-@RabbitListener(queues = WareConsTant.STOC_RELEASE_STOCK_QUEUE)
+@RabbitListener(queues = WareConsTant.STOCK_RELEASE_STOCK_QUEUE)
 @Component
 @Slf4j
 public class ReleaseLockStockListener {

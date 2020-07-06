@@ -26,28 +26,28 @@ public class RabbitMqConfig {
 
     @Bean
     public Exchange stockEventExchange() {
-        return new TopicExchange(WareConsTant.STOC_KEVENT_EXCHANGE, true, false);
+        return new TopicExchange(WareConsTant.STOCK_EVENT_EXCHANGE, true, false);
     }
 
     @Bean
     public Queue stockReleaseStockQueue() {
-        return new Queue(WareConsTant.STOC_RELEASE_STOCK_QUEUE, true, false, false);
+        return new Queue(WareConsTant.STOCK_RELEASE_STOCK_QUEUE, true, false, false);
     }
 
     @Bean
     public Queue stockDelayQueue() {
         Map<String, Object> arguments = Maps.newHashMap();
-        arguments.put("x-dead-letter-exchange", WareConsTant.STOC_KEVENT_EXCHANGE);
-        arguments.put("x-dead-letter-routeing-key", "stock.release");
-        arguments.put("x-message-ttl", 120000);
+        arguments.put("x-dead-letter-exchange", WareConsTant.STOCK_EVENT_EXCHANGE);
+        arguments.put("x-dead-letter-routing-key", "stock.release");
+        arguments.put("x-message-ttl", 60*1000*15);
         return new Queue(WareConsTant.STOCK_DELAY_QUEUE, true, false, false, arguments);
     }
 
     @Bean
     public Binding stockLockBinding() {
         return new Binding(
-                WareConsTant.STOC_RELEASE_STOCK_QUEUE, Binding.DestinationType.QUEUE,
-                WareConsTant.STOC_KEVENT_EXCHANGE,
+                WareConsTant.STOCK_RELEASE_STOCK_QUEUE, Binding.DestinationType.QUEUE,
+                WareConsTant.STOCK_EVENT_EXCHANGE,
                 "stock.release.#",
                 null
         );
@@ -57,7 +57,7 @@ public class RabbitMqConfig {
     public Binding stockReleaseBinding() {
         return new Binding(
                 WareConsTant.STOCK_DELAY_QUEUE, Binding.DestinationType.QUEUE,
-                WareConsTant.STOC_KEVENT_EXCHANGE,
+                WareConsTant.STOCK_EVENT_EXCHANGE,
                 WareConsTant.STOCK_LOCKED,
                 null
         );

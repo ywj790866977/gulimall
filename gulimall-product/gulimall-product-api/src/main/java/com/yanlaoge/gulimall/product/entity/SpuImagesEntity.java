@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
 
@@ -43,5 +44,13 @@ public class SpuImagesEntity implements Serializable {
 	 * 是否默认图
 	 */
 	private Integer defaultImg;
+	/**
+	 * 创建时间
+	 */
+	private LocalDateTime createTime;
+	/**
+	 * 更新时间
+	 */
+	private LocalDateTime updateTime;
 
 }

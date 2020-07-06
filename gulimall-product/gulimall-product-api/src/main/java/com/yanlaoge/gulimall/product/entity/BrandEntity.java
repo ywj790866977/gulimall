@@ -6,6 +6,7 @@ import com.yanlaoge.common.valid.AddGroup;
 import com.yanlaoge.common.valid.ListValue;
 import com.yanlaoge.common.valid.UpdateGroup;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -64,5 +65,13 @@ public class BrandEntity implements Serializable {
 	@NotNull(groups = AddGroup.class)
 	@Min(value = 0,message = "排序必须大于0",groups = {AddGroup.class,UpdateGroup.class})
 	private Integer sort;
+	/**
+	 * 创建时间
+	 */
+	private LocalDateTime createTime;
+	/**
+	 * 更新时间
+	 */
+	private LocalDateTime updateTime;
 
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -52,5 +53,13 @@ public class AttrGroupEntity implements Serializable {
 	 */
 	@TableField(exist = false)
 	private List<Long> catelogPath;
+	/**
+	 * 创建时间
+	 */
+	private LocalDateTime createTime;
+	/**
+	 * 更新时间
+	 */
+	private LocalDateTime updateTime;
 
 }

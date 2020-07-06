@@ -76,8 +76,8 @@ public class RabbitMqConfig {
     public Queue orderDelayQueue() {
         Map<String, Object> arguments = Maps.newHashMap();
         arguments.put("x-dead-letter-exchange", OrderConstant.ORDER_EVENT_EXCHANGE);
-        arguments.put("x-dead-letter-routeing-key","order.release.order");
-        arguments.put("x-message-ttl",60000);
+        arguments.put("x-dead-letter-routing-key","order.release.order");
+        arguments.put("x-message-ttl",60*1000*10);
         return new Queue(OrderConstant.ORDER_DELAY_QUEUE, true, false, false,arguments);
     }
 

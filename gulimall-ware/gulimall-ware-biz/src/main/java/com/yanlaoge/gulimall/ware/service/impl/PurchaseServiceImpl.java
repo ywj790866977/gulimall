@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -63,8 +65,8 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         Long purchaseId = mergeVo.getPurchaseId();
         if (purchaseId == null) {
             PurchaseEntity purchaseEntity = new PurchaseEntity();
-            purchaseEntity.setCreateTime(new Date());
-            purchaseEntity.setUpdateTime(new Date());
+//            purchaseEntity.setCreateTime(LocalDateTime.now());
+//            purchaseEntity.setUpdateTime(new Date());
             purchaseEntity.setStatus(PurchaseStatusEnum.CREATED.getCode());
             this.save(purchaseEntity);
             purchaseId = purchaseEntity.getId();
@@ -85,7 +87,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         purchaseDetailService.updateBatchById(collect);
         PurchaseEntity purchaseEntity = new PurchaseEntity();
         purchaseEntity.setId(purchaseId);
-        purchaseEntity.setUpdateTime(new Date());
+//        purchaseEntity.setUpdateTime(new Date());
         this.updateById(purchaseEntity);
     }
 
@@ -97,7 +99,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
                         || PurchaseStatusEnum.ASSIGNED.getCode().equals(item.getStatus()))
                 .peek(item -> {
                     item.setStatus(PurchaseStatusEnum.RECEIVE.getCode());
-                    item.setUpdateTime(new Date());
+//                    item.setUpdateTime(new Date());
                 })
                 .collect(Collectors.toList());
         // 2. 改变状态
@@ -142,7 +144,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         PurchaseEntity entity = new PurchaseEntity();
         entity.setId(id);
         entity.setStatus(flag? PurchaseStatusEnum.FINISH.getCode() : PurchaseStatusEnum.HASERROR.getCode());
-        entity.setUpdateTime(new Date());
+//        entity.setUpdateTime(new Date());
         this.updateById(entity);
         //3. 入库
 

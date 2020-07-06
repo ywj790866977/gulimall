@@ -1,9 +1,11 @@
 package com.yanlaoge.gulimall.order.service.impl;
 
+import cn.hutool.core.util.EnumUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.base.Enums;
 import com.yanlaoge.common.utils.*;
 import com.yanlaoge.common.vo.MemberRespVo;
 import com.yanlaoge.gulimall.cart.feign.CartFeignService;
@@ -16,6 +18,7 @@ import com.yanlaoge.gulimall.order.dao.OrderDao;
 import com.yanlaoge.gulimall.order.entity.OrderEntity;
 import com.yanlaoge.gulimall.order.entity.OrderItemEntity;
 import com.yanlaoge.gulimall.order.entity.PaymentInfoEntity;
+import com.yanlaoge.gulimall.order.eunms.AliPayedStatusEnum;
 import com.yanlaoge.gulimall.order.eunms.OrderStatusEnum;
 import com.yanlaoge.gulimall.order.interceptor.LoginInterceptor;
 import com.yanlaoge.gulimall.order.service.OrderItemService;
@@ -32,6 +35,7 @@ import com.yanlaoge.gulimall.ware.vo.*;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.enums.EnumUtils;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
@@ -198,7 +202,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     public PayVo getOrderPay(String orderSn) {
         PayVo payVo = new PayVo();
         OrderEntity orderEntity = this.getOrderByOrderSn(orderSn);
-        List<OrderItemEntity> items = itemService.list(new QueryWrapper<OrderItemEntity>().eq("order_sn", orderEntity));
+        List<OrderItemEntity> items = itemService.list(new QueryWrapper<OrderItemEntity>().eq("order_sn",
+                orderEntity.getOrderSn()));
         OrderItemEntity orderItemEntity = items.get(0);
         payVo.setTotal_amount(orderEntity.getPayAmount().setScale(2, RoundingMode.UP).toString());
         payVo.setOut_trade_no(orderSn);
@@ -234,8 +239,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         infoEntity.setCallbackTime(vo.getNotifyTime());
         paymentInfoService.save(infoEntity);
         //2.修改订单状态
-
-        return null;
+        if(AliPayedStatusEnum.TRADE_SUCCESS.getMsg().equalsIgnoreCase(vo.getTradeStatus())
+                || AliPayedStatusEnum.TRADE_FINISHED.getMsg().equalsIgnoreCase(vo.getTradeStatus())){
+            baseMapper.updateOrderStatus(vo.getOutTradeNo(),OrderStatusEnum.PAYED.getCode());
+        }
+        return "success";
     }
 
     /**

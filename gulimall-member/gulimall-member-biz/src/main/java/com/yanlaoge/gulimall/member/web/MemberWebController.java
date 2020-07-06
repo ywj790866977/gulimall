@@ -24,7 +24,7 @@ public class MemberWebController {
     @Resource
     private OrderFeignService orderFeignService;
 
-    @GetMapping("/memberOder.html")
+    @GetMapping("/memberOrder.html")
     public String memberOrderPage(@RequestParam(value = "pageNum",defaultValue = "1") Integer pageNum,
                                   @RequestParam(value = "pageSize",defaultValue = "10") Integer pageSize, Model model){
         //验证支付宝给我传来的所有请求数据

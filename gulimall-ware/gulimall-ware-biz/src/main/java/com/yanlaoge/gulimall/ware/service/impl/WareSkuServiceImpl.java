@@ -159,8 +159,9 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                     // 发送锁定消息
                     StockLockDetailDto lockDetailDto = new StockLockDetailDto();
                     BeanUtils.copyProperties(detailEntity, lockDetailDto);
-                    StockLockedDto lockedDto = StockLockedDto.builder().id(taskEntity.getId()).detailTo(lockDetailDto).build();
-                    rabbitTemplate.convertAndSend(WareConsTant.STOC_KEVENT_EXCHANGE, WareConsTant.STOCK_LOCKED, lockedDto);
+                    StockLockedDto stockLockedDto = new StockLockedDto();
+                    stockLockedDto.setId(taskEntity.getId()).setDetailTo(lockDetailDto);
+                    rabbitTemplate.convertAndSend(WareConsTant.STOCK_EVENT_EXCHANGE, WareConsTant.STOCK_LOCKED, stockLockedDto);
                     break;
                 }
             }
@@ -209,7 +210,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         List<WareOrderTaskDetailEntity> detailEntities = wareOrderTaskDetailService.list(
                 new QueryWrapper<WareOrderTaskDetailEntity>()
                         .eq("task_id", taskEntity.getId())
-                        .eq("loack_status",WareStockStatusEnum.LOCK.getCode()));
+                        .eq("lock_status",WareStockStatusEnum.LOCK.getCode()));
         if(CollectionUtils.isEmpty(detailEntities)){
             for (WareOrderTaskDetailEntity detailEntity : detailEntities) {
                 unLockStock(detailEntity.getSkuId(),detailEntity.getWareId(),detailEntity.getSkuNum(),taskEntity.getId());

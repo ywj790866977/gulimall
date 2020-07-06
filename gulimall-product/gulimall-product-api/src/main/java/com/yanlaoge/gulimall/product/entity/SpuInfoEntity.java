@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.math.BigDecimal;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -54,11 +55,11 @@ public class SpuInfoEntity implements Serializable {
 	 * 
 	 */
 	@JsonFormat( pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-	private Date createTime;
+	private LocalDateTime createTime;
 	/**
 	 * 
 	 */
 	@JsonFormat( pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-	private Date updateTime;
+	private LocalDateTime updateTime;
 
 }

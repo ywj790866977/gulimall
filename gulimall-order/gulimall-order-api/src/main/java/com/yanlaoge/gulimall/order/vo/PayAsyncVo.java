@@ -1,4 +1,4 @@
-package com.yanlaoge.gulimall.thirdparty.vo;
+package com.yanlaoge.gulimall.order.vo;
 
 import lombok.Data;
 import lombok.ToString;

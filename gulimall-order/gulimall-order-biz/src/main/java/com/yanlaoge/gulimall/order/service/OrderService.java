@@ -3,11 +3,8 @@ package com.yanlaoge.gulimall.order.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.gulimall.order.entity.OrderEntity;
-import com.yanlaoge.gulimall.order.vo.OrderConfirmVo;
-import com.yanlaoge.gulimall.order.vo.OrderSubmitVo;
-import com.yanlaoge.gulimall.order.vo.SubmitOrderResponseVo;
-import com.yanlaoge.gulimall.thirdparty.vo.PayAsyncVo;
-import com.yanlaoge.gulimall.thirdparty.vo.PayVo;
+import com.yanlaoge.gulimall.order.vo.*;
+import com.yanlaoge.gulimall.seckill.to.SeckillOrderTo;
 
 import java.util.Map;
 
@@ -80,5 +77,12 @@ public interface OrderService extends IService<OrderEntity> {
      * @return res
      */
     String handlerPayResult(PayAsyncVo vo);
+
+    /**
+     * 秒杀订单信息
+     *
+     * @param seckillOrderTo 消息to
+     */
+    void createSeckillOrder(SeckillOrderTo seckillOrderTo);
 }
 

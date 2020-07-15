@@ -329,10 +329,17 @@ PUT product
 13 购物车
 14 物流
 15 用户
-16 
+16 秒杀
 21 库存
 ```
 ### rabbitMq
 ```shell script
  docker run  -d --name rabbitmq -p 5671:5671 -p 5672:5672 -p4369:4369 -p 25672:25672 -p 15671:15671 -p 15672:15672 rabbitmq:management
+```
+
+### zipkin
+```shell script
+docker run -d -p 9411:9411 openzipkin/zipkin
+## 持久化容器
+docker run --env STORAGE_TYPE=elasticsearch --env=ES_HOSTS=10.211.55.20:9200 openzipkin/zipkin-dependencies
 ```

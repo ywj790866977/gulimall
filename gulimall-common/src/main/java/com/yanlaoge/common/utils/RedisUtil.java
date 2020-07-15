@@ -1,17 +1,14 @@
 package com.yanlaoge.common.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,6 +25,8 @@ public class RedisUtil {
      */
     @Resource
     private RedisTemplate<Object, Object> redisTemplate;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     //=============================common============================
 
@@ -165,6 +164,28 @@ public class RedisUtil {
     }
 
     /**
+     * 同一个key,只能插入一次
+     *
+     * @param key   key
+     * @param value value
+     * @param time  时间
+     * @param unit  时间类型
+     * @return 是否成功
+     */
+    public boolean setIfAbsent(String key, Object value, long time, TimeUnit unit) {
+        try {
+            if (time > 0) {
+                return redisTemplate.opsForValue().setIfAbsent(key, value, time, unit);
+            } else {
+                return setIfAbsent(key, value);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
      * setIfAbsent 不带时间插入
      *
      * @param key   key
@@ -233,6 +254,13 @@ public class RedisUtil {
 
     public List<Object> hAllGet(String key) {
         return redisTemplate.opsForHash().values(key);
+    }
+
+    public List<Object> hGet(String key, List<Object> items) {
+//        BoundHashOperations<String, String, String> boundHashOps =
+//                stringRedisTemplate.boundHashOps(key);
+//        return boundHashOps.multiGet(items);
+        return redisTemplate.opsForHash().multiGet(key, items);
     }
 
     /**
@@ -516,7 +544,7 @@ public class RedisUtil {
      * @param value 值
      * @return
      */
-    public boolean lSet(String key, Object value) {
+    public boolean lrSet(String key, Object value) {
         try {
             redisTemplate.opsForList().rightPush(key, value);
             return true;
@@ -526,6 +554,17 @@ public class RedisUtil {
         }
     }
 
+    public boolean llSet(String key, Object value) {
+        try {
+            redisTemplate.opsForList().leftPush(key, value);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
     /**
      * 将list放入缓存
      *
@@ -534,9 +573,22 @@ public class RedisUtil {
      * @param time  时间(秒)
      * @return
      */
-    public boolean lSet(String key, Object value, long time) {
+    public boolean lrSet(String key, Object value, long time) {
         try {
             redisTemplate.opsForList().rightPush(key, value);
+            if (time > 0) {
+                expire(key, time);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean llSet(String key, Object value, long time) {
+        try {
+            redisTemplate.opsForList().leftPush(key, value);
             if (time > 0) {
                 expire(key, time);
             }
@@ -552,11 +604,21 @@ public class RedisUtil {
      *
      * @param key   键
      * @param value 值
-     * @return
+     * @return 是否
      */
-    public boolean lSet(String key, List<Object> value) {
+    public boolean lrSet(String key, List<Object> value) {
         try {
             redisTemplate.opsForList().rightPushAll(key, value);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean llSet(String key, List<Object> value) {
+        try {
+            redisTemplate.opsForList().leftPushAll(key, value);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -572,9 +634,22 @@ public class RedisUtil {
      * @param time  时间(秒)
      * @return
      */
-    public boolean lSet(String key, List<Object> value, long time) {
+    public boolean lrSet(String key, List<Object> value, long time) {
         try {
             redisTemplate.opsForList().rightPushAll(key, value);
+            if (time > 0) {
+                expire(key, time);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean llSet(String key, List<Object> value, long time) {
+        try {
+            redisTemplate.opsForList().leftPushAll(key, value);
             if (time > 0) {
                 expire(key, time);
             }
@@ -623,12 +698,27 @@ public class RedisUtil {
 
     /**
      * 执行脚本
+     *
      * @param script 脚本
-     * @param key 处理的key
+     * @param key    处理的key
      * @param expect 期望的值
      * @return 0/1
      */
-    public Long executeScript(String script,String key,String expect){
-        return redisTemplate.execute(new DefaultRedisScript<Long>(script,Long.class), Arrays.asList(key),expect);
+    public Long executeScript(String script, String key, String expect) {
+        return redisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class), Arrays.asList(key), expect);
     }
+
+    public Set<Object> keys(String key) {
+        try {
+            return redisTemplate.keys(key);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Set<Object> hKeys(String key) {
+        return redisTemplate.opsForHash().keys(key);
+    }
+
 }

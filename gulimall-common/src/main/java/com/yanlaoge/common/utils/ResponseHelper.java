@@ -142,6 +142,10 @@ public class ResponseHelper {
         return new ResponseVo<T>(code, message, null);
     }
 
+    public static <T> ResponseVo<T> error(ServiceStatusCode serviceStatusCode) {
+        return new ResponseVo<T>(serviceStatusCode.getCode(), serviceStatusCode.getMsg(), null);
+    }
+
     /**
      * 无权限
      *

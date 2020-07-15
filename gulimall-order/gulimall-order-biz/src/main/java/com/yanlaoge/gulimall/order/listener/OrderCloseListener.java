@@ -30,6 +30,7 @@ public class OrderCloseListener {
         try {
             log.info("[handlerOrderClose] orderclose , orderEntity = {}",orderEntity);
             orderService.closeOrder(orderEntity);
+            //TODO 支付宝手动收单
             channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
             log.info("[handlerOrderClose] is ok");
         } catch (Exception e) {

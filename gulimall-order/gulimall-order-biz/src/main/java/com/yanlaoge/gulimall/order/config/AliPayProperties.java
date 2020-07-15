@@ -1,4 +1,4 @@
-package com.yanlaoge.gulimall.thirdparty.config;
+package com.yanlaoge.gulimall.order.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -45,4 +45,8 @@ public class AliPayProperties {
      * 字符编码格式
      */
     private String charset = "utf-8";
+    /**
+     * 订单超时时间
+     */
+    private String timeout;
 }

@@ -7,6 +7,7 @@ import com.yanlaoge.common.valid.ListValue;
 import com.yanlaoge.common.valid.UpdateGroup;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -68,10 +69,10 @@ public class BrandEntity implements Serializable {
 	/**
 	 * 创建时间
 	 */
-	private LocalDateTime createTime;
+	private Date createTime;
 	/**
 	 * 更新时间
 	 */
-	private LocalDateTime updateTime;
+	private Date updateTime;
 
 }

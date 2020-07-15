@@ -1,11 +1,9 @@
 package com.yanlaoge.gulimall.order.service.impl;
 
-import cn.hutool.core.util.EnumUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.common.base.Enums;
 import com.yanlaoge.common.utils.*;
 import com.yanlaoge.common.vo.MemberRespVo;
 import com.yanlaoge.gulimall.cart.feign.CartFeignService;
@@ -24,22 +22,18 @@ import com.yanlaoge.gulimall.order.interceptor.LoginInterceptor;
 import com.yanlaoge.gulimall.order.service.OrderItemService;
 import com.yanlaoge.gulimall.order.service.OrderService;
 import com.yanlaoge.gulimall.order.service.PaymentInfoService;
-import com.yanlaoge.gulimall.order.vo.*;
 import com.yanlaoge.gulimall.order.vo.MemberAddressVo;
+import com.yanlaoge.gulimall.order.vo.*;
 import com.yanlaoge.gulimall.product.entity.SpuInfoEntity;
 import com.yanlaoge.gulimall.product.feign.ProductFeignService;
-import com.yanlaoge.gulimall.thirdparty.vo.PayAsyncVo;
-import com.yanlaoge.gulimall.thirdparty.vo.PayVo;
+import com.yanlaoge.gulimall.seckill.to.SeckillOrderTo;
 import com.yanlaoge.gulimall.ware.feign.WareFeignService;
 import com.yanlaoge.gulimall.ware.vo.*;
-import io.seata.spring.annotation.GlobalTransactional;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.enums.EnumUtils;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -50,7 +44,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -150,13 +143,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         MemberRespVo memberRespVo = LoginInterceptor.threadLocal.get();
         //1. 原子验证令牌
         Long isOk = atomTokenCheck(vo, memberRespVo.getId());
-        ServiceAssert.isFalse(isOk==1,OrderRespStatus.TOKEND_ERROR);
+        ServiceAssert.isFalse(isOk == 1, OrderRespStatus.TOKEND_ERROR);
         //2. 创建订单
         CreateOrderTo orderTo = createOrder(vo);
         //3. 验价
         boolean isPrice =
                 orderTo.getOrder().getPayAmount().subtract(vo.getPayPrice()).abs().doubleValue() < OrderConstant.PRICE_DIFFERENCE;
-        ServiceAssert.isFalse(isPrice,OrderRespStatus.PRICE_ERROR);
+        ServiceAssert.isFalse(isPrice, OrderRespStatus.PRICE_ERROR);
         //4.保存订单
         saveOrder(orderTo);
         //6.锁定库存
@@ -171,19 +164,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         //7. 成功
         responseVo.setOrder(orderTo.getOrder());
         //8.发送消息到队列
-        rabbitTemplate.convertAndSend(OrderConstant.ORDER_EVENT_EXCHANGE,OrderConstant.ORDER_CREATE_ORDER,orderTo.getOrder());
+        rabbitTemplate.convertAndSend(OrderConstant.ORDER_EVENT_EXCHANGE, OrderConstant.ORDER_CREATE_ORDER, orderTo.getOrder());
         return responseVo;
     }
 
     @Override
     public OrderEntity getOrderByOrderSn(String orderSn) {
-        return this.getOne(new QueryWrapper<OrderEntity>().eq("order_sn",orderSn));
+        return this.getOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn));
     }
 
     @Override
     public void closeOrder(OrderEntity orderEntity) {
         OrderEntity order = this.getById(orderEntity.getId());
-        if(OrderStatusEnum.CREATE_NEW.getCode().equals(order.getStatus())){
+        if (OrderStatusEnum.CREATE_NEW.getCode().equals(order.getStatus())) {
             OrderEntity update = new OrderEntity();
             update.setId(orderEntity.getId());
             update.setStatus(OrderStatusEnum.CANCLED.getCode());
@@ -191,7 +184,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             try {
                 //TODO 发送消息之后,记录到数据库日志,保存消息状态
                 //TODO 定期扫描数据库失败的信息进行再次发送
-                rabbitTemplate.convertAndSend(OrderConstant.ORDER_EVENT_EXCHANGE,"order.release.other",order);
+                rabbitTemplate.convertAndSend(OrderConstant.ORDER_EVENT_EXCHANGE, "order.release.other", order);
             } catch (AmqpException e) {
                 log.error("[closeOrder] is error");
             }
@@ -207,8 +200,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         OrderItemEntity orderItemEntity = items.get(0);
         payVo.setTotal_amount(orderEntity.getPayAmount().setScale(2, RoundingMode.UP).toString());
         payVo.setOut_trade_no(orderSn);
-        payVo.setSubject(orderItemEntity.getSkuName());
+        payVo.setSubject(StringUtils.isEmpty(orderItemEntity.getSkuName()) ? "谷粒" : orderItemEntity.getSkuName());
         payVo.setBody(orderItemEntity.getSkuAttrsVals());
+        //TODO　订单过期时间
+        payVo.setTimeout_express("8m");
         return payVo;
     }
 
@@ -217,7 +212,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         MemberRespVo memberRespVo = LoginInterceptor.threadLocal.get();
         IPage<OrderEntity> page = this.page(
                 new Query<OrderEntity>().getPage(params),
-                new QueryWrapper<OrderEntity>().eq("member_id",memberRespVo.getId()).orderByDesc("id")
+                new QueryWrapper<OrderEntity>().eq("member_id", memberRespVo.getId()).orderByDesc("id")
         );
         List<OrderEntity> orders =
                 page.getRecords().stream().peek(
@@ -239,11 +234,32 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         infoEntity.setCallbackTime(vo.getNotifyTime());
         paymentInfoService.save(infoEntity);
         //2.修改订单状态
-        if(AliPayedStatusEnum.TRADE_SUCCESS.getMsg().equalsIgnoreCase(vo.getTradeStatus())
-                || AliPayedStatusEnum.TRADE_FINISHED.getMsg().equalsIgnoreCase(vo.getTradeStatus())){
-            baseMapper.updateOrderStatus(vo.getOutTradeNo(),OrderStatusEnum.PAYED.getCode());
+        if (AliPayedStatusEnum.TRADE_SUCCESS.getMsg().equalsIgnoreCase(vo.getTradeStatus())
+                || AliPayedStatusEnum.TRADE_FINISHED.getMsg().equalsIgnoreCase(vo.getTradeStatus())) {
+            baseMapper.updateOrderStatus(vo.getOutTradeNo(), OrderStatusEnum.PAYED.getCode());
         }
         return "success";
+    }
+
+    @Override
+    public void createSeckillOrder(SeckillOrderTo seckillOrderTo) {
+        //1.保存订单
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setOrderSn(seckillOrderTo.getOrderSn());
+        orderEntity.setMemberId(seckillOrderTo.getMemberId());
+        orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
+        BigDecimal total =
+                seckillOrderTo.getSeckillPrice().multiply(new BigDecimal(seckillOrderTo.getNum().toString()));
+        orderEntity.setPayAmount(total);
+        //TODO 地址
+        this.save(orderEntity);
+        //2.订单项
+        OrderItemEntity itemEntity = new OrderItemEntity();
+        itemEntity.setOrderSn(seckillOrderTo.getOrderSn());
+        itemEntity.setRealAmount(total);
+        itemEntity.setSkuQuantity(seckillOrderTo.getNum());
+        //TODO 查询sku信息
+        itemService.save(itemEntity);
     }
 
     /**

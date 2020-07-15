@@ -18,12 +18,22 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8333
   redis:
     port: 6379
-    host: 192.168.52.128
+    host: 10.211.55.20
   session:
     store-type: redis
-
+  zipkin:
+    base-url: http://10.211.55.20:9411
+    discovery-client-enabled: false
+    sender:
+      type: web
+  sleuth:
+    sampler:
+      probability: 1
 alipay:
   app-id: 2016102700772599
   gateway-url: https://openapi.alipaydev.com/gateway.do
@@ -32,7 +42,19 @@ alipay:
   notify-url: http://http://ks2u045akv.52http.tech/payed/notify
   return-url: http://member.gulimall.com/memberOder.html
 
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+logging:
+  level:
+    com.yanlaoge.gulimall: debug
+    org.springframework.cloud.openfeign: debug
+    org.springframework.cloud.sleuth: debug
 
 server:
-  port: 10007
+  port: 10008
+feign:
+  sentinel:
+    enabled: true

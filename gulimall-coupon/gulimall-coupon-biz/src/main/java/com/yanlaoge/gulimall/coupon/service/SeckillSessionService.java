@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.yanlaoge.common.utils.PageUtils;
 import com.yanlaoge.gulimall.coupon.entity.SeckillSessionEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,5 +21,13 @@ public interface SeckillSessionService extends IService<SeckillSessionEntity> {
      * @return 分页
      */
     PageUtils queryPage(Map<String, Object> params);
+
+    /**
+     * 获取3天需要上架的秒杀商品
+     *
+     * @return 集合
+     */
+    List<SeckillSessionEntity> getLates3DaysSession();
+
 }
 

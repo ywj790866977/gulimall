@@ -1,4 +1,4 @@
-package com.yanlaoge.gulimall.thirdparty.vo;
+package com.yanlaoge.gulimall.order.vo;
 
 import lombok.Data;
 
@@ -28,4 +28,8 @@ public class PayVo {
      *
      */
     private String product_code = "FAST_INSTANT_TRADE_PAY";
+    /**
+     * 订单超时时间
+     */
+    private String timeout_express ;
 }

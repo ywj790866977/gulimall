@@ -1,7 +1,6 @@
 package com.yanlaoge.gulimall.thirdparty.feign;
 
 import com.yanlaoge.common.utils.ResponseVo;
-import com.yanlaoge.gulimall.thirdparty.vo.PayVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,12 +24,4 @@ public interface ThridPartyFeignService {
     @GetMapping("/sms/sendcode")
     ResponseVo<String> sendCode(@RequestParam("phone") String phone, @RequestParam("code") String code);
 
-    /**
-     * 支付宝
-     *
-     * @param vo vo
-     * @return R
-     */
-    @PostMapping("/pay/aliPay")
-    ResponseVo<String> aliPay(@RequestBody PayVo vo);
 }

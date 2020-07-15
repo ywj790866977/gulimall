@@ -1,14 +1,13 @@
 package com.yanlaoge.gulimall.coupon.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.yanlaoge.common.utils.ResponseHelper;
+import com.yanlaoge.common.utils.ResponseVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.yanlaoge.gulimall.coupon.entity.SeckillSessionEntity;
 import com.yanlaoge.gulimall.coupon.service.SeckillSessionService;
@@ -29,6 +28,16 @@ import com.yanlaoge.common.utils.R;
 public class SeckillSessionController {
     @Autowired
     private SeckillSessionService seckillSessionService;
+
+    /**
+     * 查询近3天需要上架的商品
+     *
+     * @return R
+     */
+    @GetMapping("/lates3DaysSession")
+    public ResponseVo<List<SeckillSessionEntity>> getLates3DaysSession() {
+        return ResponseHelper.success(seckillSessionService.getLates3DaysSession());
+    }
 
     /**
      * 列表

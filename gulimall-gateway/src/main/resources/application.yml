@@ -1,67 +1,101 @@
-#spring:
-#  application:
-#    name: gulimall-gateway
-#  cloud:
-#    nacos:
-#      discovery:
-#        server-addr: 127.0.0.1:8848
-#    gateway:
-#      routes:
-#        - id: gulimall-ware
-#          uri: lb://gulimall-ware
-#          predicates:
-#            - Path=/api/ware/**
-#          filters:
-#            - RewritePath=/api/(?<sement>.*),/$\{sement}
-#        - id: gulimall-member
-#          uri: lb://gulimall-member
-#          predicates:
-#            - Path=/api/member/**
-#          filters:
-#            - RewritePath=/api/(?<sement>.*),/$\{sement}
-#        - id: gulimall-product
-#          uri: lb://gulimall-product
-#          predicates:
-#            - Path=/api/product/**
-#          filters:
-#            - RewritePath=/api/(?<sement>.*),/$\{sement}
-#        - id: third_party_route
-#          uri: lb://gulimall-third-party
-#          predicates:
-#            - Path=/api/thirdparty/**
-#          filters:
-#            - RewritePath=/api/thirdparty/(?<sement>.*),/$\{sement}
-#        - id: admin_rote
-#          uri: lb://renren-fast
-#          predicates:
-#            - Path=/api/**
-#          filters:
-#            - RewritePath=/api/(?<sement>.*),/renren-fast/$\{sement}
-#        - id: gulimall_member_route
-#          uri: lb://gulimall-member
-#          predicates:
-#            - Host=member.gulimall.com
-#        - id: gulimall_order_route
-#          uri: lb://gulimall-order
-#          predicates:
-#            - Host=order.gulimall.com
-#        - id: gulimall_cart_route
-#          uri: lb://gulimall-cart
-#          predicates:
-#            - Host=cart.gulimall.com
-#        - id: gulimall_auth_route
-#          uri: lb://gulimall-auth-server
-#          predicates:
-#            - Host=auth.gulimall.com
-#        - id: gulimall_search_route
-#          uri: lb://gulimall-search
-#          predicates:
-#            - Host=search.gulimall.com
-#        - id: gulimall_route
-#          uri: lb://gulimall-product
-#          predicates:
-#            - Host=gulimall.com,item.gulimall.com
-#
-#
-#server:
-#  port: 9000
+spring:
+  application:
+    name: gulimall-gateway
+  zipkin:
+    base-url: http://10.211.55.20:9411
+    discovery-client-enabled: false
+    sender:
+      type: web
+  sleuth:
+    sampler:
+      probability: 1
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8333
+    gateway:
+      routes:
+        - id: gulimall_ware_route
+          uri: lb://gulimall-ware
+          predicates:
+            - Path=/api/ware/**
+          filters:
+            - RewritePath=/api/(?<sement>.*),/$\{sement}
+        - id: gulimall_coupon_route
+          uri: lb://gulimall-coupon
+          predicates:
+            - Path=/api/coupon/**
+          filters:
+            - RewritePath=/api/(?<sement>.*),/$\{sement}
+        - id: gulimall_member_route
+          uri: lb://gulimall-member
+          predicates:
+            - Path=/api/member/**
+          filters:
+            - RewritePath=/api/(?<sement>.*),/$\{sement}
+        - id: gulimall_product_route
+          uri: lb://gulimall-product
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/(?<sement>.*),/$\{sement}
+        - id: third_party_route
+          uri: lb://gulimall-third-party
+          predicates:
+            - Path=/api/thirdparty/**
+          filters:
+            - RewritePath=/api/thirdparty/(?<sement>.*),/$\{sement}
+        - id: admin_rote
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**
+          filters:
+            - RewritePath=/api/(?<sement>.*),/renren-fast/$\{sement}
+        - id: gulimall_seckill_route
+          uri: lb://gulimall-seckill
+          predicates:
+            - Host=seckill.gulimall.com
+        - id: gulimall_member_route
+          uri: lb://gulimall-member
+          predicates:
+            - Host=member.gulimall.com
+        - id: gulimall_order_route
+          uri: lb://gulimall-order
+          predicates:
+            - Host=order.gulimall.com
+        - id: gulimall_cart_route
+          uri: lb://gulimall-cart
+          predicates:
+            - Host=cart.gulimall.com
+        - id: gulimall_auth_route
+          uri: lb://gulimall-auth-server
+          predicates:
+            - Host=auth.gulimall.com
+        - id: gulimall_search_route
+          uri: lb://gulimall-search
+          predicates:
+            - Host=search.gulimall.com
+        - id: gulimall_route
+          uri: lb://gulimall-product
+          predicates:
+            - Host=gulimall.com,item.gulimall.com
+
+
+
+server:
+  port: 9001
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+logging:
+  level:
+    com.yanlaoge.gulimall: debug
+    org.springframework.cloud.openfeign: debug
+    org.springframework.cloud.sleuth: debug
+

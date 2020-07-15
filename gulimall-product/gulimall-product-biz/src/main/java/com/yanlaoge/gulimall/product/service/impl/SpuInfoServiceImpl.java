@@ -1,43 +1,36 @@
 package com.yanlaoge.gulimall.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Sets;
 import com.yanlaoge.common.to.SkuReductionTo;
-import com.yanlaoge.common.utils.*;
 import com.yanlaoge.common.to.SpuBoundsTo;
+import com.yanlaoge.common.utils.*;
 import com.yanlaoge.gulimall.coupon.feign.CouponFeignService;
+import com.yanlaoge.gulimall.product.dao.SpuInfoDao;
 import com.yanlaoge.gulimall.product.entity.*;
 import com.yanlaoge.gulimall.product.enums.ProductStatusEnum;
 import com.yanlaoge.gulimall.product.service.*;
-import com.yanlaoge.gulimall.product.vo.Attr;
-import com.yanlaoge.gulimall.product.vo.BaseAttrs;
-import com.yanlaoge.gulimall.product.vo.Bounds;
-import com.yanlaoge.gulimall.product.vo.Images;
-import com.yanlaoge.gulimall.product.vo.Skus;
-import com.yanlaoge.gulimall.product.vo.SpuSaveVo;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
-
+import com.yanlaoge.gulimall.product.vo.*;
 import com.yanlaoge.gulimall.search.feign.SearchFeignService;
 import com.yanlaoge.gulimall.search.model.Attrs;
 import com.yanlaoge.gulimall.search.model.SkuModel;
 import com.yanlaoge.gulimall.ware.feign.WareFeignService;
 import com.yanlaoge.gulimall.ware.vo.SkuHasStockVo;
-import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
-import com.yanlaoge.gulimall.product.dao.SpuInfoDao;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service("spuInfoService")
@@ -84,7 +77,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
      *
      * @param saveVo 保存vo
      */
-    @GlobalTransactional
+    //@GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveSpuInfo(SpuSaveVo saveVo) {

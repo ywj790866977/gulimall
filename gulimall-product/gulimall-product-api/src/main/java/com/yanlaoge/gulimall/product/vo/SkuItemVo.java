@@ -38,4 +38,8 @@ public class SkuItemVo {
      * 有无货
      */
     private Boolean hasStock = true;
+    /**
+     * 商品秒杀vo
+     */
+    private SeckillInfoVo seckillInfo;
 }

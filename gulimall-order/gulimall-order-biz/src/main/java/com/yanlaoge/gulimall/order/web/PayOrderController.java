@@ -1,9 +1,8 @@
 package com.yanlaoge.gulimall.order.web;
 
-import com.yanlaoge.common.utils.ResponseVo;
+import com.yanlaoge.gulimall.order.common.AlipayTemplate;
 import com.yanlaoge.gulimall.order.service.OrderService;
-import com.yanlaoge.gulimall.thirdparty.feign.ThridPartyFeignService;
-import com.yanlaoge.gulimall.thirdparty.vo.PayVo;
+import com.yanlaoge.gulimall.order.vo.PayVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +18,7 @@ import javax.annotation.Resource;
 public class PayOrderController {
 
     @Resource
-    private ThridPartyFeignService thridPartyFeignService;
+    private AlipayTemplate alipayTemplate;
     @Resource
     private OrderService orderService;
 
@@ -27,11 +26,7 @@ public class PayOrderController {
     @GetMapping(value = "/payOrder", produces = "text/html")
     public String payOrder(@RequestParam("orderSn") String orderSn) {
         PayVo payVo = orderService.getOrderPay(orderSn);
-        ResponseVo<String> responseVo = thridPartyFeignService.aliPay(payVo);
-        if (responseVo == null || responseVo.getCode() != 0) {
-            return "pay";
-        }
-        return responseVo.getData();
+        return  alipayTemplate.pay(payVo);
     }
 
 }

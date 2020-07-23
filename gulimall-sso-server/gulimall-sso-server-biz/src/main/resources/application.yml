@@ -1,22 +1,16 @@
-    server:
+server:
   port: 9001
 spring:
   application:
     name: gulimall-sso-server
   redis:
-    host: 192.168.211.132
+    host: 10.211.55.20
     port: 6379
-    password:
-    jedis:
-      pool:
-        max-active: 8
-        max-idle: 8
-        min-idle: 0
-  datasource:
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://192.168.211.132:3306/changgou_oauth?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&serverTimezone=UTC
-    username: root
-    password: 123456
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://10.211.55.20:3306/gulimall_ums?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+#    username: root
+#    password: root
   main:
     allow-bean-definition-overriding: true
 #eureka:
@@ -27,13 +21,13 @@ spring:
 #      defaultZone: http://127.0.0.1:7001/eureka
 auth:
   ttl: 3600  #token存储到redis的过期时间
-  clientId: changgou
-  clientSecret: changgou
+  clientId: changgou  # 客户端id
+  clientSecret: changgou  # 客户端秘钥
   cookieDomain: localhost
   cookieMaxAge: -1
 encrypt:
   key-store:
-    location: classpath:/changgou.jks
-    secret: changgou
-    alias: changgou
+    location: classpath:/changgou.jks  # 证书位置
+    secret: changgou # 秘钥
+    alias: changgou # 证书别名
     password: changgou

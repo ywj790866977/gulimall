@@ -1,5 +1,7 @@
 package com.yanlaoge.gulimall.sso.controller;
 
+import com.yanlaoge.common.utils.ResponseHelper;
+import com.yanlaoge.common.utils.ResponseVo;
 import com.yanlaoge.gulimall.sso.service.AuthService;
 import com.yanlaoge.gulimall.sso.util.AuthToken;
 import com.yanlaoge.gulimall.sso.util.CookieUtil;
@@ -51,7 +53,7 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/login")
-    public void login(String username, String password) {
+    public ResponseVo<String> login(String username, String password) {
         if(StringUtils.isEmpty(username)){
             throw new RuntimeException("用户名不允许为空");
         }
@@ -65,8 +67,7 @@ public class AuthController {
         String accessToken = authToken.getAccessToken();
         //将令牌存储到cookie
         saveCookie(accessToken);
-
-//        return new Result(true, StatusCode.OK,"登录成功！");
+        return ResponseHelper.success("登录成功");
     }
 
     /***

@@ -1,5 +1,7 @@
 package com.yanlaoge.gulimall.sso.controller;
 
+import com.yanlaoge.common.utils.ResponseHelper;
+import com.yanlaoge.common.utils.ResponseVo;
 import com.yanlaoge.gulimall.sso.service.LoginService;
 import com.yanlaoge.gulimall.sso.util.AuthToken;
 import com.yanlaoge.gulimall.sso.util.CookieUtil;
@@ -55,14 +57,14 @@ public class UserLoginController {
      * @return
      */
     @RequestMapping("/login")
-    public void login(String username, String password) {
+    public ResponseVo<String> login(String username, String password) {
         //登录 之后生成令牌的数据返回
         AuthToken authToken = loginService.login(username, password, clientId, clientSecret, GRAND_TYPE);
 
 
         //设置到cookie中
         saveCookie(authToken.getAccessToken());
-//        return new Result<>(true, StatusCode.OK,"令牌生成成功",authToken);
+        return ResponseHelper.success("令牌生成成功");
     }
 
     private void saveCookie(String token){

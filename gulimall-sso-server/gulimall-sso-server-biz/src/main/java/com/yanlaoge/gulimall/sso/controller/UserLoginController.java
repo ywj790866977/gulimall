@@ -5,7 +5,6 @@ import com.yanlaoge.common.utils.ResponseVo;
 import com.yanlaoge.gulimall.sso.service.LoginService;
 import com.yanlaoge.gulimall.sso.util.AuthToken;
 import com.yanlaoge.gulimall.sso.util.CookieUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,9 +13,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 /**
+ * 登录接口
+ *
  * @author rubyle
  * @date 2020/07/23
  */
@@ -54,7 +54,7 @@ public class UserLoginController {
      *
      * @param username 用户名
      * @param password 密码
-     * @return
+     * @return R
      */
     @RequestMapping("/login")
     public ResponseVo<String> login(String username, String password) {
@@ -67,8 +67,8 @@ public class UserLoginController {
         return ResponseHelper.success("令牌生成成功");
     }
 
-    private void saveCookie(String token){
+    private void saveCookie(String token) {
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-        CookieUtil.addCookie(response,cookieDomain,"/","Authorization",token,cookieMaxAge,false);
+        CookieUtil.addCookie(response, cookieDomain, "/", "Authorization", token, cookieMaxAge, false);
     }
 }

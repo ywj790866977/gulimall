@@ -12,7 +12,7 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
  */
 @Configuration
 public class SessionConfig {
-    
+
     @Bean
     public CookieSerializer cookieSerializer(){
         DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
@@ -20,7 +20,7 @@ public class SessionConfig {
         cookieSerializer.setCookieName("GULISESSION");
         return cookieSerializer;
     }
-    
+
     @Bean
     public RedisSerializer<Object> springSessionDefaultRedisSerializer(){
         return new GenericJackson2JsonRedisSerializer();

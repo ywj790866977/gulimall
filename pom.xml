@@ -32,7 +32,6 @@
         <module>gulimall-sso-server</module>
         <module>gulimall-sso-client</module>
         <module>gulimall-seckill</module>
-        <module>gulimall-core</module>
     </modules>
 
     <properties>
@@ -72,6 +71,7 @@
         <remote-addr>192.168.1.10:22</remote-addr>
         <remote-username>root</remote-username>
         <remote-passwd>123456</remote-passwd>
+        <swagger.version>2.9.2</swagger.version>
     </properties>
 
     <dependencyManagement>
@@ -99,6 +99,17 @@
                 <version>${alibaba.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <!--  swagger2  -->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${swagger.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

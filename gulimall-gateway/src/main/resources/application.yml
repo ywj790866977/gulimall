@@ -18,35 +18,73 @@ spring:
         dashboard: localhost:8333
     gateway:
       routes:
+        - id: gulimall_cart_route1
+          uri: lb://gulimall-cart
+          predicates:
+            - Path=/api/cart/**
+          filters:
+            - RewritePath=/api/cart/v2/api-docs,/v2/api-docs
+            - RewritePath=/api/(?<sement>.*),/$\{sement}
+        - id: gulimall_auth_route1
+          uri: lb://gulimall-auth-server
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - RewritePath=/api/auth/v2/api-docs,/v2/api-docs
+            - RewritePath=/api/(?<sement>.*),/$\{sement}
+        - id: gulimall_order_route1
+          uri: lb://gulimall-order
+          predicates:
+            - Path=/api/order/**
+          filters:
+            - RewritePath=/api/order/v2/api-docs,/v2/api-docs
+            - RewritePath=/api/(?<sement>.*),/$\{sement}
+        - id: gulimall_search_route1
+          uri: lb://gulimall-search
+          predicates:
+            - Path=/api/search/**
+          filters:
+            - RewritePath=/api/search/v2/api-docs,/v2/api-docs
+        - id: gulimall_seckill_route1
+          uri: lb://gulimall-seckill
+          predicates:
+            - Path=/api/seckill/**
+          filters:
+            - RewritePath=/api/seckill/v2/api-docs,/v2/api-docs
         - id: gulimall_ware_route
           uri: lb://gulimall-ware
           predicates:
             - Path=/api/ware/**
           filters:
+            - RewritePath=/api/ware/v2/api-docs,/v2/api-docs
             - RewritePath=/api/(?<sement>.*),/$\{sement}
         - id: gulimall_coupon_route
           uri: lb://gulimall-coupon
           predicates:
             - Path=/api/coupon/**
           filters:
+            - RewritePath=/api/coupon/v2/api-docs,/v2/api-docs
             - RewritePath=/api/(?<sement>.*),/$\{sement}
         - id: gulimall_member_route
           uri: lb://gulimall-member
           predicates:
             - Path=/api/member/**
           filters:
+            - RewritePath=/api/member/v2/api-docs,/v2/api-docs
             - RewritePath=/api/(?<sement>.*),/$\{sement}
         - id: gulimall_product_route
           uri: lb://gulimall-product
           predicates:
             - Path=/api/product/**
           filters:
+            - RewritePath=/api/product/v2/api-docs,/v2/api-docs
             - RewritePath=/api/(?<sement>.*),/$\{sement}
         - id: third_party_route
           uri: lb://gulimall-third-party
           predicates:
             - Path=/api/thirdparty/**
           filters:
+            - RewritePath=/api/thirdparty/v2/api-docs,/v2/api-docs
             - RewritePath=/api/thirdparty/(?<sement>.*),/$\{sement}
         - id: admin_rote
           uri: lb://renren-fast

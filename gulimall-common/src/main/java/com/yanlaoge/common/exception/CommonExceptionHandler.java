@@ -30,6 +30,7 @@ public class CommonExceptionHandler {
     
     private static final String GLOBEL_ERROR_MSG = "服务端发生异常！";
 
+
     @ExceptionHandler(value = ServiceException.class)
     public ResponseVo<Object> serviceErrorHandler(HttpServletResponse resp, ServiceException ex) throws Exception {
     	logger.error("ServiceException: ", ex);

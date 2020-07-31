@@ -18,6 +18,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * 登录接口1
+ *
  * @author rubyle
  * @date 2020/07/23
  */
@@ -54,14 +56,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseVo<String> login(String username, String password) {
-        if(StringUtils.isEmpty(username)){
+        if (StringUtils.isEmpty(username)) {
             throw new RuntimeException("用户名不允许为空");
         }
-        if(StringUtils.isEmpty(password)){
+        if (StringUtils.isEmpty(password)) {
             throw new RuntimeException("密码不允许为空");
         }
         //申请令牌
-        AuthToken authToken =  authService.login(username,password,clientId,clientSecret);
+        AuthToken authToken = authService.login(username, password, clientId, clientSecret);
 
         //用户身份令牌
         String accessToken = authToken.getAccessToken();
@@ -74,8 +76,8 @@ public class AuthController {
      * 将令牌存储到cookie
      * @param token
      */
-    private void saveCookie(String token){
+    private void saveCookie(String token) {
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-        CookieUtil.addCookie(response,cookieDomain,"/","Authorization",token,cookieMaxAge,false);
+        CookieUtil.addCookie(response, cookieDomain, "/", "Authorization", token, cookieMaxAge, false);
     }
 }
